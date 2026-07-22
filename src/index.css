@@ -1,0 +1,371 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+@import "./comparison-responsive.css";
+@import "./responsive.css";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-cairo: "Cairo", sans-serif;
+  
+  --color-primary: #a855f7;
+  --color-primary-dark: #9333ea;
+  --color-accent: #10b981;
+
+  /* Custom Breakpoints */
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1440px;
+  --breakpoint-3xl: 1920px;
+}
+
+@layer base {
+  :root {
+    /* Fluid Typography using clamp() - Professional Scaling */
+    --fs-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.8rem);
+    --fs-sm: clamp(0.85rem, 0.8rem + 0.3vw, 0.95rem);
+    --fs-base: clamp(1rem, 0.95rem + 0.25vw, 1.1rem);
+    --fs-lg: clamp(1.1rem, 1.05rem + 0.3vw, 1.2rem);
+    --fs-xl: clamp(1.2rem, 1.1rem + 0.5vw, 1.4rem);
+    --fs-2xl: clamp(1.4rem, 1.3rem + 0.7vw, 1.8rem);
+    --fs-3xl: clamp(1.75rem, 1.5rem + 1.2vw, 2.5rem);
+    --fs-4xl: clamp(2.1rem, 1.8rem + 1.8vw, 3.5rem);
+    --fs-5xl: clamp(2.5rem, 2rem + 3vw, 5rem);
+
+    /* Fluid Spacing */
+    --space-xs: clamp(0.4rem, 0.35rem + 0.2vw, 0.6rem);
+    --space-sm: clamp(0.8rem, 0.7rem + 0.4vw, 1.2rem);
+    --space-md: clamp(1.2rem, 1.1rem + 0.6vw, 1.8rem);
+    --space-lg: clamp(1.8rem, 1.6rem + 0.8vw, 2.5rem);
+    --space-xl: clamp(2.5rem, 2.2rem + 1.2vw, 3.5rem);
+    --space-2xl: clamp(3.5rem, 3rem + 1.8vw, 5rem);
+    --space-3xl: clamp(5rem, 4.5rem + 2.5vw, 7.5rem);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply font-cairo bg-[#050505] text-white antialiased selection:bg-primary/30;
+    font-size: var(--fs-base);
+    line-height: 1.6;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+  }
+
+  h1 { font-size: var(--fs-5xl); font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; }
+  h2 { font-size: var(--fs-4xl); font-weight: 800; line-height: 1.2; letter-spacing: -0.01em; }
+  h3 { font-size: var(--fs-3xl); font-weight: 700; line-height: 1.3; }
+  h4 { font-size: var(--fs-2xl); font-weight: 700; }
+
+  section {
+    padding-top: var(--space-2xl);
+    padding-bottom: var(--space-2xl);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+    max-width: 1440px;
+  }
+
+  @media (min-width: 1920px) {
+    .container {
+      max-width: 1600px;
+    }
+  }
+
+  button, .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+}
+
+.glass {
+  @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+}
+
+.glass-hover {
+  @apply hover:bg-white/[0.06] hover:border-white/[0.15] transition-all duration-500;
+}
+
+/* ==========================================================================
+   ARABIC PREMIUM TYPOGRAPHY LAYOUT & READING EXPERIENCE
+   Specially engineered for optimal Cairo/Arabic font metrics.
+   ========================================================================== */
+.prose-arabic {
+  direction: rtl;
+  text-align: right;
+  font-family: "Cairo", var(--font-sans);
+}
+
+.prose-arabic p {
+  /* Fluid font scaling optimized for high visual density of Arabic glyphs */
+  font-size: clamp(16px, 0.98rem + 0.2vw, 18px);
+  /* 1.95 line height prevents overlapping diacritics and ascenders/descenders */
+  line-height: 1.95;
+  /* Neutral tracking is critical; positive or negative tracking breaks cursive kashida connections */
+  letter-spacing: 0px !important;
+  /* 0.04em word spacing provides a highly rhythmic reading flow, reducing mental fatigue */
+  word-spacing: 0.04em;
+  color: #d1d5db; /* gray-300 */
+  margin-bottom: 1.75rem;
+  font-weight: 400;
+}
+
+.prose-arabic h2 {
+  font-family: "Cairo", sans-serif;
+  font-size: clamp(1.4rem, 1.3rem + 1vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1.4;
+  color: #ffffff;
+  margin-top: 2.75rem;
+  margin-bottom: 1.25rem;
+  letter-spacing: 0px !important;
+}
+
+.prose-arabic h3 {
+  font-family: "Cairo", sans-serif;
+  font-size: clamp(1.15rem, 1.1rem + 0.6vw, 1.4rem);
+  font-weight: 700;
+  line-height: 1.45;
+  color: #f3f4f6; /* gray-100 */
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+  letter-spacing: 0px !important;
+}
+
+.prose-arabic blockquote p {
+  font-size: clamp(1.05rem, 1.02rem + 0.3vw, 1.2rem);
+  line-height: 1.9;
+  color: #f3f4f6;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.prose-arabic ul, .prose-arabic ol {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose-arabic li {
+  font-size: clamp(15px, 0.95rem + 0.15vw, 17px);
+  line-height: 1.85;
+  letter-spacing: 0px !important;
+  margin-bottom: 0.75rem;
+}
+
+.sticky-cta-bar {
+  @apply fixed bottom-0 left-0 right-0 z-[100] p-4 bg-white/[0.03] backdrop-blur-xl border-t border-white/10 lg:hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+  background: rgba(5, 5, 5, 0.8);
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-primary to-purple-400;
+}
+
+.purple-glow {
+  @apply absolute -z-10 blur-[120px] rounded-full opacity-20;
+}
+
+/* Responsive Table Wrapper */
+.table-responsive {
+  @apply w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom Scrollbar for Horizontal Scroll */
+.table-responsive::-webkit-scrollbar {
+  height: 4px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 10px;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.25); }
+}
+
+@keyframes tech-grid-move {
+  0% { background-position: 0 0; }
+  100% { background-position: 50px 50px; }
+}
+
+@keyframes particle-float {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { transform: translate(var(--tw-translate-x), var(--tw-translate-y)) scale(0); opacity: 0; }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+@keyframes gradient-move {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-float {
+  /* Disabled continuous animation to optimize performance */
+}
+
+.animate-glow-pulse {
+  /* Disabled continuous animation to optimize performance */
+}
+
+.tech-grid {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.scroll-progress {
+  @apply fixed top-0 left-0 h-1 bg-primary z-[200] transition-all duration-300 origin-left;
+}
+
+.logo-aura {
+  @apply relative;
+}
+
+.logo-aura::after {
+  content: '';
+  @apply absolute inset-0 -z-10 blur-2xl opacity-0 transition-opacity duration-500 rounded-full bg-primary/40;
+}
+
+.logo-aura:hover::after {
+  @apply opacity-100;
+}
+
+.btn-ripple {
+  @apply relative overflow-hidden;
+}
+
+.ripple-effect {
+  @apply absolute rounded-full bg-white/30 pointer-events-none;
+  animation: ripple 0.6s linear forwards;
+}
+
+.pricing-card-featured {
+  @apply border-primary/50 scale-105 shadow-[0_0_50px_rgba(168,85,247,0.2)];
+}
+
+.feature-card-glow:hover {
+  @apply border-primary/40 shadow-[0_0_30px_rgba(168,85,247,0.15)];
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+@keyframes css-shimmer {
+  0% { transform: translateX(-100%) skewX(-20deg); }
+  100% { transform: translateX(200%) skewX(-20deg); }
+}
+
+.css-shimmer-element {
+  /* Disabled infinite shimmer to optimize rendering and reduce paint storm */
+}
+
+@keyframes scroll-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+
+.css-scroll-line {
+  /* Disabled infinite animation to optimize rendering and reduce paint storm */
+}
+
+/* ==========================================================================
+   DEFINITIVE RENDERING & CONTRAST FIXES (Anti Black-Screen / Invisible Text)
+   Forces clean rendering, absolute element visibility, and stable z-indexes.
+   ========================================================================== */
+
+/* CSS Selector 1: Smart Form Header Title (H2) */
+div#root:nth-of-type(1) > div:nth-of-type(1) > section#smart-form:nth-of-type(21) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h2:nth-of-type(1),
+#smart-form .smart-form-title {
+  color: #ffffff !important;
+  background: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  text-shadow: 0 2px 10px rgba(168, 85, 247, 0.3) !important;
+}
+
+/* CSS Selector 2: Smart Form Section Wrapper */
+div#root:nth-of-type(1) > div:nth-of-type(1) > section#smart-form:nth-of-type(21),
+#smart-form {
+  background: #050505 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 10 !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.03) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+}
+
+/* CSS Selector 3: FAQ Section Header Title (H2) */
+div#root:nth-of-type(1) > div:nth-of-type(1) > section#faq:nth-of-type(22) > div:nth-of-type(3) > div:nth-of-type(1) > h2:nth-of-type(1),
+#faq h2 {
+  color: #ffffff !important;
+  background: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3) !important;
+}
+
+/* CSS Selector 4: FAQ Background tech-grid block (Prevents z-index overlay masking content) */
+div#root:nth-of-type(1) > div:nth-of-type(1) > section#faq:nth-of-type(22) > div:nth-of-type(2),
+#faq .tech-grid {
+  pointer-events: none !important;
+  z-index: 1 !important;
+  opacity: 0.05 !important;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) !important;
+}
+
+

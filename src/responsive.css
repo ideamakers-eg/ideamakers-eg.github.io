@@ -1,0 +1,200 @@
+/* 
+  IDEA Makers - Global Responsive Enhancements
+  Ensuring a premium, fluid experience across all devices.
+*/
+
+:root {
+  /* Fluid Container Padding */
+  --container-padding: clamp(1rem, 5vw, 4rem);
+  
+  /* Fluid Section Spacing */
+  --section-spacing: clamp(4rem, 10vw, 10rem);
+}
+
+/* Global Container Fixes */
+.container {
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* Fluid Typography for Headlines */
+h1 {
+  font-size: clamp(2.5rem, 8vw, 5rem) !important;
+  line-height: 1.1;
+  word-break: keep-all;
+}
+
+h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem) !important;
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem) !important;
+}
+
+/* Responsive Section Spacing */
+section {
+  padding-top: var(--section-spacing);
+  padding-bottom: var(--section-spacing);
+}
+
+/* Hero Section Adjustments */
+@media (max-width: 768px) {
+  .hero-content {
+    text-align: center;
+    padding-top: 2rem;
+  }
+  
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+  
+  .hero-actions button, 
+  .hero-actions a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Features Grid Scaling */
+.features-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+}
+
+/* Pricing Section Responsive */
+@media (max-width: 1024px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto;
+    gap: 3rem;
+  }
+  
+  .pricing-card-featured {
+    transform: scale(1) !important;
+  }
+}
+
+/* Form Responsiveness */
+.smart-form-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+}
+
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  input, select, textarea {
+    font-size: 16px !important; /* Prevent iOS zoom */
+  }
+}
+
+/* Navigation Fixes */
+@media (max-width: 1024px) {
+  nav .container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Mobile Menu Enhancements */
+.mobile-menu-overlay {
+  background: rgba(5, 5, 5, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+/* Social Icons Responsive */
+@media (max-width: 480px) {
+  .social-icons-row {
+    gap: 1.5rem !important;
+  }
+  
+  .social-icon-btn {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+  }
+}
+
+/* Footer Centering on Mobile */
+@media (max-width: 768px) {
+  footer .container {
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+  }
+  
+  footer .logo-wrapper {
+    margin: 0 auto;
+  }
+}
+
+/* Global Overflow Fix */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Image Scaling Fix */
+img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Button Minimum Touch Target */
+button, a.btn {
+  min-height: 48px;
+  padding: 0.75rem 1.5rem;
+}
+
+/* Tablet Specific (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .container {
+    max-width: 90%;
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Large Desktop (1920px+) */
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
+  }
+  
+  body {
+    font-size: 1.2rem;
+  }
+}
+
+/* Fix for sticky CTA bar on very small screens */
+@media (max-width: 360px) {
+  .sticky-cta-bar {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+  
+  .sticky-cta-bar button {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+}

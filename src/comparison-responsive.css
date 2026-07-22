@@ -1,0 +1,165 @@
+/* 
+  IDEA Makers - Comparison Table Responsive Enhancements
+  Modern, card-based mobile layout and sticky headers for tablets.
+*/
+
+/* Desktop Enhancements */
+.comparison-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.comparison-row {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.comparison-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+  transform: scale(1.01) translateX(-5px);
+  z-index: 10;
+}
+
+/* Highlighting IDEA Makers Column */
+.col-ideamakers {
+  position: relative;
+  background: rgba(168, 85, 247, 0.03) !important;
+  border-left: 1px solid rgba(168, 85, 247, 0.1);
+  border-right: 1px solid rgba(168, 85, 247, 0.1);
+  transition: all 0.3s ease;
+}
+
+.comparison-row:hover .col-ideamakers {
+  background: rgba(168, 85, 247, 0.08) !important;
+  box-shadow: inset 0 0 30px rgba(168, 85, 247, 0.1);
+}
+
+/* Tablet: Horizontal Scroll + Sticky First Column */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .table-responsive {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 1rem;
+  }
+  
+  .comparison-table {
+    min-width: 800px;
+  }
+
+  .col-criteria {
+    position: sticky;
+    right: 0;
+    z-index: 20;
+    background: #050505 !important; /* Match site background */
+    box-shadow: -10px 0 20px rgba(0,0,0,0.5);
+  }
+  
+  thead .col-criteria {
+    background: #0a0a0a !important;
+  }
+}
+
+/* Mobile: Stacked Cards Transformation */
+@media (max-width: 767px) {
+  .table-responsive {
+    overflow: visible;
+  }
+
+  .comparison-table thead {
+    display: none; /* Hide headers on mobile */
+  }
+  
+  .comparison-table, 
+  .comparison-table tbody, 
+  .comparison-table tr, 
+  .comparison-table td {
+    display: block;
+    width: 100%;
+  }
+  
+  .comparison-row {
+    margin-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 2.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: cardReveal 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes cardReveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Staggered animation for rows */
+  .comparison-row:nth-child(1) { animation-delay: 0.1s; }
+  .comparison-row:nth-child(2) { animation-delay: 0.2s; }
+  .comparison-row:nth-child(3) { animation-delay: 0.3s; }
+  .comparison-row:nth-child(4) { animation-delay: 0.4s; }
+  .comparison-row:nth-child(5) { animation-delay: 0.5s; }
+  .comparison-row:nth-child(6) { animation-delay: 0.6s; }
+  
+  .comparison-row:hover {
+    transform: translateY(-8px);
+    border-color: rgba(168, 85, 247, 0.4);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  
+  .col-criteria {
+    font-size: 1.4rem !important;
+    color: #fff;
+    font-weight: 900 !important;
+    margin-bottom: 1.5rem;
+    padding: 0 0 1rem 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    text-align: center !important;
+  }
+  
+  .col-traditional, .col-ideamakers {
+    padding: 1.25rem !important;
+    border-radius: 1.5rem;
+    margin-top: 1rem;
+    text-align: center !important;
+  }
+  
+  .col-traditional {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .col-ideamakers {
+    background: rgba(168, 85, 247, 0.12) !important;
+    border: 1px solid rgba(168, 85, 247, 0.3) !important;
+    box-shadow: 0 15px 30px rgba(168, 85, 247, 0.1);
+  }
+  
+  /* Mobile Labels */
+  .col-traditional::before {
+    content: "الأنظمة التقليدية";
+    display: block;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .col-ideamakers::before {
+    content: "IDEA Makers";
+    display: block;
+    font-size: 0.7rem;
+    color: #a855f7;
+    margin-bottom: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .col-traditional div, .col-ideamakers div {
+    justify-content: center !important;
+  }
+}

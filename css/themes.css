@@ -1,0 +1,31 @@
+/* Theme Variables */
+:root {
+  /* Light Theme (Default) */
+  --color-primary: #4f46e5; /* Indigo 600 */
+  --color-primary-hover: #4338ca; /* Indigo 700 */
+  --color-secondary: #10b981; /* Emerald 500 */
+  --color-bg: #f8fafc; /* Slate 50 */
+  --color-text: #0f172a; /* Slate 900 */
+  --color-text-muted: #64748b; /* Slate 500 */
+  --color-border: #e2e8f0; /* Slate 200 */
+}
+
+[data-theme="dark"] {
+  --color-bg: #0f172a;
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-border: #1e293b;
+}
+
+/* RTL Specific Adjustments */
+[dir="rtl"] .founder-quote {
+  border-right: 4px solid var(--color-primary);
+  padding-right: 1.5rem;
+  border-left: none;
+}
+
+[dir="ltr"] .founder-quote {
+  border-left: 4px solid var(--color-primary);
+  padding-left: 1.5rem;
+  border-right: none;
+}

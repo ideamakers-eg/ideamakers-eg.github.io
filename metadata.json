@@ -1,0 +1,6 @@
+{
+  "name": "Idea Makers POS - PlayStation Lounge Management",
+  "description": "The golden standard for PlayStation lounge management in 2026. Full control, increased profits, and professional management with ease.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

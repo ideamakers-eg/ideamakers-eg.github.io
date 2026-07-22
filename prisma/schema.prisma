@@ -1,0 +1,77 @@
+// Enterprise Prisma Schema Definition for Playstation POS Enterprise CMS
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  AUTHOR
+  VIEWER
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String
+  name         String
+  role         Role       @default(EDITOR)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  AuditLog     AuditLog[]
+}
+
+model CmsContent {
+  key       String   @id
+  value     String
+  category  String   @default("general")
+  updatedAt DateTime @updatedAt
+}
+
+model Article {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  category    String
+  author      String
+  date        String
+  readTime    String
+  description String
+  content     String
+  image       String
+  video       String?
+  tags        String   // Comma-separated or JSON array string
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MediaAsset {
+  id               String   @id @default(uuid())
+  name             String
+  type             String
+  size             String
+  url              String
+  resolution       String?
+  optimized        Boolean  @default(true)
+  compressionRatio String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  userName  String
+  role      String
+  action    String
+  details   String
+  ipAddress String?
+  timestamp DateTime @default(now())
+}
