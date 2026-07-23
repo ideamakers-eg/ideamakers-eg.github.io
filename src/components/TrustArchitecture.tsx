@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Shield, 
@@ -14,34 +14,31 @@ import {
   Zap,
   Globe,
   Database,
-  ExternalLink
+  ExternalLink,
+  ZoomIn,
+  X
 } from 'lucide-react';
-import { MediaRenderer } from './MediaRenderer';
-import ciscoCertificateImg from '../assets/images/cisco_certificate_1783313854566.jpg';
+
+// =========================================================================
+// 🖼️ رابط صورة شهادة Cisco السيبرانية الرسمية
+// يمكنك تعديل هذا اللينك في أي وقت لتغيير صورة الشهادة المعروضة في الموقع
+// Place your Cisco Certificate Image URL here (e.g. https://i.postimg.cc/0Q38JF7k/cisco-certificate.png... or similar)
+// =========================================================================
+export const DEFAULT_CISCO_CERTIFICATE_IMAGE_URL = "https://i.postimg.cc/0Q38JF7k/cisco-certificate.png";
 
 interface TrustArchitectureProps {
   onContactFounder: (message: string) => void;
-  cmsContent?: any;
+  certificateImageUrl?: string;
 }
 
-export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ onContactFounder, cmsContent }) => {
+export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ 
+  onContactFounder,
+  certificateImageUrl = DEFAULT_CISCO_CERTIFICATE_IMAGE_URL
+}) => {
   const [activeTab, setActiveTab] = useState<'learning' | 'standards' | 'principles' | 'responsibility'>('learning');
-  
-  const showMode = cmsContent?.trustCertShowMode || 'both';
-  const certImg = cmsContent?.trustCertImgUrl || '';
-  
-  const [activeCertView, setActiveCertView] = useState<'replica' | 'image'>(
-    showMode === 'image' ? 'image' : 'replica'
-  );
+  const [isZoomModalOpen, setIsZoomModalOpen] = useState<boolean>(false);
 
-  // Sync state if showMode changes
-  useEffect(() => {
-    if (showMode === 'image') {
-      setActiveCertView('image');
-    } else if (showMode === 'replica') {
-      setActiveCertView('replica');
-    }
-  }, [showMode]);
+  const currentCertificateUrl = certificateImageUrl || DEFAULT_CISCO_CERTIFICATE_IMAGE_URL;
 
   const trustCards = [
     {
@@ -135,17 +132,21 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ onContactF
         {/* ================= HEADER BLOCK ================= */}
         <div id="trust-header-block" className="max-w-3xl mx-auto text-center mb-20 space-y-6">
           <motion.div 
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: -10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-white/[0.02] border border-white/5 text-gray-400"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             <span>فلسفة الأمان والنزاهة الرقمية</span>
           </motion.div>
           
           <motion.h2 
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
             className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-[1.25] tracking-tight font-cairo"
           >
             الأمان ليس ميزةً مضافة، <br />
@@ -153,8 +154,10 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ onContactF
           </motion.h2>
 
           <motion.p 
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             className="text-gray-400 text-base sm:text-lg md:text-xl font-light leading-relaxed max-w-2xl mx-auto"
           >
             نحن نرفض التسويات البرمجية والادعاءات التسويقية الزائفة. في <span className="text-white font-medium">IDEA Makers</span>، نلتزم بمبادئ هندسية واعية وثقافة تعلم مستمر تضمن حماية مشروعك من الجذور.
@@ -162,194 +165,149 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ onContactF
         </div>
 
         {/* ================= EDUCATIONAL COMMITMENT & DIGITAL CERTIFICATE SHOWCASE ================= */}
-        {showMode !== 'none' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-28" id="education-certificate-block">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-28" id="education-certificate-block">
+          
+          {/* Certificate Column (CSS-crafted high-fidelity replica) */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="lg:col-span-7 relative group"
+          >
+            {/* Ambient glow behind card */}
+            <div className="absolute inset-0 bg-primary/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl" />
             
-            {/* Certificate Column (Interactive & CMS Managed) */}
-            <motion.div 
-              initial={false}
-              animate={{ opacity: 1, scale: 1 }}
-              className="lg:col-span-7 relative group"
-            >
-              {/* Ambient glow behind card */}
-              <div className="absolute inset-0 bg-primary/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl" />
+            {/* Real CSS Digital Certificate Box */}
+            <div className="relative rounded-3xl p-6 sm:p-10 border border-white/[0.05] bg-gradient-to-b from-white/[0.03] to-transparent shadow-3xl overflow-hidden backdrop-blur-xl">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full pointer-events-none" />
               
-              {showMode === 'both' && (
-                <div className="flex justify-center mb-6 relative z-20">
-                  <div className="flex bg-[#0c0c0e]/90 border border-white/10 rounded-2xl p-1.5 shadow-2xl backdrop-blur-md">
-                    <button
-                      type="button"
-                      onClick={() => setActiveCertView('image')}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                        activeCertView === 'image'
-                          ? 'bg-primary text-white shadow-lg'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      <Award className="w-3.5 h-3.5" />
-                      <span>صورة الشهادة الرسمية</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveCertView('replica')}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                        activeCertView === 'replica'
-                          ? 'bg-primary text-white shadow-lg'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      <Terminal className="w-3.5 h-3.5" />
-                      <span>النسخة الرقمية التفاعلية</span>
-                    </button>
-                  </div>
+              {/* Header inside Certificate card */}
+              <div className="flex justify-between items-start border-b border-white/[0.05] pb-6 mb-6">
+                <div className="text-right">
+                  <span className="text-[10px] uppercase tracking-widest text-primary font-black block mb-1">CISCO NETWORKING ACADEMY</span>
+                  <span className="text-xs text-gray-400 block font-light">مؤسسة تدريب الأمن والشبكات العالمية</span>
                 </div>
-              )}
-
-              {activeCertView === 'image' ? (
-                /* Actual Image rendering with elegant styling and verified seal */
-                <div className="relative rounded-3xl p-3 sm:p-4 border border-white/[0.05] bg-gradient-to-b from-white/[0.03] to-transparent shadow-3xl overflow-hidden backdrop-blur-xl flex flex-col justify-between h-full min-h-[420px]">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full pointer-events-none" />
-                  
-                  <div className="relative z-10 w-full flex-1 flex items-center justify-center p-2 rounded-2xl bg-black/30 border border-white/5 overflow-hidden group/img">
-                    <MediaRenderer 
-                      src={certImg || ciscoCertificateImg} 
-                      type="image" 
-                      className="max-h-[380px] w-auto max-w-full object-contain rounded-xl shadow-2xl transition-transform duration-500 group-hover/img:scale-[1.02]" 
-                      alt="Cisco Cybersecurity Certificate - Eslam Arafa" 
-                    />
-                  </div>
-
-                  {/* Verification Bar */}
-                  <div className="mt-4 py-3 px-4 rounded-2xl bg-[#0F0D13] border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-right relative z-10">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary/20 to-purple-500/20 border border-primary/30 flex items-center justify-center text-primary-light shrink-0">
-                        <Shield className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <span className="text-[11px] text-gray-400 block font-light">الشهادة الرسمية الموثقة من Cisco</span>
-                        <span className="text-xs text-gray-200 font-bold block mt-0.5">موثقة برقم معرف 1553a1d2 على منصة Credly الدولية</span>
-                      </div>
-                    </div>
-                    
-                    <a 
-                      href="https://www.credly.com/badges/910cf85b-b5ce-4b11-82fc-dfb906b038a0" 
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all hover:scale-[1.02] cursor-pointer"
-                    >
-                      <span>تحقق من الشارة الرسمية</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
+                <div className="p-2 bg-white/[0.02] border border-white/5 rounded-xl text-primary">
+                  <Award className="w-6 h-6" />
                 </div>
-              ) : (
-                /* Real CSS Digital Certificate Box */
-                <div className="relative rounded-3xl p-6 sm:p-10 border border-white/[0.05] bg-gradient-to-b from-white/[0.03] to-transparent shadow-3xl overflow-hidden backdrop-blur-xl">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full pointer-events-none" />
-                  
-                  {/* Header inside Certificate card */}
-                  <div className="flex justify-between items-start border-b border-white/[0.05] pb-6 mb-6">
-                    <div className="text-right">
-                      <span className="text-[10px] uppercase tracking-widest text-primary font-black block mb-1">CISCO NETWORKING ACADEMY</span>
-                      <span className="text-xs text-gray-400 block font-light">مؤسسة تدريب الأمن والشبكات العالمية</span>
-                    </div>
-                    <div className="p-2 bg-white/[0.02] border border-white/5 rounded-xl text-primary">
-                      <Award className="w-6 h-6" />
-                    </div>
-                  </div>
-
-                  {/* Certificate content */}
-                  <div className="space-y-6 text-right">
-                    <div>
-                      <span className="text-[11px] text-gray-500 block">يُمنح ميثاق الحضور والتأهيل لـ</span>
-                      <span className="text-2xl sm:text-3xl font-black text-white block mt-1 font-cairo">إسلام عرفة</span>
-                      <span className="text-xs text-primary font-medium block mt-1">Founder & CEO, Lead Engineer – IDEA Makers</span>
-                    </div>
-
-                    <div className="py-4 px-4 rounded-2xl bg-white/[0.01] border border-white/[0.03] inline-block w-full">
-                      <span className="text-[11px] text-gray-500 block mb-1">البرنامج والمادة المنجزة بنجاح:</span>
-                      <span className="text-base sm:text-lg font-bold text-white block font-cairo">مقدمة في الأمن السيبراني (Introduction to Cybersecurity)</span>
-                      <p className="text-xs text-gray-400 mt-2 font-light leading-relaxed">
-                        تأكيد منهجي على كفاءات فحص الثغرات الأمنية، تأمين قواعد البيانات المحلية والشبكات، وفهم آليات الاختراق ومكافحتها لبناء أنظمة مرنة.
-                      </p>
-                    </div>
-
-                    {/* Credly Digital Badge & Verification Link */}
-                    <div className="py-3 px-4 rounded-2xl bg-[#0F0D13] border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-right">
-                      <div className="flex items-center gap-3">
-                        {/* Simplified geometric representations of Credly Badge */}
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary/20 to-purple-500/20 border border-primary/30 flex items-center justify-center text-primary-light shrink-0">
-                          <Shield className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <span className="text-[11px] text-gray-400 block font-light">الشارة الرقمية المعتمدة من Cisco</span>
-                          <span className="text-xs text-gray-200 font-bold block mt-0.5">موثق ومعتمد على منصة Credly الدولية</span>
-                        </div>
-                      </div>
-                      
-                      <a 
-                        href="https://www.credly.com/badges/910cf85b-b5ce-4b11-82fc-dfb906b038a0" 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all hover:scale-[1.02] cursor-pointer"
-                      >
-                        <span>تحقق من الشارة</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-
-                    {/* Certificate Meta Details */}
-                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/[0.03] text-xs text-gray-500 font-mono">
-                      <div>
-                        <span className="text-[10px] uppercase text-gray-600 block mb-1">CERTIFICATE ID</span>
-                        <span className="text-gray-300 font-medium">1553a1d2-37f1-48b6-9d5919d35f98</span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] uppercase text-gray-600 block mb-1">DATE COMPLETED</span>
-                        <span className="text-gray-300 font-medium">17 June 2026</span>
-                      </div>
-                    </div>
-
-                    {/* Certificate Signature */}
-                    <div className="pt-4 flex justify-between items-end">
-                      <div className="text-left font-serif">
-                        <span className="text-xs text-gray-400 block">Lynn Bloomer</span>
-                        <span className="text-[9px] text-gray-600 block">Cisco Academy Board</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-[10px] uppercase text-gray-500 block">نطاق الاستخدام الهيكلي</span>
-                        <span className="text-[11px] text-primary font-medium block">تأمين كود الكاشير وإدارة الخزينة</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-
-            {/* Explanation Text Column */}
-            <motion.div 
-              initial={false}
-              animate={{ opacity: 1, x: 0 }}
-              className="lg:col-span-5 space-y-6 text-right"
-            >
-              <span className="text-xs uppercase tracking-wider text-primary font-bold block">الفلسفة خلف الأكواد</span>
-              <h3 className="text-2xl sm:text-3xl font-black text-white font-cairo leading-snug">
-                التعلم ليس بهدف "جمع الألقاب"، بل لبناء عقلية هندسية واعية
-              </h3>
-              <p className="text-gray-300 text-base sm:text-lg leading-relaxed font-light">
-                نحن نؤمن بأن الأمان لا يأتي عبر شهادة تُعلّق على الحائط لتضمن سلامة البرمجيات تلقائياً؛ فكل نظام برمجيات بحاجة لتيقظ وتحديث مستمر. 
-              </p>
-              <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light">
-                إن دراسات أمن المعلومات والأمن السيبراني المستمرة لمؤسسنا المهندس <span className="text-white font-medium">إسلام عرفة</span> تشكل الدعامة الأساسية لثقافة التطوير داخل <span className="text-primary">IDEA Makers</span>. نحن نوجه هذا الوعي العلمي والعملي المكتسب من أكاديميات عالمية مثل <span className="text-white font-medium">Cisco</span> لنصمم حلولاً تمنع التلاعب بالورديات وسرقة الكاشير، مع الحفاظ على كود متماسك وآمن بنسبة 100%. يمكنك التحقق بشكل رسمي من صحة هذه الشارة من خلال منصة <span className="text-white font-medium">Credly</span> العالمية الشهيرة لتوثيق الشهادات.
-              </p>
-              <div className="pt-4 flex flex-wrap gap-3 justify-end">
-                <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-400 font-medium">تأمين الذاكرة المحلية</span>
-                <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-400 font-medium">غلق الورديات الأعمى</span>
-                <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-400 font-medium">حظر التعديلات الخارجية</span>
               </div>
-            </motion.div>
-          </div>
-        )}
+
+              {/* Certificate Image Frame (Renders directly when image URL is provided in DEFAULT_CISCO_CERTIFICATE_IMAGE_URL) */}
+              {currentCertificateUrl ? (
+                <div 
+                  onClick={() => setIsZoomModalOpen(true)}
+                  className="mb-6 relative group rounded-2xl overflow-hidden border border-primary/30 bg-black/40 cursor-pointer"
+                >
+                  <img 
+                    src={currentCertificateUrl} 
+                    alt="Cisco Introduction to Cybersecurity Certificate - Eslam Arafa"
+                    className="w-full h-auto object-contain max-h-[460px] rounded-2xl transition-transform duration-500 group-hover:scale-[1.02]"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <div className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-xl">
+                      <ZoomIn className="w-4 h-4" />
+                      <span>تكبير الشهادة</span>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Certificate content */}
+              <div className="space-y-6 text-right">
+                <div>
+                  <span className="text-[11px] text-gray-500 block">يُمنح ميثاق الحضور والتأهيل لـ</span>
+                  <span className="text-2xl sm:text-3xl font-black text-white block mt-1 font-cairo">إسلام عرفة</span>
+                  <span className="text-xs text-primary font-medium block mt-1">Founder & CEO, Lead Engineer – IDEA Makers</span>
+                </div>
+
+                <div className="py-4 px-4 rounded-2xl bg-white/[0.01] border border-white/[0.03] inline-block w-full">
+                  <span className="text-[11px] text-gray-500 block mb-1">البرنامج والمادة المنجزة بنجاح:</span>
+                  <span className="text-base sm:text-lg font-bold text-white block font-cairo">مقدمة في الأمن السيبراني (Introduction to Cybersecurity)</span>
+                  <p className="text-xs text-gray-400 mt-2 font-light leading-relaxed">
+                    تأكيد منهجي على كفاءات فحص الثغرات الأمنية، تأمين قواعد البيانات المحلية والشبكات، وفهم آليات الاختراق ومكافحتها لبناء أنظمة مرنة.
+                  </p>
+                </div>
+
+                {/* Credly Digital Badge & Verification Link */}
+                <div className="py-3 px-4 rounded-2xl bg-[#0F0D13] border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-right">
+                  <div className="flex items-center gap-3">
+                    {/* Simplified geometric representations of Credly Badge */}
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary/20 to-purple-500/20 border border-primary/30 flex items-center justify-center text-primary-light shrink-0">
+                      <Shield className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-gray-400 block font-light">الشارة الرقمية المعتمدة من Cisco</span>
+                      <span className="text-xs text-gray-200 font-bold block mt-0.5">موثق ومعتمد على منصة Credly الدولية</span>
+                    </div>
+                  </div>
+                  
+                  <a 
+                    href="https://www.credly.com/badges/910cf85b-b5ce-4b11-82fc-dfb906b038a0" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all hover:scale-[1.02] cursor-pointer"
+                  >
+                    <span>تحقق من الشارة</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                {/* Certificate Meta Details */}
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/[0.03] text-xs text-gray-500 font-mono">
+                  <div>
+                    <span className="text-[10px] uppercase text-gray-600 block mb-1">CERTIFICATE ID</span>
+                    <span className="text-gray-300 font-medium">1553a1d2-37f1-48b6-9d5919d35f98</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase text-gray-600 block mb-1">DATE COMPLETED</span>
+                    <span className="text-gray-300 font-medium">17 June 2026</span>
+                  </div>
+                </div>
+
+                {/* Certificate Signature */}
+                <div className="pt-4 flex justify-between items-end">
+                  <div className="text-left font-serif">
+                    <span className="text-xs text-gray-400 block">Lynn Bloomer</span>
+                    <span className="text-[9px] text-gray-600 block">Cisco Academy Board</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] uppercase text-gray-500 block">نطاق الاستخدام الهيكلي</span>
+                    <span className="text-[11px] text-primary font-medium block">تأمين كود الكاشير وإدارة الخزينة</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Explanation Text Column */}
+          <motion.div 
+            initial={{ opacity: 0, x: 25 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="lg:col-span-5 space-y-6 text-right"
+          >
+            <span className="text-xs uppercase tracking-wider text-primary font-bold block">الفلسفة خلف الأكواد</span>
+            <h3 className="text-2xl sm:text-3xl font-black text-white font-cairo leading-snug">
+              التعلم ليس بهدف "جمع الألقاب"، بل لبناء عقلية هندسية واعية
+            </h3>
+            <p className="text-gray-300 text-base sm:text-lg leading-relaxed font-light">
+              نحن نؤمن بأن الأمان لا يأتي عبر شهادة تُعلّق على الحائط لتضمن سلامة البرمجيات تلقائياً؛ فكل نظام برمجيات بحاجة لتيقظ وتحديث مستمر. 
+            </p>
+            <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light">
+              إن دراسات أمن المعلومات والأمن السيبراني المستمرة لمؤسسنا المهندس <span className="text-white font-medium">إسلام عرفة</span> تشكل الدعامة الأساسية لثقافة التطوير داخل <span className="text-primary">IDEA Makers</span>. نحن نوجه هذا الوعي العلمي والعملي المكتسب من أكاديميات عالمية مثل <span className="text-white font-medium">Cisco</span> لنصمم حلولاً تمنع التلاعب بالورديات وسرقة الكاشير، مع الحفاظ على كود متماسك وآمن بنسبة 100%. يمكنك التحقق بشكل رسمي من صحة هذه الشارة من خلال منصة <span className="text-white font-medium">Credly</span> العالمية الشهيرة لتوثيق الشهادات.
+            </p>
+            <div className="pt-4 flex flex-wrap gap-3 justify-end">
+              <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-400 font-medium">تأمين الذاكرة المحلية</span>
+              <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-400 font-medium">غلق الورديات الأعمى</span>
+              <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-400 font-medium">حظر التعديلات الخارجية</span>
+            </div>
+          </motion.div>
+        </div>
 
         {/* ================= INTERACTIVE TRUST PILLARS SECTION (APPLE/STRIPE) ================= */}
         <div className="space-y-12" id="interactive-trust-pillars">
@@ -388,10 +346,10 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ onContactF
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
-                initial={{ opacity: 0, y: 4 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.15, ease: "easeOut" }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 className="rounded-3xl border border-white/[0.04] bg-gradient-to-b from-white/[0.01] to-transparent p-8 sm:p-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-start text-right"
               >
                 {/* Information side (Col-7) */}
@@ -441,7 +399,7 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ onContactF
                         <motion.div 
                           initial={{ width: 0 }} 
                           animate={{ width: "95%" }} 
-                          transition={{ duration: 0.15, ease: "easeOut" }} 
+                          transition={{ duration: 1.5, ease: "easeOut" }} 
                           className="h-full bg-amber-400" 
                         />
                       </div>
@@ -462,7 +420,7 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ onContactF
                   {activeTab === 'principles' && (
                     <div className="relative z-10 py-6 space-y-4 text-center">
                       <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
-                        <Lock className="w-6 h-6" />
+                        <Lock className="w-6 h-6 animate-pulse" />
                       </div>
                       <span className="text-xs text-gray-400 block font-light">تأمين مبيعات الصالات ضد الاحتيال والسرقة</span>
                       <div className="flex gap-2 justify-center">
@@ -497,8 +455,10 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ onContactF
 
         {/* ================= APPLE-STYLE EXECUTIVE FOUNDER QUOTE ================= */}
         <motion.div 
-          initial={false}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
           className="max-w-4xl mx-auto my-28 border-r border-primary/40 pr-8 pl-0 py-2 text-right relative"
           id="trust-founder-quote"
         >
@@ -519,13 +479,15 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ onContactF
 
         {/* ================= PREMIUM CALL TO ACTION (CTA) ================= */}
         <motion.div 
-          initial={false}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 0.98 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
           className="max-w-4xl mx-auto rounded-[2.5rem] p-8 sm:p-16 text-center border border-white/[0.03] bg-gradient-to-b from-white/[0.01] to-transparent relative overflow-hidden"
           id="trust-cta-block"
         >
           {/* Subtle concentric decorative background lights */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-primary/5 blur-[120px] rounded-full pointer-events-none animate-pulse" />
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-primary/[0.02] to-transparent pointer-events-none" />
           
           <div className="relative z-10 space-y-6 max-w-2xl mx-auto">
@@ -548,6 +510,57 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({ onContactF
           </div>
         </motion.div>
       </div>
+
+      {/* Lightbox / Fullscreen Zoom Modal for Certificate */}
+      <AnimatePresence>
+        {isZoomModalOpen && currentCertificateUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-8"
+            onClick={() => setIsZoomModalOpen(false)}
+          >
+            <div 
+              className="relative max-w-5xl max-h-[90vh] w-full bg-black/80 border border-white/10 rounded-3xl overflow-hidden p-2 sm:p-4 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setIsZoomModalOpen(false)}
+                className="absolute top-4 left-4 z-20 p-3 bg-black/80 hover:bg-white/20 text-white rounded-full transition-all border border-white/20 cursor-pointer"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="text-right p-4 border-b border-white/10 mb-2">
+                <h4 className="text-lg font-bold text-white font-cairo">شهادة Cisco السيبرانية الرسمية — إسلام عرفة</h4>
+                <p className="text-xs text-gray-400">Introduction to Cybersecurity | Credly Verified</p>
+              </div>
+
+              <div className="flex items-center justify-center overflow-auto max-h-[75vh]">
+                <img 
+                  src={currentCertificateUrl} 
+                  alt="Cisco Cybersecurity Certificate - Eslam Arafa"
+                  className="max-w-full max-h-[70vh] object-contain rounded-2xl shadow-2xl"
+                />
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap justify-between items-center text-xs text-gray-400">
+                <a 
+                  href="https://www.credly.com/badges/910cf85b-b5ce-4b11-82fc-dfb906b038a0" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="text-primary hover:underline font-bold flex items-center gap-1"
+                >
+                  <span>التحقق الرقمي المباشر عبر Credly</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+                <span>ID: 1553a1d2-37f1-48b6-9d5919d35f98</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

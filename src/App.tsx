@@ -15,7 +15,6 @@ import {
   Zap, 
   Trophy,
   ArrowLeft,
-  ArrowUp,
   Menu,
   X,
   Play,
@@ -39,42 +38,10 @@ import { Testimonials } from './components/Testimonials';
 import ScrollProgress from './components/ScrollProgress';
 import GrayscaleImage from './components/GrayscaleImage';
 import Footer from './components/Footer';
-const Blog = React.lazy(() => import('./components/Blog').then(m => ({ default: m.Blog })));
-const SiteArchitecture = React.lazy(() => import('./components/SiteArchitecture').then(m => ({ default: m.SiteArchitecture })));
 import { MediaRenderer } from './components/MediaRenderer';
 import { TrustArchitecture } from './components/TrustArchitecture';
-import { fetchCmsContentFromSupabase, subscribeToSupabaseRealtime } from './lib/supabase';
 import { localizationData } from './localizationData';
-import FAQSection from './components/FAQSection';
-import { LANDING_PAGE_STRATEGY } from './data/landingPageStrategy';
-import { Compass, Info } from 'lucide-react';
 import defaultThumbnail from './assets/images/lounge_video_thumbnail_1782956244229.jpg';
-import ciscoCertificateImg from './assets/images/cisco_certificate_1783313854566.jpg';
-import ceoEslamArafaImg from './assets/images/CEO-Eslam-Arafa.jpg';
-import engineeringPartnershipImg from './assets/images/engineering_partnership.jpg';
-
-const parseMarkdownText = (text: string) => {
-  if (!text) return "";
-  const parts = [];
-  const regex = /\*\*([^*]+)\*\*/g;
-  let lastIndex = 0;
-  let match;
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(text.substring(lastIndex, match.index));
-    }
-    parts.push(
-      <strong key={match.index} className="font-extrabold text-white">
-        {match[1]}
-      </strong>
-    );
-    lastIndex = regex.lastIndex;
-  }
-  if (lastIndex < text.length) {
-    parts.push(text.substring(lastIndex));
-  }
-  return parts.length > 0 ? parts : text;
-};
 
 const WHATSAPP_NUMBER = "201121778205";
 
@@ -90,7 +57,6 @@ export const packages = [
       '🖥️ دعم كامل لعدد لا نهائي من الأجهزة والشاشات بالفرع',
       '🔌 حصانة تامة ضد انقطاع الإنترنت (نظام أوفلاين محلي 100%)',
       '🧾 حساب الوقت والمبيعات بدقة متناهية ومنع التلاعب الأساسي',
-      '☕ نظام الكافيه والمشروبات والمخازن الأساسي لزيادة الأرباح',
       '📊 تقارير حسابية يومية أساسية لملخص الوردية وإجمالي الكاشير',
       '📞 دعم فني استراتيجي خلال فترة الضمان لمساعدتك في التأسيس والبدء'
     ]
@@ -103,7 +69,7 @@ export const packages = [
     color: 'accent',
     features: [
       '🔥 تشمل كافة مميزات باقة Starter بالكامل برخصة أصلية للأبد',
-      '📊 نظام صلاحيات متقدم ومراقبة دقيقة لمنع الموظفين من التلاعب بالفواتير أو حذفها',
+      '👑 حماية سيادية مطلقة: منع الموظفين من تشغيل الشاشات سراً خارج السيستم',
       '☕ نظام الكافيه والمشروبات المتكامل لرفع مبيعات البوفيه بمتوسط 40%',
       '📈 ذكاء الأعمال المتقدم: تقارير الأرباح والخسائر والصيانة والإهلاك للأدمن',
       '🎨 تخصيص كامل لهوية صالتك التجارية وشعارك الخاص على الفواتير والإيصالات',
@@ -171,7 +137,7 @@ export const faqs = [
   },
   {
     q: "ماذا يحدث لبيانات جلسات اللعب عند انقطاع الكهرباء فجأة؟",
-    a: "لا تقلق أبداً، فالنظام يدعم الحماية الت تلقائية للبيانات الآمنة. يتم حفظ تفاصيل الجلسة النشطة والطلبات تلقائياً وبصفة دورية كل بضع ثوانٍ. عند إعادة التشغيل، سيستأنف النظام عمله تماماً من النقطة التي توقف عندها."
+    a: "لا تقلق أبداً، فالنظام يدعم الحماية التلقائية للبيانات الآمنة. يتم حفظ تفاصيل الجلسة النشطة والطلبات تلقائياً وبصفة دورية كل بضع ثوانٍ. عند إعادة التشغيل، سيستأنف النظام عمله تماماً من النقطة التي توقف عندها."
   },
   {
     q: "هل يدعم البرنامج طباعة الفواتير والباركود وتخصيص البيانات؟",
@@ -194,84 +160,50 @@ export const faqs = [
     a: "نعم وبفخر، ملتزمون في صُنّاع الفكرة (IDEA Makers) بتقديم دعم فني متميز ومتابعة ما بعد الشراء لضمان سلامة العمل، بالإضافة إلى تثريات دورية لتحسين واجهات المستخدم ومميزات النظام."
   },
   {
-    q: "هل يدعم البرنامج حسابات العروض الترويجية والخصومات لزبائن الصالة? ",
+    q: "هل يدعم البرنامج حسابات العروض الترويجية والخصومات لزبائن الصالة؟",
     a: "نعم، يدعم نظام حسابات صالات بلايستيشن تخصيص عروض مسبقة الدفع مثل (لعب 3 ساعات والحصول على ساعة مجانية) أو تطبيق خصومات حرة للعملاء المميزين وتفصيلها بالفاتورة لمراجعتها بالتقارير الإدارية."
   },
   {
     q: "هل يدعم نظام إدارة كافيه ألعاب حجز الأجهزة بشكل مسبق؟",
     a: "نعم بالتأكيد، يوفر واجهة رسومية ومخططاً تفاعلياً واضحاً يوضح للأدمن الأجهزة الشاغرة، والأجهزة المحجوزة مسبقاً بالتاريخ والساعة لتفادي تداخل أدوار العملاء وزيادة مستويات رضاهم."
-  },
-  {
-    q: "هل يدعم البرنامج حساب الوقت المفتوح (Open Time) والتنبيه التلقائي بالصوت؟",
-    a: "نعم بالكامل! يدعم النظام تشغيل الجلسات بنظام الوقت المحدد (ساعة، ساعتين، إلخ مع إصدار تنبيه مرئي وصوتي فور انتهاء الجلسة لتنبيه الكاشير) أو نظام الوقت المفتوح (حيث يحسب النظام الثواني والدقائق بدقة متناهية من لحظة التشغيل وحتى قيام الكاشير بإنهاء الجلسة وإصدار الفاتورة)."
-  },
-  {
-    q: "ما هي أنواع التقارير المالية والتحليلية التي يتيحها البرنامج لمالك الصالة؟",
-    a: "يوفر لوحة إحصائيات وتقارير جبارة تشمل: تقرير الشيفتات والورديات اليومية، تفاصيل المبيعات للبوفيه واللعب بشكل منفصل، سجل المصروفات الخارجية، تقرير صافي الأرباح، تقارير أداء الكاشيرية، وإحصائيات لأكثر الأجهزة جلباً للأرباح وأكثر الأوقات نشاطاً بالصالة لمساعدتك على التطوير الدائم."
-  },
-  {
-    q: "هل يتحكم البرنامج مباشرة في تشغيل وقفل أجهزة البلايستيشن أو الشاشات كهربائياً؟",
-    a: "البرنامج يعمل بنظام تحكم وإدارة برمجية ذكية بالكامل من داخل السيستم دون الحاجة لتوصيلات كهربائية أو هاردوير إضافي. يتم تحقيق (الحماية السيادية المطلقة) برمجياً عبر تسجيل كل ثانية لعب ومبيعات، وعرض مخطط تفاعلي فوري لجميع الأجهزة بالصالة أمام الإدارة، مما يمنع الموظفين تماماً من تشغيل الشاشات أو الأجهزة سراً خارج النظام دون تسجيل فاتورة، حيث يكتشف النظام أي تلاعب أو اختلاف في وضعية الأجهزة على الفور بالتقارير وسجل العمليات."
-  },
-  {
-    q: "هل يتيح البرنامج إدارة مديونيات الزبائن وحساب الآجل والاشتراكات؟",
-    a: "نعم، يتوفر نظام مالي فرعي لإدارة مديونيات العملاء والشكك. يمكنك إنشاء حساب لكل عميل دائم لتسجيل مديونياته أو الرصيد مسبق الدفع (المحفظة الرقمية)، وتتبع دفعاته وتنزيل المبالغ المستحقة من حسابه بدقة متناهية مسجلة بالتقارير."
-  },
-  {
-    q: "هل يمكنني تسجيل ومراقبة المصروفات النثرية واليومية داخل البرنامج؟",
-    a: "بالتأكيد، يحتوي البرنامج على قسم خاص لتسجيل المصروفات (الإيجار، الكهرباء، فواتير المشتريات للبوفيه، مرتبات إضافية، إلخ). ويتم خصم هذه المصاريف تلقائياً من إجمالي إيرادات الصالة لتوضيح صافي الربح الفعلي بدقة تامة."
-  },
-  {
-    q: "كيف يتم تثبيت البرنامج وتشغيله لأول مرة وهل أحتاج لخبرة تقنية؟",
-    a: "التثبيت في غاية السهولة وبدون أي عناء منك؛ فبمجرد طلب البرنامج، يقوم فريق المهندسين في صُنّاع الفكرة (IDEA Makers) بالاتصال بجهازك عن بُعد (عبر AnyDesk أو TeamViewer) وتثبيت قاعدة البيانات، وتهيئة الطابعات، وضبط إعدادات الصالة بالكامل، مع تقديم شرح عملي مباشر لك ولموظفيك حتى الاحتراف."
-  },
-  {
-    q: "ما هي إجراءات حماية البيانات ضد الفيروسات وأعطال الويندوز المفاجئة؟",
-    a: "يحتوي البرنامج على ميزة النسخ الاحتياطي التلقائي (Auto-Backup) لقاعدة البيانات بشكل دوري ويومي. يمكنك ضبط النظام ليقوم بحفظ نسخة من بياناتك على فلاشة خارجية، قرص صلب آخر، أو سحابياً على Google Drive لضمان حماية بياناتك 100% واسترجاعها بضغطة زر عند الضرورة."
-  },
-  {
-    q: "هل يمكن للكاشير أو الموظف تعديل الأسعار أو حذف الفواتير دون علم الإدارة؟",
-    a: "هذا مستحيل برمجياً. يمتلك صاحب الصالة (الأدمن) حساباً مستقلاً بصلاحيات كاملة لتعديل الأسعار وحذف الفواتير وجرد الخزنة، بينما الموظف له صلاحيات محدودة جداً. بالإضافة إلى ذلك، يسجل البرنامج كل حركة يقوم بها الموظف في سجل عمليات خفي (System Audit Log) لا يمكن حذفه، مما يضمن لك مراقبة حازمة وشاملة."
-  },
-  {
-    q: "هل يدعم البرنامج العملات العربية واللغة العربية بالكامل؟",
-    a: "نعم، واجهات البرنامج مصممة بالكامل بلغة عربية فصحى وبسيطة، سهلة الاستخدام لجميع مستويات الموظفين دون تعقيد. كما يدعم البرنامج تهيئة العملة المحلية لبلدك (جنيه، ريال، درهم، دينار، دولار...) لتظهر بشكل سليم في الشاشات والفواتير المطبوعة."
-  },
-  {
-    q: "كيف يضمن البرنامج منع الموظفين من تشغيل الأجهزة سراً دون علم صاحب الصالة؟",
-    a: "من خلال الحماية السيادية البرمجية؛ حيث يقوم النظام بتسجيل كل عملية فتح لجهاز بالثانية، ويربطها بحساب الموظف النشط. كما يمنحك البرنامج (سجل مراقبة العمليات الخفي للأدمن) الذي يسجل أي تعديل أو محاولة تلاعب بالوقت أو الفواتير، ويمنح صاحب العمل تقارير فورية على هاتفه بوضعية الأجهزة الحالية وقيمة الخزنة، مما يجعل من المستحيل تشغيل أي جهاز سراً دون تسجيله فوراً بالسيستم."
-  },
-  {
-    q: "هل البرنامج متوافق مع شروط الهيئات الضريبية وحسابات القيمة المضافة؟",
-    a: "نعم، يتيح لك البرنامج تفعيل أو تعطيل نسبة الضريبة (VAT) وحسابها تلقائياً على اللعب والمبيعات لتضاف إلى الفواتير والإيصالات الحرارية، مع توافق كامل لطباعة رمز الاستجابة السريع QR Code وبيانات الصالة لضمان الامتثال التام."
-  },
-  {
-    q: "ماذا عن التحديثات المستقبلية للبرنامج، هل سأحصل عليها؟",
-    a: "نعم، نحن نلتزم بتطوير نظامنا باستمرار لتلبية تطلعات عملائنا ومجاراة التطور التقني. يحصل عملاؤنا على تحديثات مستمرة لإصلاح أي ثغرات أو تحسين أداء الواجهات وسرعة النظام، ونرسل لك حزم التحديثات والتعليمات الخاصة بها لضمان بقاء نظام صالتك مواكباً لأحدث التقنيات."
   }
 ];
 
-const FloatingCard = ({ children, className }: any) => {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+const FloatingCard = ({ children, className, delay = 0 }: any) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    animate={{ y: [0, -10, 0] }}
+    transition={{ 
+      y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay },
+      opacity: { duration: 0.5, delay }
+    }}
+    className={`absolute glass p-4 rounded-2xl border border-white/10 shadow-2xl z-20 hidden lg:block ${className}`}
+  >
+    {children}
+  </motion.div>
+);
 
-  if (isMobile) return null;
-
+const ParticleBackground = () => {
   return (
-    <div
-      className={`absolute glass p-4 rounded-2xl border border-white/10 shadow-2xl z-20 hidden lg:block ${className}`}
-    >
-      {children}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {[...Array(20)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute w-1 h-1 bg-primary/20 rounded-full"
+          style={{
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            '--tw-translate-x': `${(Math.random() - 0.5) * 200}px`,
+            '--tw-translate-y': `${(Math.random() - 0.5) * 200}px`,
+            animation: `particle-float ${5 + Math.random() * 5}s linear infinite`,
+            animationDelay: `${Math.random() * 5}s`
+          } as any}
+        />
+      ))}
     </div>
   );
 };
-
-const ParticleBackground = () => null;
 
 const RippleButton = ({ children, onClick, className, primary = false, shimmer = false }: any) => {
   const [ripples, setRipples] = useState<any[]>([]);
@@ -304,8 +236,12 @@ const RippleButton = ({ children, onClick, className, primary = false, shimmer =
       className={`btn-ripple group relative overflow-hidden ${className} ${primary ? 'animate-glow-pulse' : ''}`}
     >
       {shimmer && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-white/15 to-transparent css-shimmer-element z-0" />
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.div 
+            animate={{ x: ['-100%', '200%'] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
+            className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-20deg] z-0"
+          />
         </div>
       )}
       {ripples.map(ripple => (
@@ -328,8 +264,11 @@ const RippleButton = ({ children, onClick, className, primary = false, shimmer =
 };
 
 const ScrollIndicator = () => (
-  <div 
-    className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer group z-20"
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ delay: 2 }}
+    className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer group"
     onClick={() => {
       const el = document.getElementById('story');
       el?.scrollIntoView({ behavior: 'smooth' });
@@ -337,15 +276,19 @@ const ScrollIndicator = () => (
   >
     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] group-hover:text-primary transition-colors">استكشف</span>
     <div className="w-[1px] h-12 bg-gradient-to-b from-primary/50 to-transparent relative overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-1/2 bg-primary css-scroll-line" />
+      <motion.div 
+        animate={{ y: ['-100%', '100%'] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+        className="absolute top-0 left-0 right-0 h-1/2 bg-primary"
+      />
     </div>
-  </div>
+  </motion.div>
 );
 
 const Logo = ({ className = "", onClick }: { className?: string; onClick?: () => void }) => (
   <div className={`flex items-center gap-4 group cursor-pointer logo-aura ${className}`} onClick={() => {
     if (onClick) onClick();
-    else window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }}>
     <div className="relative w-14 h-14 flex items-center justify-center group-hover:rotate-12 group-hover:scale-110 transition-all duration-500">
       {/* Hexagon Background */}
@@ -371,7 +314,7 @@ const Logo = ({ className = "", onClick }: { className?: string; onClick?: () =>
   </div>
 );
 
-const DEFAULT_COUNTRIES = {
+const countries = {
   egypt: {
     id: 'egypt',
     name: 'مصر',
@@ -424,19 +367,15 @@ const DEFAULT_COUNTRIES = {
   }
 };
 
-export let countries = { ...DEFAULT_COUNTRIES };
-
-if (typeof window !== 'undefined') {
-  const stored = localStorage.getItem('playstation_pos_countries_config');
-  if (stored) {
-    try {
-      countries = { ...DEFAULT_COUNTRIES, ...JSON.parse(stored) };
-    } catch (e) {}
-  }
-}
-
 const Counter = ({ value }: { value: number }) => {
-  return <span>{Math.floor(value).toLocaleString()}</span>;
+  const spring = useSpring(0, { stiffness: 40, damping: 20 });
+  const display = useTransform(spring, (current) => Math.floor(current).toLocaleString());
+
+  useEffect(() => {
+    spring.set(value);
+  }, [value, spring]);
+
+  return <motion.span>{display}</motion.span>;
 };
 
 const getCountryFromPath = (path: string) => {
@@ -449,37 +388,6 @@ const getCountryFromPath = (path: string) => {
 };
 
 export default function App() {
-  const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
-  useEffect(() => {
-    const checkDevice = () => {
-      const w = window.innerWidth;
-      if (w < 768) setDeviceType('mobile');
-      else if (w < 1024) setDeviceType('tablet');
-      else setDeviceType('desktop');
-    };
-    checkDevice();
-    window.addEventListener('resize', checkDevice);
-    return () => window.removeEventListener('resize', checkDevice);
-  }, []);
-
-  const getMotionProps = (preset: 'fadeUp' | 'fadeScale' | 'fade' | 'slideMenu') => {
-    // slideMenu is a micro-interaction/dropdown open state which is allowed.
-    if (preset === 'slideMenu') {
-      return {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        exit: { opacity: 0 },
-        transition: { duration: 0.1, ease: "easeOut" }
-      };
-    }
-    // Remove all scroll reveal animations by returning immediate render properties
-    return {
-      initial: false,
-      animate: { opacity: 1, y: 0, scale: 1, x: 0 },
-      transition: { duration: 0.01 }
-    };
-  };
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
@@ -495,38 +403,6 @@ export default function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const [view, setView] = useState<'landing' | 'blog' | 'architecture'>(() => {
-    if (window.location.pathname.startsWith('/blog')) return 'blog';
-    if (window.location.pathname.startsWith('/seo-architecture') || window.location.pathname.startsWith('/site-map')) return 'architecture';
-    return 'landing';
-  });
-
-  const [countriesState, setCountriesState] = useState<Record<string, any>>(() => countries);
-
-  useEffect(() => {
-    const handleCountriesChanged = () => {
-      const stored = localStorage.getItem('playstation_pos_countries_config');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          countries = { ...DEFAULT_COUNTRIES, ...parsed };
-          setCountriesState({ ...countries });
-          // Also update selectedCountry with new values if they changed
-          setSelectedCountry((prev) => {
-            if (prev && parsed[prev.id]) {
-              return { ...prev, ...parsed[prev.id] };
-            }
-            return prev;
-          });
-        } catch (e) {}
-      } else {
-        countries = { ...DEFAULT_COUNTRIES };
-        setCountriesState({ ...countries });
-      }
-    };
-    window.addEventListener('countries-config-changed', handleCountriesChanged);
-    return () => window.removeEventListener('countries-config-changed', handleCountriesChanged);
-  }, []);
   const [selectedCountry, setSelectedCountry] = useState(() => {
     const fromPath = getCountryFromPath(window.location.pathname);
     if (fromPath) return fromPath;
@@ -596,8 +472,8 @@ export default function App() {
       heroTitlePrefix: "نظام إدارة صالات البلايستيشن",
       heroTitleHighlight: "سيستم كاشير بلايسيتشن",
       heroDescription: "نظام متكامل لإدارة البلايستيشن، الكافيه، والمخازن. صُمم خصيصاً لرفع أرباحك وتقليل أخطاء الموظفين بنسبة 99%.",
-      demoVideoUrl: "https://www.youtube.com/watch?v=1CWmNEt6xVs",
-      demoVideoThumbnailUrl: defaultThumbnail,
+      demoVideoUrl: "https://www.youtube.com/watch?v=tmfoL7IcuJk",
+      demoVideoThumbnailUrl: "https://img.youtube.com/vi/tmfoL7IcuJk/maxresdefault.jpg",
       contactPhone: "201121778205",
       whatsappMessage: "مرحباً فريق صُنّاع الفكرة، أودّ الاستفسار عن نظام إدارة صالات البلايستيشن.",
       authTag: "شريكك الهندسي في النجاح",
@@ -607,7 +483,7 @@ export default function App() {
       authStat1Desc: "يستخدمه أصحاب صالات بلايستيشن في مصر والسعودية والإمارات والكويت وقطر",
       authStat2Title: "100%",
       authStat2Desc: "تحت سيطرتك أوفلاين",
-      authImageUrl: engineeringPartnershipImg,
+      authImageUrl: "https://i.postimg.cc/GmskHZKC/aryd-swrt-afdl-202604051407.jpg",
       
       // Pricing Section Header
       pricingTitle: "استثمار سيادي.. لمرة واحدة",
@@ -620,7 +496,7 @@ export default function App() {
       
       // Free Trial Banner Section
       trialTitle: "\"ابدأ الآن وقرر بنفسك\"",
-      trialText: "خلال 3 أيام فقط، ستسترد قيمة نظام الكاشير بالكامل من الأرباح الإضافية التي ستحققها!\nنحن لا نمنحك مجرد \"تجربة مجانية\"، بل نضع بين يديك أداة تدقيق مالي وإداري متكاملة مصممة خصيصاً لإدارة صالات الألعاب والكافيه وسد ثغرات الكاشير. شغل النظام لمدة 3 أيام، وقارن أرباحك الحالية بما كنت تحققه سابقاً.. وستصدمك الفروقات الحقيقية.",
+      trialText: "خلال 3 أيام فقط، ستسترد قيمة نظام الكاشير بالكامل من الأرباح الإضافية التي ستحققها!\nنحن لا نمنحك مجرد \"تجربة مجانية\"، بل نضع بين يديك **أداة تدقيق مالي وإداري** متكاملة مصممة خصيصاً لإدارة صالات الألعاب والكافيه وسد ثغرات الكاشير. شغل النظام لمدة 3 أيام، وقارن أرباحك الحالية بما كنت تحققه سابقاً.. وستصدمك الفروقات الحقيقية.",
       trialBtnText: "ابدأ تجربة مجانية الآن",
 
       // Why choose us section
@@ -644,13 +520,13 @@ export default function App() {
 
       // Founder Story section
       founderStorySubtitle: "الرؤية خلف الابتكار",
-      founderStoryTitle: "تعرف على مؤسس صُنّاع الفكرة",
+      founderStoryTitle: "صُنّاع الفكرة",
       founderQuote: "فكرة النظام بدأت عندما لاحظنا الفوضى التي يعاني منها أصحاب صالات البلايستيشن. كمهندس برمجيات، لم أستطع تجاهل حجم الخسائر التي يسببها غياب النظام الدقيق.",
       founderPara1: "لاحظ إسلام عرفة أن العديد من الصالات تعاني من سوء الإدارة، وضياع الأرباح، وغياب التقارير الواضحة. هذا الواقع كان الدافع الأساسي لبناء نظام احترافي صُمم خصيصاً ليفهم لغة هذا البيزنس ويحل مشاكله من الجذور.",
       founderPara2: "تحول IDEA Makers PlayStation POS من مجرد كود برمججي إلى رحلة نجاح ساعدت مئات أصحاب الصالات على الانتقال من الفوضى اليدوية إلى الإدارة الرقمية الذكية التي تضمن السيادة الكاملة والنمو المستدام.",
       founderPara3: "الهدف لم يكن أبداً مجرد بيع برنامج، بل تمكين أصحاب المشاريع من مضاعفة أرباحهم، وإدارة صالاتهم بسهولة، والعمل باحترافية تليق بطموحاتهم.",
       founderBtnText: "اقرأ القصة الكاملة للابتكار",
-      founderImgUrl: ceoEslamArafaImg,
+      founderImgUrl: "https://i.postimg.cc/pX35pXmS/CEO-Eslam-Arafa.jpg",
       founderName: "Eslam Arafa",
       founderRole: "Founder & CEO – IDEA Makers",
       founderExpTitle: "Expertise",
@@ -685,99 +561,33 @@ export default function App() {
       val4Title: "التطوير المستمر",
       val4Desc: "لا نتوقف عن تحسين أدواتنا.",
       val5Title: "نجاح العميل",
-      val5Desc: "نجاحك هو المقياس الحقيقي لنجاحنا.",
-      
-      // Trust Certificate settings
-      trustCertShowMode: "both",
-      trustCertImgUrl: ciscoCertificateImg
+      val5Desc: "نجاحك هو المقياس الحقيقي لنجاحنا."
     };
+    const stored = localStorage.getItem('playstation_pos_cms_content');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed) {
+          if (parsed.heroTitleHighlight === "برنامج كاشير وإدارة جلسات الألعاب") {
+            parsed.heroTitleHighlight = "سيستم كاشير بلايسيتشن";
+          }
+          if (parsed.demoVideoUrl === "https://www.youtube.com/watch?v=1CWmNEt6xVs" || !parsed.demoVideoUrl) {
+            parsed.demoVideoUrl = "https://www.youtube.com/watch?v=tmfoL7IcuJk";
+            parsed.demoVideoThumbnailUrl = "https://img.youtube.com/vi/tmfoL7IcuJk/maxresdefault.jpg";
+          }
+          localStorage.setItem('playstation_pos_cms_content', JSON.stringify(parsed));
+        }
+        return { ...defaultCms, ...parsed };
+      } catch (e) {
+        return defaultCms;
+      }
+    }
     return defaultCms;
   });
 
-  const [showStrategicAudit, setShowStrategicAudit] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const checkAdmin = (e: any) => {
-      if (e?.detail?.isAdmin !== undefined) {
-        setIsAdmin(e.detail.isAdmin);
-      }
-    };
-    
-    window.addEventListener('admin-login-changed', checkAdmin);
-    return () => {
-      window.removeEventListener('admin-login-changed', checkAdmin);
-    };
-  }, []);
-
-  // 1. Hybrid CMS: Fetch global configurations from Supabase PostgreSQL & subscribe to Supabase Realtime
-  useEffect(() => {
-    const fetchGlobalCmsData = async () => {
-      try {
-        const data = await fetchCmsContentFromSupabase();
-        if (data) {
-          if (data.playstation_pos_cms_content) {
-            try {
-              const parsed = JSON.parse(data.playstation_pos_cms_content);
-              setCmsContent(prev => ({ ...prev, ...parsed }));
-            } catch (e) {}
-          }
-          if (data.playstation_pos_localization_data) {
-            try {
-              setLocalizations(JSON.parse(data.playstation_pos_localization_data));
-            } catch (e) {}
-          }
-          if (data.playstation_pos_packages_data) {
-            try {
-              setPackagesData(JSON.parse(data.playstation_pos_packages_data));
-            } catch (e) {}
-          }
-          if (data.playstation_pos_international_pricing) {
-            try {
-              setIntPricing(JSON.parse(data.playstation_pos_international_pricing));
-            } catch (e) {}
-          }
-        }
-      } catch (err) {
-        console.warn('[Hybrid CMS] Data fetch warning:', err);
-      }
-    };
-
-    fetchGlobalCmsData();
-
-    // Subscribe to Supabase Realtime updates
-    const unsubscribeRealtime = subscribeToSupabaseRealtime((key, value) => {
-      if (key === 'playstation_pos_cms_content') {
-        try { setCmsContent(prev => ({ ...prev, ...JSON.parse(value) })); } catch (e) {}
-      } else if (key === 'playstation_pos_localization_data') {
-        try { setLocalizations(JSON.parse(value)); } catch (e) {}
-      } else if (key === 'playstation_pos_packages_data') {
-        try { setPackagesData(JSON.parse(value)); } catch (e) {}
-      } else if (key === 'playstation_pos_international_pricing') {
-        try { setIntPricing(JSON.parse(value)); } catch (e) {}
-      }
-    });
-
-    // Pure Supabase Realtime event listeners - No polling required
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        fetchGlobalCmsData();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', fetchGlobalCmsData);
-    window.addEventListener('cms-content-changed', fetchGlobalCmsData);
-
-    return () => {
-      unsubscribeRealtime();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', fetchGlobalCmsData);
-      window.removeEventListener('cms-content-changed', fetchGlobalCmsData);
-    };
-  }, []);
-
   const activeLocal = localizations[selectedCountry.id as keyof typeof localizations] || localizations.egypt;
+
+  const hasCustomCms = typeof window !== 'undefined' && !!localStorage.getItem('playstation_pos_cms_content');
 
   const getActiveField = (fieldKey: 'heroTag' | 'heroTitlePrefix' | 'heroTitleHighlight' | 'heroDescription') => {
     const localVal = activeLocal[fieldKey];
@@ -786,6 +596,9 @@ export default function App() {
 
     if (isLocalCustomized) {
       return localVal || cmsContent[fieldKey];
+    }
+    if (hasCustomCms) {
+      return cmsContent[fieldKey] || localVal;
     }
     return localVal || cmsContent[fieldKey];
   };
@@ -798,10 +611,46 @@ export default function App() {
     heroDescription: getActiveField('heroDescription'),
   };
 
+  // Sync CMS contents upon update triggers
+  useEffect(() => {
+    const stored = localStorage.getItem('playstation_pos_cms_content');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.heroTitleHighlight === "برنامج كاشير وإدارة جلسات الألعاب") {
+          parsed.heroTitleHighlight = "سيستم كاشير بلايسيتشن";
+          localStorage.setItem('playstation_pos_cms_content', JSON.stringify(parsed));
+        }
+        setCmsContent(parsed);
+      } catch (e) {}
+    }
+
+    const storedLoc = localStorage.getItem('playstation_pos_localization_data');
+    if (storedLoc) {
+      try {
+        setLocalizations(JSON.parse(storedLoc));
+      } catch (e) {}
+    }
+
+    const storedPkgs = localStorage.getItem('playstation_pos_packages_data');
+    if (storedPkgs) {
+      try {
+        setPackagesData(JSON.parse(storedPkgs));
+      } catch (e) {}
+    }
+
+    const storedIntPr = localStorage.getItem('playstation_pos_international_pricing');
+    if (storedIntPr) {
+      try {
+        setIntPricing(JSON.parse(storedIntPr));
+      } catch (e) {}
+    }
+  }, []);
+
   // Handle country change and auto-select package, syncing the URL
   const handleCountryChange = (country: any) => {
-    setView('landing');
     setSelectedCountry(country);
+    localStorage.setItem('playstation_pos_selected_country', country.id);
     if (country.id !== 'egypt') {
       const intPkg = packagesData.find(p => p.id === 'international');
       if (intPkg) setSelectedPackage(intPkg);
@@ -819,21 +668,14 @@ export default function App() {
   // Sync state with back/forward history events
   useEffect(() => {
     const handlePopState = () => {
-      if (window.location.pathname.startsWith('/blog')) {
-        setView('blog');
-      } else if (window.location.pathname.startsWith('/seo-architecture') || window.location.pathname.startsWith('/site-map')) {
-        setView('architecture');
+      const currentCountry = getCountryFromPath(window.location.pathname) || countries.egypt;
+      setSelectedCountry(currentCountry);
+      localStorage.setItem('playstation_pos_selected_country', currentCountry.id);
+      if (currentCountry.id !== 'egypt') {
+        const intPkg = packagesData.find(p => p.id === 'international');
+        if (intPkg) setSelectedPackage(intPkg);
       } else {
-        setView('landing');
-        const currentCountry = getCountryFromPath(window.location.pathname) || countries.egypt;
-        setSelectedCountry(currentCountry);
-        localStorage.setItem('playstation_pos_selected_country', currentCountry.id);
-        if (currentCountry.id !== 'egypt') {
-          const intPkg = packagesData.find(p => p.id === 'international');
-          if (intPkg) setSelectedPackage(intPkg);
-        } else {
-          setSelectedPackage(packagesData[1]);
-        }
+        setSelectedPackage(packagesData[1]);
       }
     };
 
@@ -843,21 +685,6 @@ export default function App() {
 
   // Update localized HTML Page Title and Description tags dynamically for SEO discovery of separate country pages
   useEffect(() => {
-    if (view === 'blog') return;
-    if (view === 'architecture') {
-      document.title = 'هيكل موقع صالات البلايستيشن وسيو 2026 | IDEA Makers';
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) {
-        metaDesc.setAttribute(
-          'content', 
-          'تخطيط وهيكل موقع نظام إدارة صالات البلايستيشن وسيو التصدّر والتحويل. تصفح تفاصيل صفحات الخدمات والمشاكل والأسعار والدول.'
-        );
-      }
-      return;
-    }
-
-    if (view !== 'landing') return;
-
     let countrySuffix = '';
     if (selectedCountry.id === 'egypt') countrySuffix = ' في مصر';
     else if (selectedCountry.id === 'saudi') countrySuffix = ' في السعودية';
@@ -874,20 +701,15 @@ export default function App() {
         `امتلك أقوى نظام لإدارة صالات البلايستيشن، كاشير وسستم تشغيل ألعاب${countrySuffix}. نظام أوفلاين 100% بملكية مدى الحياة بدون اشتراكات أو رسوم شهرية متكررة.`
       );
     }
-  }, [selectedCountry, view]);
+  }, [selectedCountry]);
 
   const heroRef = useRef(null);
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+  const y2 = useTransform(scrollY, [0, 500], [0, -150]);
   const [calcDevices, setCalcDevices] = useState(5);
   const [calcHours, setCalcHours] = useState(8);
   const [leakRate, setLeakRate] = useState(20);
-
-  useEffect(() => {
-    if (cmsContent) {
-      if (cmsContent.calcDevicesDefault !== undefined) setCalcDevices(cmsContent.calcDevicesDefault);
-      if (cmsContent.calcHoursDefault !== undefined) setCalcHours(cmsContent.calcHoursDefault);
-      if (cmsContent.leakRateDefault !== undefined) setLeakRate(cmsContent.leakRateDefault);
-    }
-  }, [cmsContent]);
 
   const potentialProfit = calcDevices * calcHours * selectedCountry.hourlyPrice * 30;
   const estimatedLoss = Math.round(potentialProfit * (leakRate / 100));
@@ -908,15 +730,13 @@ export default function App() {
   }, [isMenuOpen]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleWhatsApp = (message?: string | any) => {
-    const finalMessage = (message && typeof message === 'string') ? message : (activeCmsContent.whatsappMessage || "مرحباً فريق صُنّاع الفكرة، أودّ الاستفسار عن نظام إدارة صالات البلايستيشن.");
+  const handleWhatsApp = (message?: string) => {
+    const finalMessage = message || activeCmsContent.whatsappMessage || "مرحباً فريق صُنّاع الفكرة، أودّ الاستفسار عن نظام إدارة صالات البلايستيشن.";
     const encoded = encodeURIComponent(finalMessage);
     const phone = activeCmsContent.contactPhone || "201121778205";
     window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');
@@ -950,28 +770,19 @@ export default function App() {
   };
 
   const navigateToSection = (id: string) => {
-    if (view === 'blog') {
-      setView('landing');
-      const path = `/playstation-pos-${selectedCountry.id}`;
-      window.history.pushState(null, '', path);
-      setTimeout(() => {
-        scrollToSection(id);
-      }, 150);
-    } else {
-      scrollToSection(id);
-    }
+    scrollToSection(id);
   };
 
   const getYoutubeId = (url: string) => {
-    if (!url) return '1CWmNEt6xVs';
+    if (!url) return 'tmfoL7IcuJk';
     if (url.includes('v=')) {
-      return url.split('v=')[1]?.split('&')[0] || '1CWmNEt6xVs';
+      return url.split('v=')[1]?.split('&')[0] || 'tmfoL7IcuJk';
     }
     if (url.includes('youtu.be/')) {
-      return url.split('youtu.be/')[1]?.split('?')[0] || '1CWmNEt6xVs';
+      return url.split('youtu.be/')[1]?.split('?')[0] || 'tmfoL7IcuJk';
     }
     if (url.includes('embed/')) {
-      return url.split('embed/')[1]?.split('?')[0] || '1CWmNEt6xVs';
+      return url.split('embed/')[1]?.split('?')[0] || 'tmfoL7IcuJk';
     }
     return url;
   };
@@ -979,99 +790,18 @@ export default function App() {
   const videoId = getYoutubeId(activeCmsContent.demoVideoUrl);
   const demoEmbedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&vq=hd1080`;
 
-  const renderSectionStrategicAudit = (sectionId: string) => {
-    if (!isAdmin || !showStrategicAudit) return null;
-    const section = LANDING_PAGE_STRATEGY.find(s => s.id === sectionId);
-    if (!section) return null;
-
-    return (
-      <div className="container relative z-20 my-6 text-right">
-        <div className="bg-[#0b0b0e] border border-dashed border-primary/40 rounded-2xl p-6 shadow-2xl relative overflow-hidden font-sans">
-          {/* Top Banner */}
-          <div className="absolute top-0 right-0 left-0 bg-primary/10 border-b border-primary/20 px-4 py-2 flex items-center justify-between text-xs font-mono">
-            <span className="text-primary font-bold">🎯 مستكشف أهداف القسم الهندسي لعام 2026</span>
-            <span className="text-gray-500 font-bold">ID: {section.id}</span>
-          </div>
-
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-right">
-            {/* Section Purpose */}
-            <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl col-span-1 md:col-span-2 lg:col-span-3">
-              <h5 className="text-xs font-bold text-gray-400 mb-1">اسم القسم وغرضه الفعلي:</h5>
-              <p className="text-sm font-bold text-white mb-1">{section.name}</p>
-              <p className="text-xs text-gray-300 leading-relaxed"><strong className="text-primary">الغرض الأساسي:</strong> {section.purpose}</p>
-            </div>
-
-            {/* Core Goals (7 metrics) */}
-            <div className="bg-white/[0.01] border border-white/5 p-4 rounded-xl space-y-3 col-span-1 md:col-span-2">
-              <h5 className="text-xs font-bold text-primary mb-2 flex items-center gap-1 justify-start">
-                <Compass className="w-3.5 h-3.5 text-primary" />
-                المعايير السبعة للأهداف (The 7 Pillars)
-              </h5>
-              <div className="space-y-2 text-xs">
-                <p className="leading-relaxed"><strong className="text-blue-400">الهدف المالي (Business):</strong> {section.goals.business}</p>
-                <p className="leading-relaxed"><strong className="text-purple-400">الهدف النفسي (Psychological):</strong> {section.goals.psychological}</p>
-                <p className="leading-relaxed"><strong className="text-emerald-400">الهدف لمحركات البحث (SEO):</strong> {section.goals.seo}</p>
-                <p className="leading-relaxed"><strong className="text-amber-400">الهدف لواجهة الاستخدام (UX):</strong> {section.goals.ux}</p>
-                <p className="leading-relaxed"><strong className="text-pink-400">الهدف لمعدلات التحويل (Conversion):</strong> {section.goals.conversion}</p>
-                <p className="leading-relaxed"><strong className="text-teal-400">الهدف لبناء الثقة (Trust):</strong> {section.goals.trust}</p>
-                <p className="leading-relaxed"><strong className="text-indigo-400">تصنيف محرك جوجل (Google Ranking):</strong> {section.goals.googleRanking}</p>
-              </div>
-            </div>
-
-            {/* Section Content Architecture */}
-            <div className="bg-white/[0.01] border border-white/5 p-4 rounded-xl space-y-2.5 text-xs col-span-1">
-              <h5 className="text-xs font-bold text-primary mb-1 flex items-center gap-1 justify-start">
-                <Info className="w-3.5 h-3.5 text-primary" />
-                بنية نشر وصياغة المحتوى
-              </h5>
-              <p className="leading-relaxed"><strong className="text-gray-300">استراتيجية الصياغة:</strong> {section.contentStrategy}</p>
-              <p className="leading-relaxed">
-                <strong className="text-gray-300">بنية وسوم العناوين:</strong> 
-                <span className="font-mono bg-black/40 px-1 py-0.5 rounded text-primary ml-1">{section.headingStructure}</span>
-              </p>
-              <div>
-                <strong className="text-gray-300 block mb-0.5">التدرج الهرمي للمعلومات:</strong>
-                <ul className="list-decimal list-inside text-gray-400 space-y-0.5 pr-1 font-light">
-                  {section.informationHierarchy.slice(0, 3).map((h, i) => (
-                    <li key={i} className="truncate">{h}</li>
-                  ))}
-                  {section.informationHierarchy.length > 3 && <li className="text-[10px] text-gray-500">+{section.informationHierarchy.length - 3} عناصر أخرى</li>}
-                </ul>
-              </div>
-              <p className="leading-relaxed"><strong className="text-gray-300">التركيز البصري:</strong> {section.visualPriority}</p>
-              <p className="leading-relaxed"><strong className="text-gray-300">موقع زر CTA:</strong> {section.ctaPlacement}</p>
-              <p className="leading-relaxed"><strong className="text-gray-300">الروابط الداخلية:</strong> {section.internalLinks.join(' ، ')}</p>
-              <p className="leading-relaxed"><strong className="text-gray-300">سكيما جوجل:</strong> <span className="font-mono text-primary bg-primary/5 px-1 rounded">{section.supportingSchema}</span></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="min-h-screen font-cairo bg-[#050505] text-white selection:bg-primary/30 overflow-x-hidden">
-      <style>{`
-        :root {
-          --color-primary: ${activeCmsContent.primaryColor || '#a855f7'} !important;
-          --color-primary-dark: ${activeCmsContent.primaryColor || '#9333ea'} !important;
-          --color-accent: ${activeCmsContent.secondaryColor || '#10b981'} !important;
-          --font-sans: "${activeCmsContent.primaryFont || 'Inter'}", ui-sans-serif, system-ui, sans-serif !important;
-          --font-cairo: "${activeCmsContent.primaryFont || 'Inter'}", sans-serif !important;
-        }
-      `}</style>
       <ScrollProgress />
 
       {/* Navigation */}
       <nav className={`fixed top-0 left-0 right-0 z-[150] transition-all duration-500 ${scrolled ? 'py-4 glass border-b border-white/10' : 'py-6'}`}>
         <div className="container flex items-center justify-between">
           <Logo onClick={() => {
-            setView('landing');
             const path = `/playstation-pos-${selectedCountry.id}`;
             if (window.location.pathname !== path) {
               window.history.pushState({ countryId: selectedCountry.id }, '', path);
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
           }} />
 
           <div className="hidden lg:flex items-center gap-8 text-sm font-medium">
@@ -1080,19 +810,6 @@ export default function App() {
             <a href="#pricing" onClick={(e) => { e.preventDefault(); navigateToSection('pricing'); }} className="hover:text-primary transition-all hover:translate-y-[-2px]">الأسعار</a>
             <a href="#smart-form" onClick={(e) => { e.preventDefault(); navigateToSection('smart-form'); }} className="hover:text-primary transition-all hover:translate-y-[-2px]">احجز الآن</a>
             <a href="#faq" onClick={(e) => { e.preventDefault(); navigateToSection('faq'); }} className="hover:text-primary transition-all hover:translate-y-[-2px]">الأسئلة الشائعة</a>
-            
-            <button 
-              onClick={() => {
-                setView('blog');
-                if (window.location.pathname !== '/blog') {
-                  window.history.pushState(null, '', '/blog');
-                }
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className={`hover:text-primary transition-all hover:translate-y-[-2px] font-bold ${view === 'blog' ? 'text-primary' : 'text-white'}`}
-            >
-              المدونة
-            </button>
 
             {/* Country Selector Dropdown */}
             <div className="relative" ref={dropdownRef}>
@@ -1117,7 +834,7 @@ export default function App() {
                     <div className="px-3 py-1 text-[10px] font-bold text-gray-500 tracking-wider border-b border-white/5 uppercase select-none mb-1 text-center">
                       اختر الدولة لتخصيص المحتوى
                     </div>
-                    {(Object.values(countriesState) as any[]).map((country) => (
+                    {Object.values(countries).map((country) => (
                       <button
                         key={country.id}
                         onClick={() => {
@@ -1147,16 +864,8 @@ export default function App() {
             <RippleButton 
               primary
               onClick={() => {
-                if (view === 'blog') {
-                  setView('landing');
-                  setTimeout(() => {
-                    const el = document.getElementById('smart-form');
-                    el?.scrollIntoView({ behavior: 'smooth' });
-                  }, 150);
-                } else {
-                  const el = document.getElementById('smart-form');
-                  el?.scrollIntoView({ behavior: 'smooth' });
-                }
+                const el = document.getElementById('smart-form');
+                el?.scrollIntoView({ behavior: 'smooth' });
               }}
               className="bg-primary text-white px-6 py-2.5 rounded-full transition-all shadow-lg shadow-primary/20"
             >
@@ -1174,10 +883,10 @@ export default function App() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
+            initial={{ opacity: 0, x: '-100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '-100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className="fixed inset-0 z-[200] glass lg:hidden pt-24 px-6 flex flex-col mobile-menu-overlay overflow-y-auto"
           >
             <button 
@@ -1190,12 +899,10 @@ export default function App() {
             <div className="flex flex-col gap-4 text-xl font-bold text-center mt-8 pb-12">
               <div className="flex justify-center mb-6">
                 <Logo className="scale-125" onClick={() => {
-                  setView('landing');
                   const path = `/playstation-pos-${selectedCountry.id}`;
                   if (window.location.pathname !== path) {
                     window.history.pushState({ countryId: selectedCountry.id }, '', path);
                   }
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
                   setIsMenuOpen(false);
                 }} />
               </div>
@@ -1204,7 +911,7 @@ export default function App() {
               <div className="w-full px-3 py-3 bg-white/[0.03] border border-white/10 rounded-3xl mb-6 text-right">
                 <span className="block text-xs text-gray-400 font-bold mb-3 text-center">اختر الدولة لتخصيص المحتوى والأسعار 🗺️</span>
                 <div className="grid grid-cols-5 gap-1.5">
-                  {(Object.values(countriesState) as any[]).map((country) => (
+                  {Object.values(countries).map((country) => (
                     <button
                       key={country.id}
                       onClick={() => {
@@ -1230,9 +937,9 @@ export default function App() {
                 return (
                   <motion.a 
                     key={item}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.12, delay: idx * 0.02 }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
                     href={`#${sectionId}`} 
                     onClick={(e) => {
                       e.preventDefault();
@@ -1246,42 +953,17 @@ export default function App() {
                 );
               })}
 
-              <motion.button
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.12, delay: 5 * 0.02 }}
-                onClick={() => {
-                  setView('blog');
-                  if (window.location.pathname !== '/blog') {
-                    window.history.pushState(null, '', '/blog');
-                  }
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                  setIsMenuOpen(false);
-                }}
-                className={`py-4 hover:text-primary transition-colors border-b border-white/5 last:border-0 font-bold text-center ${view === 'blog' ? 'text-primary' : 'text-white'}`}
-              >
-                المدونة التخصيصية 📝
-              </motion.button>
-
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.12, delay: 0.12 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
                 className="pt-6"
               >
                 <RippleButton 
                   primary
                   onClick={() => {
-                    if (view === 'blog') {
-                      setView('landing');
-                      setTimeout(() => {
-                        const el = document.getElementById('smart-form');
-                        el?.scrollIntoView({ behavior: 'smooth' });
-                      }, 150);
-                    } else {
-                      const el = document.getElementById('smart-form');
-                      el?.scrollIntoView({ behavior: 'smooth' });
-                    }
+                    const el = document.getElementById('smart-form');
+                    el?.scrollIntoView({ behavior: 'smooth' });
                     setIsMenuOpen(false);
                   }}
                   className="w-full bg-primary text-white py-5 rounded-2xl shadow-xl shadow-primary/30 font-black text-lg"
@@ -1294,78 +976,28 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {view === 'blog' ? (
-        <React.Suspense fallback={
-          <div className="min-h-screen bg-[#050508] flex flex-col items-center justify-center p-6 text-center" dir="rtl">
-            <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin mb-4" />
-            <p className="text-gray-400 text-sm">جاري تحميل المدونة...</p>
-          </div>
-        }>
-          <Blog 
-            onBackToLanding={() => {
-              setView('landing');
-              const path = `/playstation-pos-${selectedCountry.id}`;
-              window.history.pushState(null, '', path);
-            }} 
-            onNavigateToForm={() => {
-              setView('landing');
-              const path = `/playstation-pos-${selectedCountry.id}`;
-              window.history.pushState(null, '', path);
-              
-              // Highly robust polling scroll mechanism to ensure it works perfectly during render transitions
-              let attempts = 0;
-              const scrollInterval = setInterval(() => {
-                const el = document.getElementById('smart-form');
-                if (el) {
-                  const offset = 100; // Account for fixed header
-                  const bodyRect = document.body.getBoundingClientRect().top;
-                  const elementRect = el.getBoundingClientRect().top;
-                  const elementPosition = elementRect - bodyRect;
-                  const offsetPosition = elementPosition - offset;
-                  
-                  window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                  });
-                  clearInterval(scrollInterval);
-                } else if (attempts > 30) {
-                  clearInterval(scrollInterval);
-                }
-                attempts++;
-              }, 50);
-            }} 
-          />
-        </React.Suspense>
-      ) : view === 'architecture' ? (
-        <React.Suspense fallback={
-          <div className="min-h-screen bg-[#050508] flex flex-col items-center justify-center p-6 text-center" dir="rtl">
-            <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin mb-4" />
-            <p className="text-gray-400 text-sm">جاري تحميل خريطة الموقع...</p>
-          </div>
-        }>
-          <SiteArchitecture 
-            onBackToLanding={() => {
-              setView('landing');
-              const path = `/playstation-pos-${selectedCountry.id}`;
-              window.history.pushState(null, '', path);
-            }}
-          />
-        </React.Suspense>
-      ) : (
-        <>
-          {/* Hero Section */}
+      {/* Hero Section */}
           <section className="relative pt-28 pb-0 lg:pt-28 lg:pb-0 overflow-hidden" ref={heroRef}>
         {/* Background Elements */}
         <div className="absolute inset-0 tech-grid opacity-20" />
         <ParticleBackground />
-        <div className="purple-glow w-[500px] h-[500px] bg-primary/20 top-[-10%] right-[-10%]" />
-        <div className="purple-glow w-[400px] h-[400px] bg-purple-600/15 bottom-[10%] left-[-5%]" />
+        <motion.div 
+          style={{ y: y1 }}
+          className="purple-glow w-[500px] h-[500px] bg-primary/30 top-[-10%] right-[-10%]" 
+        />
+        <motion.div 
+          style={{ y: y2 }}
+          className="purple-glow w-[400px] h-[400px] bg-purple-600/20 bottom-[10%] left-[-5%]" 
+        />
         
         <div className="container relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               className="mt-10 md:mt-16 lg:mt-24"
-              {...getMotionProps('fadeScale')}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
             >
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-[10px] sm:text-xs font-bold text-primary mt-[40px] sm:mt-[60px] mb-8 border-primary/30 tracking-widest uppercase">
                 <Gamepad2 className="w-3 h-3" />
@@ -1374,7 +1006,10 @@ export default function App() {
             </motion.div>
 
             <motion.h1 
-              {...getMotionProps('fadeUp')}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.1 }}
               className="text-4xl sm:text-6xl lg:text-7xl font-black mb-8 leading-[1.2] tracking-tight"
             >
               {activeCmsContent.heroTitlePrefix} <br />
@@ -1382,22 +1017,32 @@ export default function App() {
             </motion.h1>
 
             <motion.p 
-              {...getMotionProps('fadeUp')}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
               className="text-lg sm:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto font-light leading-relaxed"
             >
               {activeCmsContent.heroDescription}
             </motion.p>
 
             <motion.div 
-              {...getMotionProps('fadeUp')}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
               className="flex flex-col items-center gap-6"
             >
               <div className="relative group">
                 {/* Free Trial Badge */}
                 <motion.div
-                  initial={deviceType === 'mobile' ? false : { opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.15 }}
+                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ 
+                    delay: 1,
+                    type: "spring",
+                    stiffness: 200
+                  }}
                   className="absolute -top-4 -right-4 z-20 bg-gradient-to-r from-orange-500 to-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg shadow-orange-500/40 border border-white/20 whitespace-nowrap"
                 >
                   تجربة مجانية 3 أيام (72 ساعة)
@@ -1407,7 +1052,7 @@ export default function App() {
                   primary
                   shimmer
                   onClick={() => scrollToSection('smart-form')}
-                  className="w-full sm:w-auto bg-primary text-white px-12 py-6 rounded-2xl shadow-2xl shadow-primary/40 font-black text-xl hover:scale-[1.015] active:scale-[0.985] transition-all duration-200"
+                  className="w-full sm:w-auto bg-primary text-white px-12 py-6 rounded-2xl shadow-2xl shadow-primary/40 font-black text-xl hover:scale-105 transition-transform"
                 >
                   ابدأ تجربتك المجانية الآن
                 </RippleButton>
@@ -1421,8 +1066,11 @@ export default function App() {
 
             {/* Trust Badges */}
             <motion.div
-              {...getMotionProps('fade')}
-              className="mt-16 flex flex-wrap items-center justify-center gap-12 opacity-60 grayscale hover:grayscale-0 transition-all duration-300"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.5 }}
+              className="mt-16 flex flex-wrap items-center justify-center gap-12 opacity-60 grayscale hover:grayscale-0 transition-all duration-500"
             >
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
@@ -1446,7 +1094,10 @@ export default function App() {
 
             {/* Free Trial Offer */}
             <motion.div
-              {...getMotionProps('fadeUp')}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.6 }}
               className="mt-16 pt-12 pb-8 border-t border-white/5 px-4 sm:px-6"
             >
               <div className="flex flex-col items-center">
@@ -1472,106 +1123,13 @@ export default function App() {
         <ScrollIndicator />
       </section>
 
-      {renderSectionStrategicAudit("hero")}
-
-      {/* Problem Agitation Section */}
-      <section className="py-24 bg-white/[0.02] relative overflow-hidden">
-        <div className="absolute inset-0 tech-grid opacity-10" />
-        <div className="container relative z-10">
-          <motion.div 
-            {...getMotionProps('fadeUp')}
-            className="max-w-4xl mx-auto text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-5xl font-black mb-6">{activeLocal.problemSectionTitle}</h2>
-            <p className="text-xl text-gray-400 font-light">في كل ساعة تمر بدون نظام دقيق، هناك أرباح تضيع في الزحام.</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 features-grid text-right">
-            {activeLocal.problems.map((item, idx) => (
-              <motion.div
-                key={idx}
-                {...getMotionProps('fadeUp')}
-                transition={{ duration: 0.15, delay: deviceType === 'mobile' ? 0 : Math.min(idx * 0.02, 0.06) }}
-                whileHover={deviceType === 'desktop' ? { scale: 1.01 } : undefined}
-                className="glass p-8 rounded-3xl border border-red-500/10 hover:border-red-500/30 transition-colors group"
-              >
-                <div className="mb-6 p-4 bg-red-500/10 rounded-2xl w-fit group-hover:scale-105 transition-transform">
-                  {item.iconType === 'theft' ? (
-                    <AlertTriangle className="w-8 h-8 text-red-500" />
-                  ) : item.iconType === 'time' ? (
-                    <Clock className="w-8 h-8 text-red-500" />
-                  ) : (
-                    <Monitor className="w-8 h-8 text-red-500" />
-                  )}
-                </div>
-                <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
-                <p className="text-gray-400 leading-relaxed text-sm">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Silent Realization Block */}
-      <section className="py-24 relative">
-        <div className="container">
-          <motion.div 
-            {...getMotionProps('fadeScale')}
-            className="max-w-5xl mx-auto glass p-8 md:p-16 lg:p-20 rounded-[48px] border-primary/20 relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] -mr-32 -mt-32" />
-            
-            <div className="relative z-10 text-center">
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 0.5 }}
-                transition={{ duration: 0.2 }}
-              >
-                <HelpCircle className="w-16 h-16 text-primary mx-auto mb-8" />
-              </motion.div>
-              <h2 className="text-3xl md:text-5xl font-black mb-12">3 أسئلة ستغير نظرتك لصالتك..</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-right">
-                {[
-                  "هل تعرف أرباح كل جهاز يوميًا بدقة؟",
-                  "هل تعرف أكثر ساعة ضغط في صالتك؟",
-                  "هل تعرف كم تخسر فعليًا بدون نظام؟"
-                ].map((q, idx) => (
-                  <motion.div 
-                    key={idx} 
-                    {...getMotionProps('fadeUp')}
-                    transition={{ duration: 0.15, delay: deviceType === 'mobile' ? 0 : 0.04 + idx * 0.02 }}
-                    className="flex gap-4 items-start"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-1">
-                      <span className="text-primary font-bold">{idx + 1}</span>
-                    </div>
-                    <p className="text-xl md:text-2xl font-medium leading-tight">{q}</p>
-                  </motion.div>
-                ))}
-              </div>
-              
-              <div className="mt-12 flex justify-center">
-                <button 
-                  onClick={() => scrollToSection('smart-form')}
-                  className="text-gray-400 hover:text-white transition-colors font-bold text-sm underline underline-offset-8 decoration-primary/30"
-                >
-                  أو ابدأ التجربة المجانية الآن
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-        <ScrollIndicator />
-      </section>
-
-      {renderSectionStrategicAudit("hero")}
-
       {/* Video Showcase Section */}
       <section id="demo-video" className="relative pt-16 sm:pt-24 pb-20 lg:pt-32 lg:pb-32 overflow-hidden bg-gradient-to-b from-transparent via-primary/5 to-transparent">
         <div className="container relative z-10">
           <motion.div 
-            {...getMotionProps('fadeUp')}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="max-w-4xl mx-auto text-center mb-12 lg:mb-16"
           >
             <h2 className="text-3xl sm:text-5xl font-black mb-6">شاهد النظام وهو يعمل في الواقع</h2>
@@ -1583,7 +1141,9 @@ export default function App() {
           {/* Live System Indicator Badge */}
           <div className="flex justify-center mt-8 sm:mt-10 mb-5 sm:mb-6">
             <motion.div
-              {...getMotionProps('fadeUp')}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               className="px-6 py-2 rounded-full glass border border-primary/30 text-[11px] sm:text-xs font-bold text-white uppercase tracking-[0.2em] flex items-center gap-3 shadow-[0_0_20px_rgba(168,85,247,0.15)]"
             >
               <span className="flex h-2 w-2">
@@ -1596,7 +1156,7 @@ export default function App() {
 
           <div className="relative max-w-[900px] mx-auto px-4 sm:px-0">
             {/* Floating UI Elements */}
-            <FloatingCard className="-top-12 -right-12 w-72">
+            <FloatingCard className="-top-12 -right-12 w-72" delay={0}>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/30">
                   <TrendingUp className="w-6 h-6 text-primary" />
@@ -1611,7 +1171,7 @@ export default function App() {
               </div>
             </FloatingCard>
 
-            <FloatingCard className="top-1/4 -left-20 w-64">
+            <FloatingCard className="top-1/4 -left-20 w-64" delay={1.5}>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <p className="text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">نشاط الصالة</p>
@@ -1622,7 +1182,7 @@ export default function App() {
                     <motion.div 
                       initial={{ width: 0 }}
                       whileInView={{ width: '75%' }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 2, delay: 1 }}
                       className="h-full bg-primary" 
                     />
                   </div>
@@ -1636,25 +1196,40 @@ export default function App() {
 
             {/* Video Container */}
             <motion.div 
-              {...getMotionProps('fadeScale')}
-              whileHover={deviceType === 'desktop' ? { scale: 1.01 } : undefined}
-              className="relative group rounded-2xl sm:rounded-[40px] overflow-hidden glass border-white/10 shadow-[0_0_50px_rgba(168,85,247,0.25)] hover:shadow-[0_0_80px_rgba(168,85,247,0.4)] aspect-video bg-black transition-shadow duration-300"
+              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              whileHover={{ scale: 1.02 }}
+              viewport={{ once: true }}
+              transition={{ 
+                duration: 1, 
+                ease: [0.16, 1, 0.3, 1],
+                scale: { duration: 0.4 }
+              }}
+              className="relative group rounded-2xl sm:rounded-[40px] overflow-hidden glass border-white/10 shadow-[0_0_50px_rgba(168,85,247,0.25)] hover:shadow-[0_0_80px_rgba(168,85,247,0.4)] aspect-video bg-black transition-shadow duration-500"
             >
               {/* 1. Video (Bottom Layer) */}
               <div className="absolute inset-0 w-full h-full z-0">
                 <MediaRenderer
                   src={activeCmsContent.demoVideoUrl}
-                  poster={activeCmsContent.demoVideoThumbnailUrl || defaultThumbnail}
+                  poster={activeCmsContent.demoVideoThumbnailUrl || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
                   type="video"
                   controls={true}
                   className="w-full h-full absolute top-0 left-0 object-cover rounded-none border-none shadow-none"
-                  loading="eager"
                 />
               </div>
 
               {/* 2. Overlay Effects */}
-              <div className="absolute inset-0 z-10 group-hover:bg-primary/5 transition-colors duration-300 pointer-events-none" />
+              <div className="absolute inset-0 z-10 group-hover:bg-primary/5 transition-colors duration-700 pointer-events-none" />
               
+              {/* 3. Tech Scanner Effect */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
+                <motion.div 
+                  animate={{ top: ['-10%', '110%'] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                  className="absolute left-0 right-0 h-[1px] bg-primary/40 shadow-[0_0_20px_rgba(168,85,247,1)]"
+                />
+              </div>
+
               <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-primary/20 rounded-tr-[40px] pointer-events-none z-30" />
               <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-primary/20 rounded-bl-[40px] pointer-events-none z-30" />
             </motion.div>
@@ -1663,13 +1238,14 @@ export default function App() {
           {/* YouTube CTA Button */}
           <div className="flex justify-center mt-8 sm:mt-10 mb-10 sm:mb-12 px-4">
             <motion.a
-              href="https://www.youtube.com/watch?v=1CWmNEt6xVs"
+              href={activeCmsContent.demoVideoUrl || "https://www.youtube.com/watch?v=tmfoL7IcuJk"}
               target="_blank"
               rel="noopener noreferrer"
-              {...getMotionProps('fadeUp')}
-              whileHover={deviceType === 'desktop' ? { scale: 1.015 } : undefined}
-              whileTap={{ scale: 0.98 }}
-              className="group/yt-btn flex items-center gap-6 bg-white text-black px-8 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(168,85,247,0.3)] hover:bg-primary hover:text-white transition-all duration-300 w-full sm:w-[340px] justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className="group/yt-btn flex items-center gap-6 bg-white text-black px-8 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(168,85,247,0.3)] hover:bg-primary hover:text-white transition-all duration-500 w-full sm:w-[340px] justify-center"
             >
               <div className="flex flex-col items-start leading-tight">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 group-hover/yt-btn:opacity-100 transition-opacity">شاهد بوضوح على</span>
@@ -1687,8 +1263,6 @@ export default function App() {
         </div>
       </section>
 
-      {renderSectionStrategicAudit("demo-video")}
-
       {/* Trust Bar */}
       <section className="py-12 border-y border-white/[0.05] bg-white/[0.01]">
         <div className="container">
@@ -1703,14 +1277,14 @@ export default function App() {
         </div>
       </section>
 
-      {renderSectionStrategicAudit("stats")}
-
       {/* Problem Agitation Section */}
       <section className="py-24 bg-white/[0.02] relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-10" />
         <div className="container relative z-10">
           <motion.div 
-            {...getMotionProps('fadeUp')}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="max-w-4xl mx-auto text-center mb-16"
           >
             <h2 className="text-3xl md:text-5xl font-black mb-6">{activeLocal.problemSectionTitle}</h2>
@@ -1724,7 +1298,7 @@ export default function App() {
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.03, duration: 0.25 }}
+                transition={{ delay: idx * 0.2, duration: 0.7 }}
                 whileHover={{ y: -10, scale: 1.02 }}
                 className="glass p-8 rounded-3xl border-red-500/10 hover:border-red-500/30 transition-all group feature-card-glow"
               >
@@ -1752,7 +1326,7 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.8 }}
             className="max-w-5xl mx-auto glass p-8 md:p-16 lg:p-20 rounded-[48px] border-primary/20 relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] -mr-32 -mt-32" />
@@ -1761,7 +1335,7 @@ export default function App() {
               <motion.div
                 initial={{ rotate: -10, opacity: 0 }}
                 whileInView={{ rotate: 0, opacity: 0.5 }}
-                transition={{ delay: 0.05, duration: 0.2 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
               >
                 <HelpCircle className="w-16 h-16 text-primary mx-auto mb-8" />
               </motion.div>
@@ -1771,14 +1345,14 @@ export default function App() {
                 {[
                   "هل تعرف أرباح كل جهاز يوميًا بدقة؟",
                   "هل تعرف أكثر ساعة ضغط في صالتك؟",
-                  "هل تعرف كم تخسر فعليًا بدون نظام?"
+                  "هل تعرف كم تخسر فعليًا بدون نظام؟"
                 ].map((q, idx) => (
                   <motion.div 
                     key={idx} 
                     initial={{ opacity: 0, x: 20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.05 + idx * 0.03, duration: 0.2 }}
+                    transition={{ delay: 0.4 + idx * 0.2 }}
                     className="flex gap-4 items-start"
                   >
                     <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-1">
@@ -1806,14 +1380,14 @@ export default function App() {
         </div>
       </section>
 
-      {renderSectionStrategicAudit("pain")}
-
       {/* Solution Section */}
       <section id="solution" className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-5" />
         <div className="container">
           <motion.div 
-            {...getMotionProps('fadeUp')}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="max-w-5xl mx-auto text-center"
           >
             <h2 className="text-3xl md:text-5xl font-black mb-6">{activeLocal.solutionSectionTitle}</h2>
@@ -1840,14 +1414,14 @@ export default function App() {
         </div>
       </section>
 
-      {renderSectionStrategicAudit("solution")}
-
       {/* Product Story Section */}
       <section id="story" className="py-24 relative overflow-hidden bg-white/[0.01]">
         <div className="absolute inset-0 tech-grid opacity-5" />
         <div className="container">
           <motion.div 
-            {...getMotionProps('fadeUp')}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-center mb-20"
           >
             <h2 className="text-4xl md:text-6xl font-black mb-6">قصة الابتكار: <span className="text-gradient">لماذا صنعنا هذا النظام؟</span></h2>
@@ -1996,7 +1570,9 @@ export default function App() {
           </div>
 
           <motion.div 
-            {...getMotionProps('fadeUp')}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="mt-24 text-center"
           >
             <p className="text-2xl font-bold mb-8 italic text-gray-300">"هذا النظام يفهم عملك أكثر مما تتخيل."</p>
@@ -2023,7 +1599,7 @@ export default function App() {
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.8 }}
               className="flex-1"
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs font-bold text-primary mb-6 border-primary/30">
@@ -2065,16 +1641,15 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.8 }}
               className="flex-1 relative"
             >
               <div className="glass rounded-[40px] p-4 border-white/10 shadow-2xl relative z-10 group overflow-hidden">
                 <GrayscaleImage 
-                  src={activeCmsContent.authImageUrl || engineeringPartnershipImg} 
+                  src={activeCmsContent.authImageUrl || "https://i.postimg.cc/GmskHZKC/aryd-swrt-afdl-202604051407.jpg"} 
                   alt="Engineering Partnership" 
                   className="rounded-[32px]"
                   aspectRatio="aspect-auto"
-                  loading="eager"
                 />
               </div>
               <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-primary/20 blur-[100px] rounded-full animate-pulse" />
@@ -2083,14 +1658,14 @@ export default function App() {
         </div>
       </section>
 
-      {renderSectionStrategicAudit("story")}
-
       {/* Features Section */}
       <section id="features" className="py-20 sm:py-32 relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-5" />
         <div className="container">
           <motion.div 
-            {...getMotionProps('fadeUp')}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-center mb-12 sm:mb-20"
           >
             <h2 className="font-bold mb-4 sm:mb-6">لماذا يختار المحترفون IDEA Makers؟</h2>
@@ -2132,8 +1707,10 @@ export default function App() {
             ].map((feature, i) => (
               <motion.div 
                 key={i}
-                {...getMotionProps('fadeUp')}
-                transition={{ delay: i * 0.015, duration: 0.15 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.6 }}
                 whileHover={{ y: -12, scale: 1.02 }}
                 className="glass p-6 sm:p-10 rounded-[24px] sm:rounded-[32px] border-white/[0.05] transition-all group feature-card-glow"
               >
@@ -2147,8 +1724,6 @@ export default function App() {
           </div>
         </div>
       </section>
-
-      {renderSectionStrategicAudit("features")}
 
       {/* Comparison Section */}
       <section id="comparison" className="py-20 sm:py-32 bg-white/[0.01] relative overflow-hidden">
@@ -2168,7 +1743,7 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.8 }}
             className="max-w-5xl mx-auto overflow-hidden rounded-[24px] sm:rounded-[32px] glass border-white/[0.05] shadow-2xl"
           >
             <div className="table-responsive">
@@ -2186,7 +1761,7 @@ export default function App() {
                     ["التكلفة التشغيلية", "اشتراك شهري (نزيف مستمر)", "دفع لمرة واحدة (ملكية للأبد)"],
                     ["ملكية البيانات", "مخزنة عند طرف ثالث", "مخزنة محلياً تحت سيطرتك"],
                     ["تخصيص الهوية", "محدود جداً", "كامل (شعارك وألوانك)"],
-                    ["إدارة وحساب وقت الجلسات", "يدوي/تقريبي", "إلكتروني بالثانية ودقيق بالكامل"],
+                    ["التحكم في الأجهزة", "جزئي/برمجي فقط", "تحكم سيادي مباشر"],
                     ["الدعم الفني", "تذاكر انتظار", "دعم استراتيجي مباشر"]
                   ].map((row, i) => (
                     <tr key={i} className="comparison-row border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors group">
@@ -2212,8 +1787,6 @@ export default function App() {
         </div>
       </section>
 
-      {renderSectionStrategicAudit("comparison")}
-
       {/* Profit Calculator Section */}
       <section id="calculator" className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-10" />
@@ -2230,7 +1803,7 @@ export default function App() {
               
               {/* Country Selector */}
               <div className="flex flex-wrap justify-center gap-4 mb-8">
-                {(Object.values(countriesState) as any[]).map((country) => (
+                {Object.values(countries).map((country) => (
                   <button
                     key={country.id}
                     onClick={() => handleCountryChange(country)}
@@ -2251,7 +1824,7 @@ export default function App() {
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.8 }}
               className="glass p-6 md:p-12 rounded-[40px] border-primary/20 relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] -mr-32 -mt-32" />
@@ -2263,14 +1836,14 @@ export default function App() {
                     <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 text-center sm:text-right">عدد الأجهزة بالصالة</label>
                     <div className="flex items-center justify-center gap-10">
                       <motion.button 
-                        whileHover={{ scale: 1.12 }}
+                        whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
                         title="تقليل"
                         onClick={() => setCalcDevices(Math.max(1, calcDevices - 1))} 
-                        className="w-16 h-16 rounded-full bg-red-500/20 hover:bg-red-500 border border-red-500/40 hover:border-red-500 text-red-300 hover:text-white flex items-center justify-center shadow-lg shadow-red-500/5 hover:shadow-red-500/25 transition-all duration-300 cursor-pointer"
+                        className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-red-500/20 text-white border border-white/10 shadow-xl transition-colors"
                       >
-                        <Minus className="w-8 h-8" strokeWidth={4.5} />
+                        <Minus className="w-7 h-7" />
                       </motion.button>
                       
                       <div className="relative group/input">
@@ -2287,14 +1860,14 @@ export default function App() {
                       </div>
 
                       <motion.button 
-                        whileHover={{ scale: 1.12 }}
+                        whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
                         title="زيادة"
                         onClick={() => setCalcDevices(Math.min(50, calcDevices + 1))} 
-                        className="w-16 h-16 rounded-full bg-emerald-500/20 hover:bg-emerald-500 border border-emerald-500/40 hover:border-emerald-500 text-emerald-300 hover:text-white flex items-center justify-center shadow-lg shadow-emerald-500/5 hover:shadow-emerald-500/25 transition-all duration-300 cursor-pointer"
+                        className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-emerald-500/20 text-white border border-white/10 shadow-xl transition-colors"
                       >
-                        <Plus className="w-8 h-8" strokeWidth={4.5} />
+                        <Plus className="w-7 h-7" />
                       </motion.button>
                     </div>
                     <div className="mt-6 text-center">
@@ -2308,14 +1881,14 @@ export default function App() {
                     <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 text-center sm:text-right">متوسط ساعات التشغيل اليومية للجهاز</label>
                     <div className="flex items-center justify-center gap-10">
                       <motion.button 
-                        whileHover={{ scale: 1.12 }}
+                        whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
                         title="تقليل"
                         onClick={() => setCalcHours(Math.max(1, calcHours - 1))} 
-                        className="w-16 h-16 rounded-full bg-red-500/20 hover:bg-red-500 border border-red-500/40 hover:border-red-500 text-red-300 hover:text-white flex items-center justify-center shadow-lg shadow-red-500/5 hover:shadow-red-500/25 transition-all duration-300 cursor-pointer"
+                        className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-red-500/20 text-white border border-white/10 shadow-xl transition-colors"
                       >
-                        <Minus className="w-8 h-8" strokeWidth={4.5} />
+                        <Minus className="w-7 h-7" />
                       </motion.button>
                       
                       <div className="relative group/input">
@@ -2332,14 +1905,14 @@ export default function App() {
                       </div>
 
                       <motion.button 
-                        whileHover={{ scale: 1.12 }}
+                        whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
                         title="زيادة"
                         onClick={() => setCalcHours(Math.min(24, calcHours + 1))} 
-                        className="w-16 h-16 rounded-full bg-emerald-500/20 hover:bg-emerald-500 border border-emerald-500/40 hover:border-emerald-500 text-emerald-300 hover:text-white flex items-center justify-center shadow-lg shadow-emerald-500/5 hover:shadow-emerald-500/25 transition-all duration-300 cursor-pointer"
+                        className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-emerald-500/20 text-white border border-white/10 shadow-xl transition-colors"
                       >
-                        <Plus className="w-8 h-8" strokeWidth={4.5} />
+                        <Plus className="w-7 h-7" />
                       </motion.button>
                     </div>
                     <div className="mt-6 text-center">
@@ -2351,16 +1924,16 @@ export default function App() {
                   {/* Leak Rate (Fraud & Abuse Control) */}
                   <div className="glass p-6 rounded-3xl border-white/5 hover:border-primary/20 transition-all group">
                     <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4 text-center sm:text-right">نسبة التسريب المالي وتلاعب العمال المتوقعة (دون سيستم حماية)</label>
-                    <div className="flex items-center justify-center gap-10">
+                    <div className="flex items-center justify-center gap-6">
                       <motion.button 
-                        whileHover={{ scale: 1.12 }}
+                        whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
                         title="تقليل"
                         onClick={() => setLeakRate(Math.max(5, leakRate - 5))} 
-                        className="w-16 h-16 rounded-full bg-red-500/20 hover:bg-red-500 border border-red-500/40 hover:border-red-500 text-red-300 hover:text-white flex items-center justify-center shadow-lg shadow-red-500/5 hover:shadow-red-500/25 transition-all duration-300 cursor-pointer"
+                        className="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-red-500/20 text-white border border-white/10 shadow-xl transition-colors"
                       >
-                        <Minus className="w-8 h-8" strokeWidth={4.5} />
+                        <Minus className="w-5 h-5" />
                       </motion.button>
                       
                       <div className="text-center">
@@ -2369,14 +1942,14 @@ export default function App() {
                       </div>
 
                       <motion.button 
-                        whileHover={{ scale: 1.12 }}
+                        whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
                         title="زيادة"
                         onClick={() => setLeakRate(Math.min(40, leakRate + 5))} 
-                        className="w-16 h-16 rounded-full bg-emerald-500/20 hover:bg-emerald-500 border border-emerald-500/40 hover:border-emerald-500 text-emerald-300 hover:text-white flex items-center justify-center shadow-lg shadow-emerald-500/5 hover:shadow-emerald-500/25 transition-all duration-300 cursor-pointer"
+                        className="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-emerald-500/20 text-white border border-white/10 shadow-xl transition-colors"
                       >
-                        <Plus className="w-8 h-8" strokeWidth={4.5} />
+                        <Plus className="w-5 h-5" />
                       </motion.button>
                     </div>
                     <div className="mt-4 text-center">
@@ -2457,8 +2030,6 @@ export default function App() {
         </div>
       </section>
 
-      {renderSectionStrategicAudit("calculator")}
-
       {/* Financial Justification Section */}
       <section className="py-24 bg-white/[0.02] relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-5" />
@@ -2478,7 +2049,7 @@ export default function App() {
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.8 }}
                 className="glass p-10 rounded-[40px] border-red-500/20"
               >
                 <h3 className="text-2xl font-bold text-red-500 mb-6 flex items-center gap-3">
@@ -2504,7 +2075,7 @@ export default function App() {
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.8 }}
                 className="glass p-10 rounded-[40px] border-emerald-500/20 relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 bg-emerald-500 text-black text-[10px] font-black px-4 py-1 rounded-bl-xl uppercase tracking-widest">استثمار لمرة واحدة</div>
@@ -2543,7 +2114,7 @@ export default function App() {
             
             {/* Country Selector for Pricing */}
             <div className="flex flex-wrap justify-center gap-4 mb-4">
-              {(Object.values(countriesState) as any[]).map((country) => (
+              {Object.values(countries).map((country) => (
                 <button
                   key={country.id}
                   onClick={() => handleCountryChange(country)}
@@ -2614,11 +2185,11 @@ export default function App() {
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: idx * 0.03, duration: 0.25 }}
+                  transition={{ delay: idx * 0.2, duration: 0.8 }}
                   whileHover={!isLocked ? { y: -15 } : {}}
                   animate={pkg.id === 'international' ? {
                     scale: [1, 1.02, 1],
-                    transition: { duration: 0.25 }
+                    transition: { duration: 0.5 }
                   } : {}}
                   className={`relative glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] flex flex-col transition-all duration-500 ${pkg.popular ? `${colors.borderFeatured} scale-105 shadow-[0_0_50px_${colors.glow}] py-10 sm:py-16 z-20 bg-gradient-to-b ${colors.bg} to-transparent` : 'hover:border-white/20'} ${pkg.id === 'international' ? 'border-blue-500/30' : ''} ${isLocked ? 'opacity-40 grayscale pointer-events-none' : ''} ${selectedPackage.id === pkg.id ? 'ring-4 ring-primary ring-offset-4 ring-offset-black' : ''}`}
                   onClick={() => !isLocked && setSelectedPackage(pkg)}
@@ -2743,7 +2314,7 @@ export default function App() {
                     <span className="text-xs text-gray-400 font-normal">(للملاك الجدد)</span>
                   </h4>
                   <p className="text-xs text-gray-400 leading-relaxed">
-                    تم تصميم هذه الباقة لتوفير <strong className="font-bold text-white">الأمان الحسابي الأساسي</strong> للمبتدئين الذين يديرون صالتهم بأنفسهم، ولا يملكون فريق عمل خارجي يحتاج لرقابة صارمة، أو مبيعات كافيه ضخمة.
+                    تم تصميم هذه الباقة لتوفير **الأمان الحسابي الأساسي** للمبتدئين الذين يديرون صالتهم بأنفسهم، ولا يملكون فريق عمل خارجي يحتاج لرقابة صارمة، أو مبيعات كافيه ضخمة.
                   </p>
                   <div className="h-px bg-white/5 my-4" />
                   <ul className="space-y-3 text-xs text-gray-400">
@@ -2785,20 +2356,20 @@ export default function App() {
                   <div className="text-accent text-xs font-bold uppercase tracking-wider">الباقة الذهبية الموصى بها</div>
                   <h4 className="text-xl font-black text-white flex items-center gap-2 justify-start">
                     <span>Professional Package</span>
-                    <span className="text-xs text-accent font-black">(الحماية والحسابات المتقدمة)</span>
+                    <span className="text-xs text-accent font-black">(الحصن السيادي)</span>
                   </h4>
                   <p className="text-xs text-gray-300 leading-relaxed">
-                    الباقة المفضلة لـ <strong className="font-bold text-white">90% من أصحاب الصالات</strong> لأنها تقضي على الوجع الأكبر: <strong className="font-bold text-white">تلاعب الموظفين بالفواتير والمبيعات</strong>. فجوة السعر الضئيلة لمرة واحدة (2,000 ج.م) ستستردها خلال أول أسبوع تشغيل فقط بفضل دمج الكافيه وحظر تلاعب الموظفين بالسيستم!
+                    الباقة المفضلة لـ **90% من أصحاب الصالات** لأنها تقضي على الوجع الأكبر: **سرقة الموظفين وتشغيل الأجهزة سراً**. فجوة السعر الضئيلة لمرة واحدة (2,000 ج.م) ستستردها خلال أول أسبوع تشغيل فقط بفضل دمج الكافيه وحظر الشاشات بدون فاتورة!
                   </p>
                   <div className="h-px bg-white/5 my-4" />
                   <ul className="space-y-3 text-xs text-gray-300">
                     <li className="flex items-center gap-2 justify-start">
                       <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
-                      <span className="font-bold text-white">🔒 نظام صلاحيات متقدم ومراقبة دقيقة لمنع الموظفين من التلاعب بالفواتير والأسعار</span>
+                      <span className="font-bold text-white">حماية سيادية مطلقة وقفل للشاشات تلقائياً</span>
                     </li>
                     <li className="flex items-center gap-2 justify-start">
                       <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
-                      <span className="font-bold text-white">نظام الكافيه والمخزن (تتبع المؤكلات  والمشروبات و الخدمات)</span>
+                      <span className="font-bold text-white">نظام الكافيه والمخزن (تتبع علب الكانز والمشروبات)</span>
                     </li>
                     <li className="flex items-center gap-2 justify-start">
                       <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
@@ -2830,7 +2401,7 @@ export default function App() {
                     <span className="text-xs text-blue-400 font-normal">(للمحترفين والخليج)</span>
                   </h4>
                   <p className="text-xs text-gray-400 leading-relaxed">
-                    مخصصة للصالات الكبرى والشركات التي تبحث عن <strong className="font-bold text-white">امتثال تام لاشتراطات بلدي والبلدية في السعودية والخليج</strong>، أو تلك التي تهدف للتوسع العابر للحدود وتغيير العملات وضبط المنطقة الزمنية بدقة تامة.
+                    مخصصة للصالات الكبرى والشركات التي تبحث عن **امتثال تام لاشتراطات بلدي والبلدية في السعودية والخليج**، أو تلك التي تهدف للتوسع العابر للحدود وتغيير العملات وضبط المنطقة الزمنية بدقة تامة.
                   </p>
                   <div className="h-px bg-white/5 my-4" />
                   <ul className="space-y-3 text-xs text-gray-400">
@@ -2890,14 +2461,14 @@ export default function App() {
                       <td className="py-4 text-center">أصل مدى الحياة للفرع الحالي (مع ترخيص ترقية للفروع مستقبلاً)</td>
                     </tr>
                     <tr>
-                      <td className="py-4 font-bold text-white">نظام صلاحيات متقدم ومراقبة الفواتير</td>
-                      <td className="py-4 text-center text-gray-500">❌ صلاحيات أساسية</td>
-                      <td className="py-4 text-center text-accent font-black bg-accent/5">🔒 نظام صلاحيات متكامل للأدمن والكاشيرية وسجل خفي للعمليات</td>
-                      <td className="py-4 text-center text-blue-400 font-bold">🔒 نظام صلاحيات متكامل للأدمن والكاشيرية وسجل خفي للعمليات</td>
+                      <td className="py-4 font-bold text-white">حماية الشاشات ضد تلاعب العمال سراً</td>
+                      <td className="py-4 text-center text-gray-500">❌ حماية أساسية (يدوية)</td>
+                      <td className="py-4 text-center text-accent font-black bg-accent/5">👑 حماية سيادية مطلقة وقفل الشاشات آلياً</td>
+                      <td className="py-4 text-center text-blue-400 font-bold">👑 حماية سيادية مطلقة وقفل الشاشات آلياً</td>
                     </tr>
                     <tr>
                       <td className="py-4 font-bold text-white">نظام الكافيه والمشروبات والمخازن</td>
-                      <td className="py-4 text-center text-green-400 font-bold">✔️ متوفر (بوفيه ومخزن أساسي)</td>
+                      <td className="py-4 text-center text-red-400">❌ غير متوفر</td>
                       <td className="py-4 text-center text-accent font-black bg-accent/5">☕ متكامل مع جرد تلقائي لكل مشروب</td>
                       <td className="py-4 text-center text-blue-400 font-bold">☕ متكامل مع جرد تلقائي لكل مشروب</td>
                     </tr>
@@ -2958,8 +2529,6 @@ export default function App() {
         </div>
       </section>
 
-      {renderSectionStrategicAudit("pricing")}
-
       {/* Free Trial Section */}
       <section className="py-16 sm:py-24 relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-10" />
@@ -2968,14 +2537,14 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.8 }}
             className="glass rounded-[32px] sm:rounded-[40px] p-8 sm:p-12 md:p-20 text-center relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-primary/10 blur-[60px] sm:blur-[80px] rounded-full" />
             <div className="relative z-10">
               <h2 className="font-black mb-6">{activeCmsContent.trialTitle || "\"ابدأ الآن وقرر بنفسك\""}</h2>
-              <p className="text-lg sm:text-xl text-gray-400 mb-8 sm:mb-10 max-w-2xl mx-auto font-light whitespace-pre-line text-right" dir="rtl">
-                {activeCmsContent.trialText ? parseMarkdownText(activeCmsContent.trialText) : <>خلال 3 أيام فقط، ستسترد قيمة نظام الكاشير بالكامل من الأرباح الإضافية التي ستحققها!<br/>نحن لا نمنحك مجرد "تجربة مجانية"، بل نضع بين يديك <strong className="font-extrabold text-white">أداة تدقيق مالي وإداري</strong> متكاملة لضبط مبيعات الصالة وسد ثغرات الكاشير. شغل النظام لمدة 3 أيام، وقارن أرباحك الحالية بما كنت تحققه سابقاً.. وستصدمك الفروقات الحقيقية.</>}
+              <p className="text-lg sm:text-xl text-gray-400 mb-8 sm:mb-10 max-w-2xl mx-auto font-light whitespace-pre-line">
+                {activeCmsContent.trialText || <>خلال 3 أيام فقط، ستسترد قيمة نظام الكاشير بالكامل من الأرباح الإضافية التي ستحققها!<br/>نحن لا نمنحك مجرد "تجربة مجانية"، بل نضع بين يديك **أداة تدقيق مالي وإداري** متكاملة لضبط مبيعات الصالة وسد ثغرات الكاشير. شغل النظام لمدة 3 أيام، وقارن أرباحك الحالية بما كنت تحققه سابقاً.. وستصدمك الفروقات الحقيقية.</>}
               </p>
               <RippleButton 
                 primary
@@ -3006,7 +2575,7 @@ export default function App() {
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.8 }}
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs font-bold text-primary mb-6 border-primary/30">
                 <Gamepad2 className="w-4 h-4" />
@@ -3029,7 +2598,7 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.8 }}
               className="relative"
             >
               <div className="glass aspect-video rounded-[40px] p-1 overflow-hidden">
@@ -3186,17 +2755,16 @@ export default function App() {
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.8 }}
                 className="relative group"
               >
                 <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                 <div className="relative glass p-2 rounded-[48px] border-white/10 overflow-hidden shadow-2xl">
                   <GrayscaleImage 
-                    src={activeCmsContent.founderImgUrl || ceoEslamArafaImg} 
+                    src={activeCmsContent.founderImgUrl || "https://i.postimg.cc/pX35pXmS/CEO-Eslam-Arafa.jpg"} 
                     alt={`${activeCmsContent.founderName || "Eslam Arafa"} - ${activeCmsContent.founderRole || "Founder & CEO"}`} 
                     className="rounded-[40px]"
                     aspectRatio="aspect-[4/5]"
-                    loading="eager"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
                   <div className="absolute bottom-8 left-8 right-8 text-right">
@@ -3231,18 +2799,7 @@ export default function App() {
                   viewport={{ once: true }}
                 >
                   <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">{activeCmsContent.founderStorySubtitle || "الرؤية خلف الابتكار"}</span>
-                  <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
-                    {activeCmsContent.founderStoryTitle?.includes("تعرف على مؤسس") ? (
-                      <>
-                        تعرف على مؤسس <br/>
-                        <span className="text-gradient">
-                          {activeCmsContent.founderStoryTitle.replace("تعرف على مؤسس", "").trim() || "صُنّاع الفكرة"}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-gradient">{activeCmsContent.founderStoryTitle || "تعرف على مؤسس صُنّاع الفكرة"}</span>
-                    )}
-                  </h2>
+                  <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">تعرف على مؤسس <br/><span className="text-gradient">{(activeCmsContent.founderStoryTitle || "صُنّاع الفكرة").replace(/^تعرف على مؤسس\s*/, '') || "صُنّاع الفكرة"}</span></h2>
                 </motion.div>
 
                 <div className="space-y-8">
@@ -3303,99 +2860,60 @@ export default function App() {
       </section>
 
       {/* Trust Architecture Section */}
-      <TrustArchitecture onContactFounder={handleWhatsApp} cmsContent={activeCmsContent} />
+      <TrustArchitecture onContactFounder={handleWhatsApp} />
 
       {/* Smart Form Section */}
       <SmartForm initialPackage={selectedPackage} initialCountry={selectedCountry} />
 
       {/* FAQ Section */}
-      <FAQSection 
-        countryFaqs={activeLocal.faqs || []}
-        defaultFaqs={faqs}
-        countryName={selectedCountry.name}
-        countryFlag={selectedCountry.flag}
-        onContactFounder={handleWhatsApp}
-      />
+      <section id="faq" className="py-16 sm:py-24 relative overflow-hidden">
+        <div className="absolute inset-0 tech-grid opacity-5" />
+        <div className="container max-w-3xl">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12 sm:mb-16"
+          >
+            <h2 className="font-bold mb-4">الأسئلة الشائعة</h2>
+            <p className="text-gray-400 text-base sm:text-lg">كل ما تحتاج لمعرفته حول نظام IDEA Makers</p>
+          </motion.div>
 
-      {renderSectionStrategicAudit("faq")}
+          <div className="space-y-4">
+            {(activeLocal.faqs && activeLocal.faqs.length > 0 ? activeLocal.faqs : faqs).map((faq, i) => (
+              <motion.details 
+                key={i} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="glass rounded-2xl group"
+              >
+                <summary className="p-5 sm:p-6 cursor-pointer font-bold flex items-center justify-between list-none text-base sm:text-lg">
+                  {faq.q}
+                  <ChevronDown className="w-5 h-5 transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-5 sm:px-6 pb-5 sm:pb-6 text-gray-400 leading-relaxed text-sm sm:text-base font-light">
+                  {faq.a}
+                </div>
+              </motion.details>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Social Media Icons Section */}
       <SocialIcons />
-        </>
-      )}
 
       {/* Professional Footer */}
-      <Footer 
-        onAdminClick={() => {
-          setView('architecture');
-          if (window.location.pathname !== '/seo-architecture') {
-            window.history.pushState(null, '', '/seo-architecture');
-          }
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        onLogoClick={() => {
-          setView('landing');
-          const path = `/playstation-pos-${selectedCountry.id}`;
-          if (window.location.pathname !== path) {
-            window.history.pushState({ countryId: selectedCountry.id }, '', path);
-          }
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-      />
-
-      {/* Strategic Audit Toggler */}
-      {isAdmin && (
-        <div className="fixed bottom-28 sm:bottom-24 left-6 z-50">
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowStrategicAudit(!showStrategicAudit)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-full font-black text-xs sm:text-sm shadow-2xl border transition-all duration-300 ${
-              showStrategicAudit 
-                ? 'bg-primary text-white border-primary shadow-primary/30' 
-                : 'bg-black/80 hover:bg-black text-gray-300 border-white/10 hover:text-white shadow-black/50'
-            }`}
-          >
-            <Compass className={`w-4 h-4 ${showStrategicAudit ? 'animate-spin-slow' : ''}`} />
-            <span>🎯 {showStrategicAudit ? 'إخفاء الأهداف والمخطط الهيكلي' : 'فحص الأهداف الهندسية والسيو'}</span>
-          </motion.button>
-        </div>
-      )}
+      <Footer />
 
       {/* Sticky Mobile CTA Bar */}
       <div className="sticky-cta-bar flex gap-3">
         <button 
           onClick={() => {
-            if (view !== 'landing') {
-              setView('landing');
-              const path = `/playstation-pos-${selectedCountry.id}`;
-              window.history.pushState(null, '', path);
-              
-              let attempts = 0;
-              const scrollInterval = setInterval(() => {
-                const el = document.getElementById('smart-form');
-                if (el) {
-                  const offset = 100;
-                  const bodyRect = document.body.getBoundingClientRect().top;
-                  const elementRect = el.getBoundingClientRect().top;
-                  const elementPosition = elementRect - bodyRect;
-                  const offsetPosition = elementPosition - offset;
-                  
-                  window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                  });
-                  clearInterval(scrollInterval);
-                } else if (attempts > 30) {
-                  clearInterval(scrollInterval);
-                }
-                attempts++;
-              }, 50);
-            } else {
-              const el = document.getElementById('smart-form');
-              el?.scrollIntoView({ behavior: 'smooth' });
-            }
+            const el = document.getElementById('smart-form');
+            el?.scrollIntoView({ behavior: 'smooth' });
           }}
           className="flex-1 bg-primary text-white py-4 rounded-xl font-bold text-sm shadow-lg shadow-primary/20"
         >

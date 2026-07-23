@@ -9,7 +9,6 @@ interface MediaRendererProps {
   alt?: string;
   controls?: boolean;
   poster?: string;
-  loading?: 'lazy' | 'eager';
 }
 
 export const MediaRenderer: React.FC<MediaRendererProps> = ({
@@ -19,7 +18,6 @@ export const MediaRenderer: React.FC<MediaRendererProps> = ({
   alt = '',
   controls = true,
   poster = '',
-  loading: imageLoading = 'lazy',
 }) => {
   const [resolvedSrc, setResolvedSrc] = useState<string>('');
   const [resolvedPoster, setResolvedPoster] = useState<string>('');
@@ -27,80 +25,49 @@ export const MediaRenderer: React.FC<MediaRendererProps> = ({
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   useEffect(() => {
-    let active = true;
+    if (!src) {
+      setResolvedSrc('');
+      return;
+    }
 
-    const loadSrc = () => {
-      if (!src) {
-        if (active) setResolvedSrc('');
-        return;
-      }
-
-      if (src.startsWith('db://')) {
-        const key = src.replace('db://', '');
-        if (active) setLoading(true);
-        getMediaItem(key).then((val) => {
-          if (active) {
-            if (val) {
-              setResolvedSrc(val);
-            } else {
-              setResolvedSrc('');
-            }
-            setLoading(false);
-          }
-        }).catch(() => {
-          if (active) {
-            setLoading(false);
-            setResolvedSrc('');
-          }
-        });
-      } else {
-        if (active) setResolvedSrc(src);
-      }
-    };
-
-    loadSrc();
-
-    window.addEventListener('cms-content-changed', loadSrc);
-    return () => {
-      active = false;
-      window.removeEventListener('cms-content-changed', loadSrc);
-    };
+    if (src.startsWith('db://')) {
+      const key = src.replace('db://', '');
+      setLoading(true);
+      getMediaItem(key).then((val) => {
+        if (val) {
+          setResolvedSrc(val);
+        } else {
+          setResolvedSrc('');
+        }
+        setLoading(false);
+      }).catch(() => {
+        setLoading(false);
+      });
+    } else {
+      setResolvedSrc(src);
+    }
   }, [src]);
 
   useEffect(() => {
-    let active = true;
+    if (!poster) {
+      setResolvedPoster('');
+      return;
+    }
 
-    const loadPoster = () => {
-      if (!poster) {
-        if (active) setResolvedPoster('');
-        return;
-      }
-
-      if (poster.startsWith('db://')) {
-        const key = poster.replace('db://', '');
-        getMediaItem(key).then((val) => {
-          if (active) {
-            if (val) {
-              setResolvedPoster(val);
-            } else {
-              setResolvedPoster('');
-            }
-          }
-        }).catch(() => {
-          if (active) setResolvedPoster('');
-        });
-      } else {
-        if (active) setResolvedPoster(poster);
-      }
-    };
-
-    loadPoster();
-
-    window.addEventListener('cms-content-changed', loadPoster);
-    return () => {
-      active = false;
-      window.removeEventListener('cms-content-changed', loadPoster);
-    };
+    if (poster.startsWith('db://')) {
+      const key = poster.replace('db://', '');
+      getMediaItem(key).then((val) => {
+        if (val) {
+          setResolvedPoster(val);
+        } else {
+          setResolvedPoster('');
+        }
+      }).catch(() => {
+        setResolvedPoster('');
+      });
+    } else {
+      setResolvedPoster(poster);
+    }
   }, [poster]);
 
   // Reset play state when video src changes
@@ -124,7 +91,6 @@ export const MediaRenderer: React.FC<MediaRendererProps> = ({
           alt={alt}
           className={className}
           referrerPolicy="no-referrer"
-          loading={imageLoading}
         />
       );
     }
@@ -138,7 +104,6 @@ export const MediaRenderer: React.FC<MediaRendererProps> = ({
         alt={alt}
         className={className}
         referrerPolicy="no-referrer"
-        loading={imageLoading}
       />
     );
   }
@@ -158,19 +123,34 @@ export const MediaRenderer: React.FC<MediaRendererProps> = ({
     return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0` : url;
   };
 
+  const getYoutubeThumbnail = (url: string) => {
+    let videoId = '';
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      videoId = match[2];
+    }
+    return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : '';
+  };
+
   // Render elegant custom poster if specified and not yet playing
-  if (resolvedPoster && !isPlaying) {
+  if ((resolvedPoster || (isYoutube(resolvedSrc) && getYoutubeThumbnail(resolvedSrc))) && !isPlaying) {
+    const posterSrc = resolvedPoster || getYoutubeThumbnail(resolvedSrc);
     return (
       <div 
         onClick={() => setIsPlaying(true)}
         className={`relative overflow-hidden aspect-video group cursor-pointer ${className}`}
       >
         <img
-          src={resolvedPoster}
+          src={posterSrc}
           alt="Video thumbnail"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           referrerPolicy="no-referrer"
-          loading={imageLoading}
+          onError={(e) => {
+            if ((e.target as HTMLImageElement).src.includes('maxresdefault.jpg')) {
+              (e.target as HTMLImageElement).src = (e.target as HTMLImageElement).src.replace('maxresdefault.jpg', 'hqdefault.jpg');
+            }
+          }}
         />
         {/* Play Overlay Button */}
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-colors duration-300 z-10">

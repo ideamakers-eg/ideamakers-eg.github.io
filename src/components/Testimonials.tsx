@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 import { Star, Quote, Users } from 'lucide-react';
 
@@ -76,15 +76,6 @@ interface TestimonialsProps {
 }
 
 export const Testimonials = ({ customTestimonials }: TestimonialsProps) => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   // Merge or select testimonials. If custom is provided, we can prepend or use them directly.
   const displayTestimonials = customTestimonials && customTestimonials.length > 0 
     ? [
@@ -106,8 +97,9 @@ export const Testimonials = ({ customTestimonials }: TestimonialsProps) => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <motion.div
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs font-bold text-primary mb-6 border-primary/30"
           >
             <Users className="w-4 h-4" />
@@ -115,16 +107,20 @@ export const Testimonials = ({ customTestimonials }: TestimonialsProps) => {
           </motion.div>
           
           <motion.h2
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl font-black mb-6"
           >
             آراء عملائنا
           </motion.h2>
           
           <motion.p
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
             className="text-xl text-gray-400 max-w-2xl mx-auto font-light"
           >
             تجارب حقيقية من أصحاب صالات البلايستيشن بعد استخدام النظام والتحول من الفوضى إلى السيطرة الكاملة.
@@ -133,71 +129,57 @@ export const Testimonials = ({ customTestimonials }: TestimonialsProps) => {
 
         {/* Testimonials Grid / Carousel */}
         <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 pb-8 md:pb-0 no-scrollbar">
-          {displayTestimonials.map((item, idx) => {
-            const cardContent = (
-              <>
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-4 h-4 ${
-                        i < Math.floor(item.rating)
-                          ? 'text-primary fill-primary'
-                          : i < item.rating
-                          ? 'text-primary/50 fill-primary/50'
-                          : 'text-gray-600'
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                <div className="relative mb-6 flex-grow">
-                  <Quote className="absolute -top-2 -right-2 w-8 h-8 text-primary/10 group-hover/card:text-primary/20 transition-colors" />
-                  <p className="text-lg text-gray-300 leading-relaxed relative z-10 font-light text-right">
-                    "{item.content}"
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-4 mt-auto pt-6 border-t border-white/5">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-purple-600/20 flex items-center justify-center text-primary font-bold text-xl border border-primary/10 shrink-0">
-                    {item.name[0]}
-                  </div>
-                  <div className="overflow-hidden text-right">
-                    <h4 className="font-bold text-white truncate">{item.name}</h4>
-                    <div className="flex flex-col text-xs text-gray-500">
-                      <span className="truncate">{item.role}</span>
-                      <span className="text-primary/70 truncate">{item.location}</span>
-                    </div>
-                  </div>
-                </div>
-              </>
-            );
-
-            // On mobile, render a standard div with zero JS animation tracking for 60 FPS scrolling.
-            // On desktop, render a motion.div with extremely fast transform transition.
-            return isMobile ? (
-              <div
-                key={idx}
-                className="min-w-[85vw] sm:min-w-[400px] md:min-w-0 snap-center glass p-8 rounded-[32px] border-white/5 hover:border-primary/30 transition-all duration-300 group/card flex flex-col h-full transform hover:-translate-y-1"
-              >
-                {cardContent}
+          {displayTestimonials.map((item, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.1 }}
+              whileHover={{ y: -10 }}
+              className="min-w-[85vw] sm:min-w-[400px] md:min-w-0 snap-center glass p-8 rounded-[32px] border-white/5 hover:border-primary/30 transition-all duration-500 group/card flex flex-col h-full"
+            >
+              <div className="flex items-center gap-1 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`w-4 h-4 ${
+                      i < Math.floor(item.rating)
+                        ? 'text-primary fill-primary'
+                        : i < item.rating
+                        ? 'text-primary/50 fill-primary/50'
+                        : 'text-gray-600'
+                    }`}
+                  />
+                ))}
               </div>
-            ) : (
-              <motion.div
-                key={idx}
-                initial={false}
-                animate={{ opacity: 1, y: 0 }}
-                className="min-w-[85vw] sm:min-w-[400px] md:min-w-0 snap-center glass p-8 rounded-[32px] border-white/5 hover:border-primary/30 transition-all duration-300 group/card flex flex-col h-full transform hover:-translate-y-2"
-              >
-                {cardContent}
-              </motion.div>
-            );
-          })}
+
+              <div className="relative mb-6 flex-grow">
+                <Quote className="absolute -top-2 -right-2 w-8 h-8 text-primary/10 group-hover/card:text-primary/20 transition-colors" />
+                <p className="text-lg text-gray-300 leading-relaxed relative z-10 font-light text-right">
+                  "{item.content}"
+                </p>
+              </div>
+
+              <div className="flex items-center gap-4 mt-auto pt-6 border-t border-white/5">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-purple-600/20 flex items-center justify-center text-primary font-bold text-xl border border-primary/10 shrink-0">
+                  {item.name[0]}
+                </div>
+                <div className="overflow-hidden text-right">
+                  <h4 className="font-bold text-white truncate">{item.name}</h4>
+                  <div className="flex flex-col text-xs text-gray-500">
+                    <span className="truncate">{item.role}</span>
+                    <span className="text-primary/70 truncate">{item.location}</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
         {/* Mobile Swipe Notice */}
         <div className="mt-4 text-center md:hidden">
-          <p className="text-xs text-gray-500">اسحب لليمين لمشاهدة المزيد</p>
+          <p className="text-xs text-gray-500 animate-pulse">اسحب لليمين لمشاهدة المزيد</p>
         </div>
       </div>
     </section>

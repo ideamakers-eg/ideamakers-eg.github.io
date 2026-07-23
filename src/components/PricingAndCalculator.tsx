@@ -45,7 +45,7 @@ export const PricingAndCalculator = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: 0.6 }}
         >
           <h2 className="text-emerald-600 font-bold tracking-wider uppercase text-sm mb-3">IDEA Makers – صناع الفكرة</h2>
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 leading-tight">
@@ -108,10 +108,9 @@ export const PricingAndCalculator = () => {
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={selectedCountry}
-                        initial={{ opacity: 0, y: 5 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -5 }}
-                        transition={{ duration: 0.12 }}
+                        exit={{ opacity: 0, y: -10 }}
                         className="flex items-baseline justify-end gap-2"
                       >
                         <span className="text-5xl font-black text-slate-900 tracking-tight">
@@ -243,9 +242,14 @@ export const PricingAndCalculator = () => {
                   <TrendingUp className="w-12 h-12 text-white/40 mx-auto mb-6" />
                   <h3 className="text-white/80 font-bold uppercase tracking-widest text-sm mb-2">إجمالي الإيراد الشهري المتوقع</h3>
                   <div className="flex items-baseline justify-center gap-3 mb-4">
-                    <span className="text-6xl md:text-7xl font-black text-white tracking-tighter">
+                    <motion.span 
+                      key={monthlyRevenue}
+                      initial={{ scale: 1.1, opacity: 0.5 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="text-6xl md:text-7xl font-black text-white tracking-tighter"
+                    >
                       {monthlyRevenue.toLocaleString()}
-                    </span>
+                    </motion.span>
                     <span className="text-2xl font-bold text-white/70">{countryConfig.currency}</span>
                   </div>
                   <p className="text-emerald-100/70 text-sm mb-10">

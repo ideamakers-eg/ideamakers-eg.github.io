@@ -39,7 +39,7 @@ const packages = [
     features: [
       'أفضل قيمة للصالات المتنامية',
       'كل مميزات باقة Starter',
-      'إدارة وقت الجلسات بدقة بالغة',
+      'تحكم سيادي في الأجهزة',
       'نظام ذكاء الأعمال والتقارير',
       'تخصيص كامل لهوية البراند',
       'بروتوكول تدريب الفريق الاحترافي'
@@ -124,14 +124,6 @@ interface SmartFormProps {
 const SmartForm = ({ initialPackage, initialCountry }: SmartFormProps) => {
   const [selectedPackage, setSelectedPackage] = useState(initialPackage || packages[1]);
   const [selectedCountry, setSelectedCountry] = useState(initialCountry || countries[0]);
-
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   // Update state when props change
   useEffect(() => {
@@ -302,8 +294,10 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
     <section id="smart-form" className="smart-form-section">
       <div className="container">
         <motion.div 
-          initial={false}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
           className="smart-form-container"
         >
           <div className="smart-form-header">
@@ -325,9 +319,8 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
                 return (
                   <motion.div
                     key={pkg.id}
-                    whileHover={(!isDisabled && !isMobile) ? { y: -2 } : {}}
-                    whileTap={!isDisabled ? { scale: 0.99 } : {}}
-                    transition={{ duration: 0.15 }}
+                    whileHover={!isDisabled ? { y: -5 } : {}}
+                    whileTap={!isDisabled ? { scale: 0.98 } : {}}
                     className={`package-card package-${pkg.id === 'professional' ? 'pro' : pkg.id} ${selectedPackage.id === pkg.id ? 'selected' : ''} ${isDisabled ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
                     onClick={() => !isDisabled && setSelectedPackage(pkg)}
                   >
@@ -343,9 +336,8 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
                     )}
                     {selectedPackage.id === pkg.id && (
                       <motion.div 
-                        initial={isMobile ? false : { opacity: 0, y: 5 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.15 }}
                         className="selection-badge"
                       >
                         تم الاختيار
@@ -381,9 +373,8 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
                 <motion.button
                   key={country.id}
                   type="button"
-                  whileHover={isMobile ? undefined : { scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ duration: 0.12 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
                   className={`country-btn ${selectedCountry.id === country.id ? 'selected' : ''}`}
                   onClick={() => setSelectedCountry(country)}
                 >
@@ -476,9 +467,8 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
 
             {/* Step 4: Dynamic Summary */}
             <motion.div 
-              initial={isMobile ? false : { opacity: 0, scale: 0.98 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.15 }}
               className="summary-box"
             >
               <div className="summary-title">
@@ -527,9 +517,8 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
 
               <motion.button
                 type="submit"
-                initial={isMobile ? false : { opacity: 0, height: 0, marginTop: 0 }}
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
                 animate={{ opacity: 1, height: 'auto', marginTop: 20 }}
-                transition={{ duration: 0.15 }}
                 className="trial-btn"
                 disabled={isSubmitting}
               >
@@ -544,15 +533,14 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
       <AnimatePresence>
         {showRedirect && (
           <motion.div 
-            initial={isMobile ? false : { opacity: 0 }}
+            initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={isMobile ? undefined : { opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            exit={{ opacity: 0 }}
             className="redirect-overlay"
           >
             <div className="text-center">
               <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageCircle className="w-10 h-10 text-primary" />
+                <MessageCircle className="w-10 h-10 text-primary animate-bounce" />
               </div>
               <h3 className="text-3xl font-bold mb-2">تم استلام طلبك!</h3>
               <p className="text-gray-400">جارٍ تحويلك إلى واتساب...</p>

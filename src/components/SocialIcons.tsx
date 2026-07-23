@@ -40,19 +40,22 @@ export const SocialIcons = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-8">
           <motion.h3 
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-xl sm:text-2xl font-black text-white text-center"
           >
             تواصل معنا عبر منصاتنا
           </motion.h3>
           
           <div className="flex flex-wrap justify-center gap-6 sm:gap-10 social-icons-row">
-            {socialLinks.map((social) => (
+            {socialLinks.map((social, index) => (
               <motion.div
                 key={social.name}
-                initial={false}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.15, duration: 0.5, ease: "easeOut" }}
                 className="relative group"
               >
                 {/* Tooltip */}

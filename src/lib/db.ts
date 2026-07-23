@@ -1,77 +1,63 @@
-import { supabase, isSupabaseConfigured } from './supabase';
+const DB_NAME = 'PlaystationCMSMediaDB';
+const STORE_NAME = 'media';
+const DB_VERSION = 1;
 
-/**
- * Fetch media asset directly from Supabase / Server Database without IndexedDB or browser cache.
- */
+export function openDB(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME);
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
 export async function getMediaItem(key: string): Promise<string | null> {
   try {
-    if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('cms_media')
-        .select('url')
-        .or(`id.eq.${key},name.eq.${key}`)
-        .single();
-      
-      if (!error && data?.url) {
-        return data.url;
-      }
-    }
-
-    // Direct REST API database fetch
-    const response = await fetch(`/api/media/${key}`);
-    if (response.ok) {
-      const resData = await response.json();
-      if (resData && resData.success && resData.value) {
-        return resData.value;
-      }
-    }
-
-    return null;
-  } catch (e) {
-    console.error('[Database Media] getMediaItem Error:', e);
-    return null;
-  }
-}
-
-/**
- * Save media asset directly to Supabase / Server Database without IndexedDB.
- */
-export async function setMediaItem(key: string, value: string): Promise<void> {
-  try {
-    if (isSupabaseConfigured && supabase) {
-      await supabase.from('cms_media').upsert({
-        id: key,
-        url: value,
-        name: key,
-        type: value.startsWith('data:image') ? 'image/png' : 'image/jpeg',
-        size: `${Math.round(value.length / 1024)} KB`,
-      }, { onConflict: 'id' });
-    }
-
-    // Direct REST API database persist
-    await fetch('/api/media', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ key, value }),
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.get(key);
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error);
     });
   } catch (e) {
-    console.error('[Database Media] setMediaItem Error:', e);
+    console.error('IndexedDB Error:', e);
+    return null;
   }
 }
 
-/**
- * Remove media asset from Supabase / Server Database.
- */
+export async function setMediaItem(key: string, value: string): Promise<void> {
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.put(value, key);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  } catch (e) {
+    console.error('IndexedDB Error:', e);
+  }
+}
+
 export async function removeMediaItem(key: string): Promise<void> {
   try {
-    if (isSupabaseConfigured && supabase) {
-      await supabase.from('cms_media').delete().eq('id', key);
-    }
-
-    await fetch(`/api/cms/media/${key}`, { method: 'DELETE' });
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.delete(key);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
   } catch (e) {
-    console.error('[Database Media] removeMediaItem Error:', e);
+    console.error('IndexedDB Error:', e);
   }
 }

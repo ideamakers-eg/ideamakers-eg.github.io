@@ -12,12 +12,7 @@ import { Heart, Gamepad2 } from 'lucide-react';
  * - Highlighting for company and developer names with subtle hover effects.
  * - No external links on developer name as per request.
  */
-interface FooterProps {
-  onAdminClick?: () => void;
-  onLogoClick?: () => void;
-}
-
-const Footer = ({ onAdminClick, onLogoClick }: FooterProps) => {
+const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -31,16 +26,11 @@ const Footer = ({ onAdminClick, onLogoClick }: FooterProps) => {
           
           {/* Brand Identity */}
           <motion.div 
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="flex items-center gap-3 mb-10 group cursor-pointer"
-            onClick={() => {
-              if (onLogoClick) {
-                onLogoClick();
-              } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <div className="w-12 h-12 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/10 group-hover:border-primary/30 transition-all duration-500">
               <Gamepad2 className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
@@ -52,8 +42,10 @@ const Footer = ({ onAdminClick, onLogoClick }: FooterProps) => {
 
           {/* Copyright Section */}
           <motion.div 
-            initial={false}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
             className="mb-10"
           >
             <p className="text-gray-500 text-sm sm:text-base font-medium tracking-wide">
@@ -61,24 +53,25 @@ const Footer = ({ onAdminClick, onLogoClick }: FooterProps) => {
             </p>
           </motion.div>
 
-          {/* Minimalist Divider - Hidden Admin Gateway */}
-          <div 
-            id="admin-secret-divider"
-            onClick={onAdminClick}
-            className="w-12 h-[2px] bg-white/10 mb-10 cursor-pointer hover:bg-white/25 active:scale-95 transition-all duration-300"
-          />
+          {/* Minimalist Divider */}
+          <div className="w-12 h-px bg-white/5 mb-10" />
 
           {/* Developer Credit (Linked) */}
           <motion.div 
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 5 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center gap-2 text-xs sm:text-sm text-gray-500 font-medium"
           >
             <div className="flex items-center gap-2">
               <span>Developed with</span>
-              <div>
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
                 <Heart className="w-3.5 h-3.5 text-red-500/80 fill-red-500/20" />
-              </div>
+              </motion.div>
               <span>by CEO:</span>
             </div>
             
@@ -98,8 +91,10 @@ const Footer = ({ onAdminClick, onLogoClick }: FooterProps) => {
 
           {/* Global Standard Badge */}
           <motion.div 
-            initial={false}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6 }}
             className="mt-16"
           >
             <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/10 select-none">
