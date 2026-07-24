@@ -483,7 +483,7 @@ export default function App() {
       authStat1Desc: "يستخدمه أصحاب صالات بلايستيشن في مصر والسعودية والإمارات والكويت وقطر",
       authStat2Title: "100%",
       authStat2Desc: "تحت سيطرتك أوفلاين",
-      authImageUrl: "https://i.postimg.cc/GmskHZKC/aryd-swrt-afdl-202604051407.jpg",
+      authImageUrl: "https://i.postimg.cc/0QKn9KfM/Fifa.jpg",
       
       // Pricing Section Header
       pricingTitle: "استثمار سيادي.. لمرة واحدة",
