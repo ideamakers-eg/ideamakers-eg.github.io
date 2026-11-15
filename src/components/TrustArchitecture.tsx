@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { CertificateViewerModal } from './CertificateViewerModal';
 import { 
   Shield, 
   BookOpen, 
@@ -16,15 +17,23 @@ import {
   Database,
   ExternalLink,
   ZoomIn,
-  X
+  X,
+  Copy,
+  Check,
+  Sparkles
 } from 'lucide-react';
 
 // =========================================================================
-// 🖼️ رابط صورة شهادة Cisco السيبرانية الرسمية
-// يمكنك تعديل هذا اللينك في أي وقت لتغيير صورة الشهادة المعروضة في الموقع
-// Place your Cisco Certificate Image URL here (e.g. https://i.postimg.cc/0Q38JF7k/cisco-certificate.png... or similar)
+// 🖼️ روابط شهادات الأمن السيبراني وحماية البنية التحتية الرسمية
 // =========================================================================
+export const OPSWAT_CERTIFICATE_ARABIC_IMAGE_URL = "/assets/aistudio/Arabic_ICIP_Certificate_Design_1facd76f.png";
+export const OPSWAT_CERTIFICATE_ENGLISH_IMAGE_URL = "/assets/aistudio/introduction_to_cip__1__e377c599.png";
+export const OPSWAT_VERIFY_URL = "https://learn.opswatacademy.com/certificate/MN4A5aUoGg";
+export const OPSWAT_CREDENTIAL_ID = "MN4A5aUoGg";
+
 export const DEFAULT_CISCO_CERTIFICATE_IMAGE_URL = "https://i.postimg.cc/0Q38JF7k/cisco-certificate.png";
+export const CISCO_VERIFY_URL = "https://www.credly.com/badges/910cf85b-b5ce-4b11-82fc-dfb906b038a0";
+export const CISCO_CREDENTIAL_ID = "1553a1d2-37f1-48b6-9d5919d35f98";
 
 interface TrustArchitectureProps {
   onContactFounder: (message: string) => void;
@@ -36,9 +45,18 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({
   certificateImageUrl = DEFAULT_CISCO_CERTIFICATE_IMAGE_URL
 }) => {
   const [activeTab, setActiveTab] = useState<'learning' | 'standards' | 'principles' | 'responsibility'>('learning');
+  const [selectedCert, setSelectedCert] = useState<'opswat' | 'cisco'>('opswat');
+  const [cipLanguage, setCipLanguage] = useState<'ar' | 'en'>('ar');
   const [isZoomModalOpen, setIsZoomModalOpen] = useState<boolean>(false);
+  const [copiedId, setCopiedId] = useState<boolean>(false);
 
-  const currentCertificateUrl = certificateImageUrl || DEFAULT_CISCO_CERTIFICATE_IMAGE_URL;
+  const currentCiscoUrl = certificateImageUrl || DEFAULT_CISCO_CERTIFICATE_IMAGE_URL;
+
+  const handleCopyId = (id: string) => {
+    navigator.clipboard?.writeText(id);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2500);
+  };
 
   const trustCards = [
     {
@@ -167,7 +185,7 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({
         {/* ================= EDUCATIONAL COMMITMENT & DIGITAL CERTIFICATE SHOWCASE ================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-28" id="education-certificate-block">
           
-          {/* Certificate Column (CSS-crafted high-fidelity replica) */}
+          {/* Certificate Column (CSS-crafted high-fidelity replica with bilingual toggle) */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.96 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -179,104 +197,303 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({
             <div className="absolute inset-0 bg-primary/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl" />
             
             {/* Real CSS Digital Certificate Box */}
-            <div className="relative rounded-3xl p-6 sm:p-10 border border-white/[0.05] bg-gradient-to-b from-white/[0.03] to-transparent shadow-3xl overflow-hidden backdrop-blur-xl">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full pointer-events-none" />
+            <div className="relative rounded-2xl sm:rounded-3xl p-3.5 sm:p-7 md:p-9 border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-black/85 shadow-3xl overflow-hidden backdrop-blur-xl">
+              <div className="absolute top-0 right-0 w-44 h-44 bg-primary/10 blur-[60px] rounded-full pointer-events-none" />
               
-              {/* Header inside Certificate card */}
-              <div className="flex justify-between items-start border-b border-white/[0.05] pb-6 mb-6">
-                <div className="text-right">
-                  <span className="text-[10px] uppercase tracking-widest text-primary font-black block mb-1">CISCO NETWORKING ACADEMY</span>
-                  <span className="text-xs text-gray-400 block font-light">مؤسسة تدريب الأمن والشبكات العالمية</span>
+              {/* ================= CERTIFICATE SELECTOR TABS ================= */}
+              <div className="mb-4 sm:mb-6 pb-4 sm:pb-5 border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCert('opswat')}
+                    className={`inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                      selectedCert === 'opswat'
+                        ? 'bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg shadow-primary/30 border border-primary/50'
+                        : 'bg-white/[0.03] text-gray-400 hover:text-white hover:bg-white/[0.07] border border-white/5'
+                    }`}
+                  >
+                    <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
+                    <span className="truncate">OPSWAT (CIP)</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold shrink-0">جديدة</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCert('cisco')}
+                    className={`inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                      selectedCert === 'cisco'
+                        ? 'bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg shadow-primary/30 border border-primary/50'
+                        : 'bg-white/[0.03] text-gray-400 hover:text-white hover:bg-white/[0.07] border border-white/5'
+                    }`}
+                  >
+                    <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary shrink-0" />
+                    <span className="truncate">Cisco Academy</span>
+                  </button>
                 </div>
-                <div className="p-2 bg-white/[0.02] border border-white/5 rounded-xl text-primary">
-                  <Award className="w-6 h-6" />
+
+                <div className="flex items-center justify-between sm:justify-start gap-2 text-left text-[11px] text-gray-400 font-mono">
+                  <div className="flex items-center gap-1.5">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span className="text-gray-300 font-medium">سجل رسمي نشط وموثق</span>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 sm:hidden">معتمد</span>
                 </div>
               </div>
 
-              {/* Certificate Image Frame (Renders directly when image URL is provided in DEFAULT_CISCO_CERTIFICATE_IMAGE_URL) */}
-              {currentCertificateUrl ? (
-                <div 
-                  onClick={() => setIsZoomModalOpen(true)}
-                  className="mb-6 relative group rounded-2xl overflow-hidden border border-primary/30 bg-black/40 cursor-pointer"
-                >
-                  <img 
-                    src={currentCertificateUrl} 
-                    alt="Cisco Introduction to Cybersecurity Certificate - Eslam Arafa"
-                    className="w-full h-auto object-contain max-h-[460px] rounded-2xl transition-transform duration-500 group-hover:scale-[1.02]"
-                    onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <div className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-xl">
-                      <ZoomIn className="w-4 h-4" />
-                      <span>تكبير الشهادة</span>
-                    </div>
+              {/* ================= CERTIFICATE HEADER ================= */}
+              <div className="flex justify-between items-start border-b border-white/[0.05] pb-4 mb-4">
+                <div className="text-right">
+                  <span className="text-[10px] uppercase tracking-widest text-primary font-black block mb-1">
+                    {selectedCert === 'opswat' ? 'OPSWAT ACADEMY — CRITICAL INFRASTRUCTURE' : 'CISCO NETWORKING ACADEMY'}
+                  </span>
+                  <span className="text-xs text-gray-300 block font-light">
+                    {selectedCert === 'opswat' 
+                      ? 'أكاديمية حماية البنى التحتية الحيوية والأنظمة الرقمية الحساسة' 
+                      : 'مؤسسة تدريب وتأهيل أمن الشبكات والأنظمة الرقمية العالمية'}
+                  </span>
+                </div>
+                <div className="p-2 sm:p-2.5 bg-primary/10 border border-primary/20 rounded-xl text-primary shrink-0">
+                  {selectedCert === 'opswat' ? <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" /> : <Award className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />}
+                </div>
+              </div>
+
+              {/* ================= BILINGUAL TOGGLE BUTTON (ARABIC / ENGLISH) ================= */}
+              {selectedCert === 'opswat' && (
+                <div className="mb-4 sm:mb-5 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-purple-950/40 via-black/50 to-purple-950/20 border border-primary/25 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shadow-inner">
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-primary shrink-0 animate-pulse" />
+                    <span className="text-xs text-gray-200 font-bold">لغة الشهادة:</span>
+                    <span className="text-[11px] text-gray-400">
+                      ({cipLanguage === 'ar' ? 'النسخة المترجمة المعتمدة بالعربية' : 'Official English Master Copy'})
+                    </span>
+                  </div>
+
+                  {/* Responsive Segmented control */}
+                  <div className="grid grid-cols-2 sm:flex sm:items-center p-1 rounded-xl bg-black/70 border border-white/10 shadow-lg gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setCipLanguage('ar')}
+                      className={`flex items-center justify-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        cipLanguage === 'ar'
+                          ? 'bg-gradient-to-r from-primary to-purple-600 text-white shadow-md shadow-primary/30 border border-white/20'
+                          : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      }`}
+                      aria-pressed={cipLanguage === 'ar'}
+                      title="عرض الشهادة باللغة العربية"
+                    >
+                      <span>🇸🇦</span>
+                      <span>عرض بالعربي</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setCipLanguage('en')}
+                      className={`flex items-center justify-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        cipLanguage === 'en'
+                          ? 'bg-gradient-to-r from-primary to-purple-600 text-white shadow-md shadow-primary/30 border border-white/20'
+                          : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      }`}
+                      aria-pressed={cipLanguage === 'en'}
+                      title="View Certificate in English"
+                    >
+                      <span>🌐</span>
+                      <span>English (إنجليزي)</span>
+                    </button>
                   </div>
                 </div>
-              ) : null}
+              )}
 
-              {/* Certificate content */}
-              <div className="space-y-6 text-right">
+              {/* ================= CERTIFICATE IMAGE FRAME (ULTRA HIGH DEFINITION & FULLY RESPONSIVE) ================= */}
+              <div 
+                onClick={() => setIsZoomModalOpen(true)}
+                className="mb-3 relative group rounded-xl sm:rounded-2xl overflow-hidden border border-primary/30 bg-black/60 cursor-pointer shadow-[0_12px_36px_rgba(0,0,0,0.85)] hover:border-primary/60 transition-all active:scale-[0.99]"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setIsZoomModalOpen(true);
+                  }
+                }}
+                aria-label="تكبير الشهادة في عارض كامل الشاشة عالي الدقة"
+              >
+                <div className="p-2 sm:p-4 flex items-center justify-center min-h-[220px] sm:min-h-[320px] md:min-h-[380px] bg-gradient-to-b from-black/40 via-transparent to-black/60">
+                  <AnimatePresence mode="wait">
+                    <motion.img 
+                      key={selectedCert === 'opswat' ? `opswat-${cipLanguage}` : 'cisco'}
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.25 }}
+                      src={
+                        selectedCert === 'opswat'
+                          ? (cipLanguage === 'ar' ? OPSWAT_CERTIFICATE_ARABIC_IMAGE_URL : OPSWAT_CERTIFICATE_ENGLISH_IMAGE_URL)
+                          : currentCiscoUrl
+                      } 
+                      alt={
+                        selectedCert === 'opswat'
+                          ? (cipLanguage === 'ar' ? 'شهادة مقدمة في حماية البنية التحتية الحيوية - إسلام عرفة' : 'OPSWAT Academy - Introduction to CIP - Eslam Arafa')
+                          : 'Cisco Introduction to Cybersecurity Certificate - Eslam Arafa'
+                      }
+                      className="w-full h-auto max-h-[320px] sm:max-h-[440px] md:max-h-[480px] object-contain rounded-lg sm:rounded-xl transition-transform duration-500 group-hover:scale-[1.01]"
+                      style={{
+                        imageRendering: '-webkit-optimize-contrast',
+                      }}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </AnimatePresence>
+                </div>
+
+                {/* Mobile & Desktop Interactive Zoom Hint Bar */}
+                <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 bg-gradient-to-t from-black/95 via-black/80 to-transparent flex items-center justify-between gap-2 pointer-events-none">
+                  <div className="flex items-center gap-1.5 text-xs text-white font-bold">
+                    <ZoomIn className="w-4 h-4 text-primary animate-pulse shrink-0" />
+                    <span className="truncate">اضغط للتكبير والفحص عالي الدقة (Full HD)</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-primary to-purple-600 text-white shadow-sm shrink-0">
+                    تكبير
+                  </span>
+                </div>
+              </div>
+
+              {/* Quick Actions Row directly under Certificate */}
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-5">
+                <button
+                  type="button"
+                  onClick={() => setIsZoomModalOpen(true)}
+                  className="px-2 py-2 rounded-xl bg-primary/15 hover:bg-primary/25 border border-primary/30 text-white text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-sm"
+                >
+                  <ZoomIn className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span className="truncate">تكبير الشاشة</span>
+                </button>
+                <a
+                  href={selectedCert === 'opswat' ? OPSWAT_VERIFY_URL : CISCO_VERIFY_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-2 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-gray-200 text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer text-center shadow-sm"
+                >
+                  <Shield className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span className="truncate">فحص الرابط</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => handleCopyId(selectedCert === 'opswat' ? OPSWAT_CREDENTIAL_ID : CISCO_CREDENTIAL_ID)}
+                  className="px-2 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-gray-200 text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-sm"
+                >
+                  {copiedId ? <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> : <Copy className="w-3.5 h-3.5 text-gray-400 shrink-0" />}
+                  <span className="truncate">{copiedId ? 'تم النسخ!' : 'نسخ الكود'}</span>
+                </button>
+              </div>
+
+              {/* ================= CERTIFICATE CONTENT & META ================= */}
+              <div className="space-y-4 sm:space-y-5 text-right">
                 <div>
-                  <span className="text-[11px] text-gray-500 block">يُمنح ميثاق الحضور والتأهيل لـ</span>
-                  <span className="text-2xl sm:text-3xl font-black text-white block mt-1 font-cairo">إسلام عرفة</span>
-                  <span className="text-xs text-primary font-medium block mt-1">Founder & CEO, Lead Engineer – IDEA Makers</span>
+                  <span className="text-[11px] text-gray-500 block">يُمنح ميثاق الحضور والتأهيل المعتمد لـ</span>
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <span className="text-xl sm:text-3xl font-black text-white block mt-1 font-cairo">إسلام عرفة</span>
+                    <span className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                      خريج معتمد
+                    </span>
+                  </div>
+                  <span className="text-xs text-primary font-medium block mt-1 font-mono">Founder & CEO, Lead Engineer – IDEA Makers</span>
                 </div>
 
-                <div className="py-4 px-4 rounded-2xl bg-white/[0.01] border border-white/[0.03] inline-block w-full">
+                {/* Course Details Block */}
+                <div className="py-3.5 sm:py-4 px-3.5 sm:px-4 rounded-xl sm:rounded-2xl bg-white/[0.02] border border-white/[0.05] inline-block w-full">
                   <span className="text-[11px] text-gray-500 block mb-1">البرنامج والمادة المنجزة بنجاح:</span>
-                  <span className="text-base sm:text-lg font-bold text-white block font-cairo">مقدمة في الأمن السيبراني (Introduction to Cybersecurity)</span>
+                  <span className="text-sm sm:text-lg font-bold text-white block font-cairo">
+                    {selectedCert === 'opswat' 
+                      ? (cipLanguage === 'ar' ? 'مقدمة في حماية البنية التحتية الحيوية (CIP - ICIP)' : 'Introduction to Critical Infrastructure Protection (ICIP)')
+                      : 'مقدمة في الأمن السيبراني (Introduction to Cybersecurity)'}
+                  </span>
                   <p className="text-xs text-gray-400 mt-2 font-light leading-relaxed">
-                    تأكيد منهجي على كفاءات فحص الثغرات الأمنية، تأمين قواعد البيانات المحلية والشبكات، وفهم آليات الاختراق ومكافحتها لبناء أنظمة مرنة.
+                    {selectedCert === 'opswat'
+                      ? 'تأهيل معتمد من أكاديمية OPSWAT لحماية البيئات الحساسة والشبكات المعزولة (Air-gapped) ومحطات التشغيل من الهجمات الخبيثة وضمان استمرارية تشغيل صالات الألعاب كبنية مستقلة ومحمية 100%.'
+                      : 'تأكيد منهجي على كفاءات فحص الثغرات الأمنية، تأمين قواعد البيانات المحلية والشبكات، وفهم آليات الاختراق ومكافحتها لبناء أنظمة مرنة.'}
                   </p>
+                  
+                  {selectedCert === 'opswat' && (
+                    <div className="mt-3 flex items-center gap-2 text-[11px] text-primary-light font-mono">
+                      <Sparkles className="w-3.5 h-3.5 text-primary" />
+                      <span>اعتمادات التعليم المهني المستمر: 0.50 CPE Credits</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Credly Digital Badge & Verification Link */}
-                <div className="py-3 px-4 rounded-2xl bg-[#0F0D13] border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-right">
-                  <div className="flex items-center gap-3">
-                    {/* Simplified geometric representations of Credly Badge */}
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary/20 to-purple-500/20 border border-primary/30 flex items-center justify-center text-primary-light shrink-0">
-                      <Shield className="w-5 h-5" />
+                {/* Official Verification Box */}
+                <div className="py-3 px-3.5 sm:px-4 rounded-xl sm:rounded-2xl bg-[#0F0D13] border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-right">
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-primary/20 to-purple-500/20 border border-primary/30 flex items-center justify-center text-primary-light shrink-0">
+                      <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <span className="text-[11px] text-gray-400 block font-light">الشارة الرقمية المعتمدة من Cisco</span>
-                      <span className="text-xs text-gray-200 font-bold block mt-0.5">موثق ومعتمد على منصة Credly الدولية</span>
+                      <span className="text-[11px] text-gray-400 block font-light">
+                        {selectedCert === 'opswat' ? 'التحقق الرسمي من أكاديمية OPSWAT' : 'الشارة الرقمية المعتمدة من Cisco'}
+                      </span>
+                      <span className="text-xs text-gray-200 font-bold block mt-0.5">
+                        {selectedCert === 'opswat' ? 'سجل رسمي نشط وموثق برقم الاعتماد' : 'موثق ومعتمد على منصة Credly الدولية'}
+                      </span>
                     </div>
                   </div>
                   
                   <a 
-                    href="https://www.credly.com/badges/910cf85b-b5ce-4b11-82fc-dfb906b038a0" 
+                    href={selectedCert === 'opswat' ? OPSWAT_VERIFY_URL : CISCO_VERIFY_URL} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all hover:scale-[1.02] cursor-pointer"
+                    className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-purple-600 hover:from-primary-dark hover:to-purple-700 text-white text-xs font-bold transition-all hover:scale-[1.02] cursor-pointer shadow-md shadow-primary/20 shrink-0"
                   >
-                    <span>تحقق من الشارة</span>
+                    <span>{selectedCert === 'opswat' ? 'التحقق من الشهادة (OPSWAT)' : 'تحقق من الشارة (Credly)'}</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
 
-                {/* Certificate Meta Details */}
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/[0.03] text-xs text-gray-500 font-mono">
+                {/* Certificate Meta Details with Copy Button */}
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 pt-3 border-t border-white/[0.04] text-xs text-gray-500 font-mono">
                   <div>
-                    <span className="text-[10px] uppercase text-gray-600 block mb-1">CERTIFICATE ID</span>
-                    <span className="text-gray-300 font-medium">1553a1d2-37f1-48b6-9d5919d35f98</span>
+                    <span className="text-[10px] uppercase text-gray-500 block mb-1">CERTIFICATE ID</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-gray-300 font-medium truncate max-w-[120px] sm:max-w-none">
+                        {selectedCert === 'opswat' ? OPSWAT_CREDENTIAL_ID : CISCO_CREDENTIAL_ID}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyId(selectedCert === 'opswat' ? OPSWAT_CREDENTIAL_ID : CISCO_CREDENTIAL_ID)}
+                        className="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                        title="نسخ رقم الاعتماد"
+                      >
+                        {copiedId ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                      </button>
+                    </div>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase text-gray-600 block mb-1">DATE COMPLETED</span>
-                    <span className="text-gray-300 font-medium">17 June 2026</span>
+                    <span className="text-[10px] uppercase text-gray-500 block mb-1">
+                      {selectedCert === 'opswat' ? 'VALID THROUGH' : 'DATE COMPLETED'}
+                    </span>
+                    <span className="text-gray-300 font-medium text-xs">
+                      {selectedCert === 'opswat' ? '10/2026 – 10/2027' : '17 June 2026'}
+                    </span>
                   </div>
                 </div>
 
-                {/* Certificate Signature */}
-                <div className="pt-4 flex justify-between items-end">
+                {/* Signatures & Architectural scope */}
+                <div className="pt-2 flex justify-between items-end border-t border-white/[0.03]">
                   <div className="text-left font-serif">
-                    <span className="text-xs text-gray-400 block">Lynn Bloomer</span>
-                    <span className="text-[9px] text-gray-600 block">Cisco Academy Board</span>
+                    <span className="text-xs text-gray-300 block">
+                      {selectedCert === 'opswat' ? 'Benny Czarny & Irfan Shakeel' : 'Lynn Bloomer'}
+                    </span>
+                    <span className="text-[9px] text-gray-500 block">
+                      {selectedCert === 'opswat' ? 'OPSWAT Academy Leadership' : 'Cisco Academy Board'}
+                    </span>
                   </div>
                   <div className="text-right">
                     <span className="text-[10px] uppercase text-gray-500 block">نطاق الاستخدام الهيكلي</span>
-                    <span className="text-[11px] text-primary font-medium block">تأمين كود الكاشير وإدارة الخزينة</span>
+                    <span className="text-[11px] text-primary font-medium block">
+                      {selectedCert === 'opswat' ? 'تأمين الشبكات المعزولة ومحطات الألعاب' : 'تأمين كود الكاشير وإدارة الخزينة'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -291,20 +508,46 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({
             transition={{ duration: 0.7, delay: 0.1 }}
             className="lg:col-span-5 space-y-6 text-right"
           >
-            <span className="text-xs uppercase tracking-wider text-primary font-bold block">الفلسفة خلف الأكواد</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 border border-primary/20 text-primary">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>شهادات سيبرانية معتمدة عالمياً</span>
+            </div>
+
             <h3 className="text-2xl sm:text-3xl font-black text-white font-cairo leading-snug">
-              التعلم ليس بهدف "جمع الألقاب"، بل لبناء عقلية هندسية واعية
+              التعلم ليس بهدف "جمع الألقاب"، بل لبناء عقلية هندسية واعية تحمي صالتك
             </h3>
+            
             <p className="text-gray-300 text-base sm:text-lg leading-relaxed font-light">
-              نحن نؤمن بأن الأمان لا يأتي عبر شهادة تُعلّق على الحائط لتضمن سلامة البرمجيات تلقائياً؛ فكل نظام برمجيات بحاجة لتيقظ وتحديث مستمر. 
+              نحن نؤمن بأن الأمان لا يأتي عبر شهادة تُعلّق على الحائط لتضمن سلامة البرمجيات تلقائياً؛ فكل نظام برمجيات بحاجة لتيقظ وتحديث مستمر وهندسة دفاعية استباقية. 
             </p>
-            <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light">
-              إن دراسات أمن المعلومات والأمن السيبراني المستمرة لمؤسسنا المهندس <span className="text-white font-medium">إسلام عرفة</span> تشكل الدعامة الأساسية لثقافة التطوير داخل <span className="text-primary">IDEA Makers</span>. نحن نوجه هذا الوعي العلمي والعملي المكتسب من أكاديميات عالمية مثل <span className="text-white font-medium">Cisco</span> لنصمم حلولاً تمنع التلاعب بالورديات وسرقة الكاشير، مع الحفاظ على كود متماسك وآمن بنسبة 100%. يمكنك التحقق بشكل رسمي من صحة هذه الشارة من خلال منصة <span className="text-white font-medium">Credly</span> العالمية الشهيرة لتوثيق الشهادات.
+
+            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
+              <div className="flex items-start gap-2.5">
+                <Shield className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">
+                  <strong className="text-white block mb-0.5">OPSWAT Academy — Introduction to CIP</strong>
+                  اعتماد تخصصي في <span className="text-primary-light">حماية البنية التحتية الحيوية (Critical Infrastructure Protection)</span>، يضمن بناء نظام IDEA Makers كبنية تحتية محلية مغلقة ومحصنة ضد أي برمجيات ضارة أو اختراقات طرفية داخل الصالة.
+                </p>
+              </div>
+
+              <div className="flex items-start gap-2.5 pt-2 border-t border-white/5">
+                <Award className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">
+                  <strong className="text-white block mb-0.5">Cisco Networking Academy — Cybersecurity</strong>
+                  تأهيل أكاديمي موثق عبر منصة Credly العالمية لتطبيق أفضل ممارسات التشفير المحلي، وسد ثغرات الكاشير والتلاعب بالأوقات، وتأمين قواعد البيانات بنسبة 100%.
+                </p>
+              </div>
+            </div>
+
+            <p className="text-gray-400 text-sm leading-relaxed font-light">
+              هذه الخلفية العلمية لمؤسسنا المهندس <span className="text-white font-medium">إسلام عرفة</span> تضمن لك راحة البال؛ فنظام صالتك مُصمم بعقلية مهندسي أمن معلومات، لا مجرد مبرمجين عاديين.
             </p>
-            <div className="pt-4 flex flex-wrap gap-3 justify-end">
-              <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-400 font-medium">تأمين الذاكرة المحلية</span>
-              <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-400 font-medium">غلق الورديات الأعمى</span>
-              <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-400 font-medium">حظر التعديلات الخارجية</span>
+
+            <div className="pt-2 flex flex-wrap gap-2.5 justify-end">
+              <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-300 font-medium">حماية البنية التحتية (CIP)</span>
+              <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-300 font-medium">نظام محلي معزول 100% Offline</span>
+              <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-300 font-medium">غلق الورديات الأعمى</span>
+              <span className="px-3 py-1 rounded-lg text-xs bg-white/[0.02] border border-white/5 text-gray-300 font-medium">منع التلاعب بالوقت والأسعار</span>
             </div>
           </motion.div>
         </div>
@@ -435,7 +678,7 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({
                       <div className="w-12 h-12 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto text-purple-400">
                         <Globe className="w-6 h-6" />
                       </div>
-                      <span className="text-xs text-gray-400 block font-light">استقلالية سيادية تامة 100% أوفلاين</span>
+                      <span className="text-xs text-gray-400 block font-light">خصوصية كاملة للبيانات (نظام محلي أوفلاين)</span>
                       <div className="text-xs text-gray-500 flex items-center justify-center gap-1">
                         <span>قواعد بيانات محلية مشفرة</span>
                         <Database className="w-3.5 h-3.5" />
@@ -511,56 +754,34 @@ export const TrustArchitecture: React.FC<TrustArchitectureProps> = ({
         </motion.div>
       </div>
 
-      {/* Lightbox / Fullscreen Zoom Modal for Certificate */}
-      <AnimatePresence>
-        {isZoomModalOpen && currentCertificateUrl && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-8"
-            onClick={() => setIsZoomModalOpen(false)}
-          >
-            <div 
-              className="relative max-w-5xl max-h-[90vh] w-full bg-black/80 border border-white/10 rounded-3xl overflow-hidden p-2 sm:p-4 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setIsZoomModalOpen(false)}
-                className="absolute top-4 left-4 z-20 p-3 bg-black/80 hover:bg-white/20 text-white rounded-full transition-all border border-white/20 cursor-pointer"
-              >
-                <X className="w-6 h-6" />
-              </button>
-
-              <div className="text-right p-4 border-b border-white/10 mb-2">
-                <h4 className="text-lg font-bold text-white font-cairo">شهادة Cisco السيبرانية الرسمية — إسلام عرفة</h4>
-                <p className="text-xs text-gray-400">Introduction to Cybersecurity | Credly Verified</p>
-              </div>
-
-              <div className="flex items-center justify-center overflow-auto max-h-[75vh]">
-                <img 
-                  src={currentCertificateUrl} 
-                  alt="Cisco Cybersecurity Certificate - Eslam Arafa"
-                  className="max-w-full max-h-[70vh] object-contain rounded-2xl shadow-2xl"
-                />
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap justify-between items-center text-xs text-gray-400">
-                <a 
-                  href="https://www.credly.com/badges/910cf85b-b5ce-4b11-82fc-dfb906b038a0" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="text-primary hover:underline font-bold flex items-center gap-1"
-                >
-                  <span>التحقق الرقمي المباشر عبر Credly</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-                <span>ID: 1553a1d2-37f1-48b6-9d5919d35f98</span>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* High-Resolution Responsive Fullscreen Certificate Viewer */}
+      <CertificateViewerModal
+        isOpen={isZoomModalOpen}
+        onClose={() => setIsZoomModalOpen(false)}
+        imageUrl={
+          selectedCert === 'opswat'
+            ? (cipLanguage === 'ar' ? OPSWAT_CERTIFICATE_ARABIC_IMAGE_URL : OPSWAT_CERTIFICATE_ENGLISH_IMAGE_URL)
+            : currentCiscoUrl
+        }
+        title={
+          selectedCert === 'opswat'
+            ? (cipLanguage === 'ar' ? 'شهادة OPSWAT Academy — حماية البنية التحتية الحيوية (CIP)' : 'OPSWAT Academy — Introduction to Critical Infrastructure Protection (ICIP)')
+            : 'شهادة Cisco السيبرانية الرسمية — إسلام عرفة'
+        }
+        recipientName="إسلام عرفة (Eslam Arafa)"
+        courseName={
+          selectedCert === 'opswat'
+            ? (cipLanguage === 'ar' ? 'مقدمة في حماية البنية التحتية الحيوية (CIP)' : 'Introduction to Critical Infrastructure Protection (ICIP)')
+            : 'مقدمة في الأمن السيبراني (Introduction to Cybersecurity)'
+        }
+        credentialId={selectedCert === 'opswat' ? OPSWAT_CREDENTIAL_ID : CISCO_CREDENTIAL_ID}
+        verifyUrl={selectedCert === 'opswat' ? OPSWAT_VERIFY_URL : undefined}
+        credlyUrl={selectedCert === 'cisco' ? CISCO_VERIFY_URL : undefined}
+        verifyLabel={selectedCert === 'opswat' ? 'التحقق عبر OPSWAT Academy' : 'التحقق عبر Credly'}
+        supportsBilingual={selectedCert === 'opswat'}
+        currentLanguage={cipLanguage}
+        onLanguageToggle={(lang) => setCipLanguage(lang)}
+      />
     </section>
   );
 };

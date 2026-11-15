@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring, useTransform } from 'motion/react';
 import { 
   CheckCircle2, 
@@ -30,7 +30,10 @@ import {
   Target,
   Gamepad2,
   Quote,
-  Send
+  Send,
+  Gift,
+  CreditCard,
+  Percent
 } from 'lucide-react';
 import SmartForm from './components/SmartForm';
 import { SocialIcons } from './components/SocialIcons';
@@ -40,59 +43,24 @@ import GrayscaleImage from './components/GrayscaleImage';
 import Footer from './components/Footer';
 import { MediaRenderer } from './components/MediaRenderer';
 import { TrustArchitecture } from './components/TrustArchitecture';
+import { CustomerJourneyRoadmap } from './components/CustomerJourneyRoadmap';
 import { localizationData } from './localizationData';
-import defaultThumbnail from './assets/images/lounge_video_thumbnail_1782956244229.jpg';
+import HeroSection from './components/HeroSection';
+import { useI18n, SUPPORTED_COUNTRIES } from './i18n';
+import { OFFICIAL_PRICING_PACKAGES, formatPriceEGP } from './pricingConfig';
+import { SEO_PILLAR_PAGES } from './data/seoPillars';
+import { SeoPillarView } from './components/SeoPillarView';
+import { GuidesHubView } from './components/GuidesHubView';
+import CompanyProfileViewerModal from './components/CompanyProfileViewerModal';
+import CompanyProfileSection from './components/CompanyProfileSection';
+import CompanyProfilePageView from './components/CompanyProfilePageView';
+import { BookOpen, FileText } from 'lucide-react';
+import { Analytics } from './lib/analytics';
 
 const WHATSAPP_NUMBER = "201121778205";
 
-export const packages = [
-  {
-    id: 'starter',
-    name: 'Starter Package',
-    price: '4000',
-    currency: 'EGP',
-    color: 'primary',
-    features: [
-      '🏡 مناسبة للصالات المبتدئة (ترخيص مخصص لفرع واحد وللأبد)',
-      '🖥️ دعم كامل لعدد لا نهائي من الأجهزة والشاشات بالفرع',
-      '🔌 حصانة تامة ضد انقطاع الإنترنت (نظام أوفلاين محلي 100%)',
-      '🧾 حساب الوقت والمبيعات بدقة متناهية ومنع التلاعب الأساسي',
-      '📊 تقارير حسابية يومية أساسية لملخص الوردية وإجمالي الكاشير',
-      '📞 دعم فني استراتيجي خلال فترة الضمان لمساعدتك في التأسيس والبدء'
-    ]
-  },
-  {
-    id: 'professional',
-    name: 'Professional Package',
-    price: '6000',
-    currency: 'EGP',
-    color: 'accent',
-    features: [
-      '🔥 تشمل كافة مميزات باقة Starter بالكامل برخصة أصلية للأبد',
-      '👑 حماية سيادية مطلقة: منع الموظفين من تشغيل الشاشات سراً خارج السيستم',
-      '☕ نظام الكافيه والمشروبات المتكامل لرفع مبيعات البوفيه بمتوسط 40%',
-      '📈 ذكاء الأعمال المتقدم: تقارير الأرباح والخسائر والصيانة والإهلاك للأدمن',
-      '🎨 تخصيص كامل لهوية صالتك التجارية وشعارك الخاص على الفواتير والإيصالات',
-      '👨‍💼 بروتوكول تدريب فريق العمل الميداني وتوجيه هندسي مباشر لتفادي أي ثغرة'
-    ],
-    popular: true
-  },
-  {
-    id: 'international',
-    name: 'International Package',
-    price: '10000',
-    currency: 'EGP',
-    color: 'blue',
-    features: [
-      '🌍 تشمل كافة مميزات الباقة الاحترافية (Professional) بالكامل',
-      '🇸🇦 مهيأة بالكامل لقوانين العمل والتراخيص واشتراطات البلدية في دول الخليج',
-      '💱 دعم ذكي لتغيير وتثبيت عملة بلدك (ريال، درهم، دينار) والتحويل الفوري',
-      '🕒 التحكم المرن في فروق التوقيت والمنطقة الزمنية والضريبة المضافة (VAT)',
-      '🛰️ قناة دعم فني دولي ذات أولوية قصوى للحالات الطارئة والتحديثات السنوية',
-      '🤝 ترخيص هجين جاهز للتوسع وربط فروع متعددة مستقبلاً (قيد التطوير النشط حالياً ⏳)'
-    ]
-  }
-];
+export const packages = OFFICIAL_PRICING_PACKAGES;
+
 
 export const internationalPricing: Record<string, { price: string; currency: string }> = {
   egypt: { price: "10000", currency: "EGP" },
@@ -184,26 +152,7 @@ const FloatingCard = ({ children, className, delay = 0 }: any) => (
   </motion.div>
 );
 
-const ParticleBackground = () => {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(20)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-1 h-1 bg-primary/20 rounded-full"
-          style={{
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            '--tw-translate-x': `${(Math.random() - 0.5) * 200}px`,
-            '--tw-translate-y': `${(Math.random() - 0.5) * 200}px`,
-            animation: `particle-float ${5 + Math.random() * 5}s linear infinite`,
-            animationDelay: `${Math.random() * 5}s`
-          } as any}
-        />
-      ))}
-    </div>
-  );
-};
+const ParticleBackground = () => null;
 
 const RippleButton = ({ children, onClick, className, primary = false, shimmer = false }: any) => {
   const [ripples, setRipples] = useState<any[]>([]);
@@ -286,32 +235,35 @@ const ScrollIndicator = () => (
 );
 
 const Logo = ({ className = "", onClick }: { className?: string; onClick?: () => void }) => (
-  <div className={`flex items-center gap-4 group cursor-pointer logo-aura ${className}`} onClick={() => {
-    if (onClick) onClick();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }}>
-    <div className="relative w-14 h-14 flex items-center justify-center group-hover:rotate-12 group-hover:scale-110 transition-all duration-500">
+  <a 
+    href="/"
+    className={`flex items-center gap-2 sm:gap-2.5 group cursor-pointer logo-aura shrink min-w-0 select-none ${className}`} 
+    onClick={(e) => {
+      e.preventDefault();
+      if (onClick) onClick();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }}
+    aria-label="الرئيسية — IDEA MAKERS"
+  >
+    <div className="relative w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 flex items-center justify-center group-hover:rotate-6 group-hover:scale-105 transition-all duration-300 shrink-0">
       {/* Hexagon Background */}
-      <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full text-primary drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]">
+      <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full text-primary drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
         <path 
           d="M50 5 L93.3 30 L93.3 70 L50 95 L6.7 70 L6.7 30 Z" 
           fill="none" 
           stroke="currentColor" 
-          strokeWidth="3"
+          strokeWidth="3.5"
           className="animate-pulse"
         />
       </svg>
       {/* Controller Icon */}
-      <Gamepad2 className="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)] relative z-10" />
-      {/* Tech Dots */}
-      <div className="absolute top-2 right-3 w-1 h-1 bg-white/40 rounded-full animate-pulse" />
-      <div className="absolute bottom-3 left-4 w-0.5 h-0.5 bg-white/60 rounded-full" />
+      <Gamepad2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.8)] relative z-10" />
     </div>
-    <div className="flex flex-col items-start leading-none">
-      <span className="text-2xl font-black tracking-tighter group-hover:text-primary transition-colors duration-300">IDEA MAKERS</span>
-      <span className="text-xs font-bold text-primary/90 tracking-[0.2em] mt-1">صُنّاع الفكرة</span>
+    <div className="flex flex-col items-start leading-tight min-w-0">
+      <span className="text-sm sm:text-base md:text-lg font-black tracking-tight group-hover:text-primary transition-colors duration-300 truncate">IDEA MAKERS</span>
+      <span className="text-[9px] sm:text-[10px] font-bold text-primary/90 tracking-wider hidden xs:block">صُنّاع الفكرة</span>
     </div>
-  </div>
+  </a>
 );
 
 const countries = {
@@ -368,14 +320,7 @@ const countries = {
 };
 
 const Counter = ({ value }: { value: number }) => {
-  const spring = useSpring(0, { stiffness: 40, damping: 20 });
-  const display = useTransform(spring, (current) => Math.floor(current).toLocaleString());
-
-  useEffect(() => {
-    spring.set(value);
-  }, [value, spring]);
-
-  return <motion.span>{display}</motion.span>;
+  return <span>{value.toLocaleString()}</span>;
 };
 
 const getCountryFromPath = (path: string) => {
@@ -390,28 +335,189 @@ const getCountryFromPath = (path: string) => {
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const headerVisibleRef = useRef(true);
+  const scrolledRef = useRef(false);
+  const lastScrollYRef = useRef(0);
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState(() => 
+    typeof window !== 'undefined' ? window.location.pathname : '/'
+  );
+
+  const { country: selectedCountry, t, setCountry: setI18nCountry, formatCurrency, formatNumber } = useI18n();
+
+  // Canonical route computations
+  const currentSlug = currentPath.replace(/^\//, '');
+  const activePillar = (SEO_PILLAR_PAGES as any)[currentSlug];
+  const isGuidesHub = currentPath === '/guides';
+  const isGuideArticle = currentPath.startsWith('/guides/');
+  const articleSlug = isGuideArticle ? currentPath.replace('/guides/', '') : null;
+  const isCompanyProfilePage = currentPath === '/company-profile' || currentPath === '/company-profile/' || currentPath === '/profile';
+  const isHomepage = !isGuidesHub && !isGuideArticle && !activePillar && !isCompanyProfilePage;
+
+  // Reusable Section Aliases Map
+  const SECTION_ALIASES: Record<string, string> = {
+    'journey': 'roadmap',
+    'roadmap': 'roadmap',
+    'why-us': 'comparison',
+    'whyus': 'comparison',
+    'comparison': 'comparison',
+    'pricing': 'pricing',
+    'features': 'features',
+    'free-trial': 'smart-form',
+    'freetrial': 'smart-form',
+    'request-trial': 'smart-form',
+    'requesttrial': 'smart-form',
+    'trial': 'smart-form',
+    'smart-form': 'smart-form',
+    'calculator': 'calculator',
+    'profit-calculator': 'calculator',
+    'faq': 'faq',
+    'demo-video': 'demo-video',
+    'video': 'demo-video',
+    'about': 'about',
+    'company-profile': 'company-profile',
+    'profile': 'company-profile',
+    'proposal': 'company-profile',
+  };
+
+  const [isCompanyProfileViewerOpen, setIsCompanyProfileViewerOpen] = useState(false);
+  const [companyProfileInitialPage, setCompanyProfileInitialPage] = useState(1);
+
+  const handleOpenCompanyProfile = (pageNumber: number = 1) => {
+    setCompanyProfileInitialPage(pageNumber);
+    setIsCompanyProfileViewerOpen(true);
+  };
+
+  const [pendingSectionScroll, setPendingSectionScroll] = useState<string | null>(null);
+
+  const scrollToSectionElement = (targetId: string, smooth: boolean = true): boolean => {
+    const resolvedId = SECTION_ALIASES[targetId] || targetId;
+    const el = document.getElementById(resolvedId);
+    if (el) {
+      const offset = 95; // Account for fixed/sticky header
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = el.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = Math.max(0, elementPosition - offset);
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: smooth ? 'smooth' : 'auto'
+      });
+      return true;
+    }
+    return false;
+  };
+
+  const headerRef = useRef<HTMLElement>(null);
+  const isHeaderFocusedRef = useRef(false);
+  const isMenuOpenRef = useRef(isMenuOpen);
+  const isCountryDropdownOpenRef = useRef(isCountryDropdownOpen);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const mobileDropdownRef = useRef<HTMLDivElement>(null);
+
+  const showHeader = useCallback(() => {
+    headerVisibleRef.current = true;
+    setHeaderVisible(true);
+    if (headerRef.current) {
+      headerRef.current.classList.remove('header-hidden');
+    }
+  }, []);
+
+  const hideHeader = useCallback(() => {
+    headerVisibleRef.current = false;
+    setHeaderVisible(false);
+    if (headerRef.current) {
+      headerRef.current.classList.add('header-hidden');
+    }
+  }, []);
+
+  const navigateTo = (path: string) => {
+    window.history.pushState({}, '', path);
+    setCurrentPath(path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsMenuOpen(false);
+    lastScrollYRef.current = 0;
+    showHeader();
+  };
+
+  const navigateHome = () => {
+    const path = selectedCountry.id === 'egypt' ? '/' : `/playstation-pos-${selectedCountry.id}`;
+    window.history.pushState({ countryId: selectedCountry.id }, '', path);
+    setCurrentPath(path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsMenuOpen(false);
+    lastScrollYRef.current = 0;
+    showHeader();
+  };
+
+  const navigateToSection = (rawSectionId: string) => {
+    const resolvedId = SECTION_ALIASES[rawSectionId] || rawSectionId;
+    setIsMenuOpen(false);
+    showHeader();
+
+    if (isHomepage) {
+      // Already on homepage: smooth scroll directly and update hash without full reload
+      scrollToSectionElement(resolvedId, true);
+      const currentBase = currentPath === '/' ? '' : currentPath;
+      window.history.pushState(null, '', `${currentBase}#${resolvedId}`);
+    } else {
+      // On an internal page (Guides hub, article, or pillar):
+      // Navigate to homepage first, and schedule the scroll after mount
+      const homePath = selectedCountry.id === 'egypt' ? '/' : `/playstation-pos-${selectedCountry.id}`;
+      window.history.pushState({ countryId: selectedCountry.id }, '', `${homePath}#${resolvedId}`);
+      setCurrentPath(homePath);
+      setPendingSectionScroll(resolvedId);
+    }
+  };
+
+  const scrollToSection = (id: string) => {
+    navigateToSection(id);
+  };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    isMenuOpenRef.current = isMenuOpen;
+    if (isMenuOpen) {
+      showHeader();
+    }
+  }, [isMenuOpen, showHeader]);
+
+  useEffect(() => {
+    isCountryDropdownOpenRef.current = isCountryDropdownOpen;
+    if (isCountryDropdownOpen) {
+      showHeader();
+    }
+  }, [isCountryDropdownOpen, showHeader]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node;
+      const outsideDesktop = !dropdownRef.current || !dropdownRef.current.contains(target);
+      const outsideMobile = !mobileDropdownRef.current || !mobileDropdownRef.current.contains(target);
+      if (outsideDesktop && outsideMobile) {
         setIsCountryDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
-  const [selectedCountry, setSelectedCountry] = useState(() => {
-    const fromPath = getCountryFromPath(window.location.pathname);
-    if (fromPath) return fromPath;
-    const storedCountryId = localStorage.getItem('playstation_pos_selected_country');
-    if (storedCountryId && countries[storedCountryId as keyof typeof countries]) {
-      return countries[storedCountryId as keyof typeof countries];
-    }
-    return countries.egypt;
-  });
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMenuOpen(false);
+        setIsCountryDropdownOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const [localizations, setLocalizations] = useState(() => {
     const stored = localStorage.getItem('playstation_pos_localization_data');
     if (stored) {
@@ -429,8 +535,15 @@ export default function App() {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        // If it's old data (e.g., doesn't use the new emoji bullet formatting or features are different), upgrade to new defaults
-        if (parsed[0] && parsed[0].features && (!parsed[0].features[0].includes('🏡') || parsed[0].features.length !== 6)) {
+        // If it's old data (e.g. price is 4000 instead of 6000 or missing official features), upgrade to official packages
+        if (
+          !parsed[0] ||
+          Number(parsed[0].price) !== 6000 ||
+          !parsed[1] ||
+          Number(parsed[1].price) !== 8000 ||
+          !parsed[2] ||
+          Number(parsed[2].price) !== 10000
+        ) {
           localStorage.setItem('playstation_pos_packages_data', JSON.stringify(packages));
           return packages;
         }
@@ -483,7 +596,7 @@ export default function App() {
       authStat1Desc: "يستخدمه أصحاب صالات بلايستيشن في مصر والسعودية والإمارات والكويت وقطر",
       authStat2Title: "100%",
       authStat2Desc: "تحت سيطرتك أوفلاين",
-      authImageUrl: "https://i.postimg.cc/0QKn9KfM/Fifa.jpg",
+      authImageUrl: "https://i.postimg.cc/k56Vy6yG/3-200.jpg",
       
       // Pricing Section Header
       pricingTitle: "استثمار سيادي.. لمرة واحدة",
@@ -526,7 +639,7 @@ export default function App() {
       founderPara2: "تحول IDEA Makers PlayStation POS من مجرد كود برمججي إلى رحلة نجاح ساعدت مئات أصحاب الصالات على الانتقال من الفوضى اليدوية إلى الإدارة الرقمية الذكية التي تضمن السيادة الكاملة والنمو المستدام.",
       founderPara3: "الهدف لم يكن أبداً مجرد بيع برنامج، بل تمكين أصحاب المشاريع من مضاعفة أرباحهم، وإدارة صالاتهم بسهولة، والعمل باحترافية تليق بطموحاتهم.",
       founderBtnText: "اقرأ القصة الكاملة للابتكار",
-      founderImgUrl: "https://i.postimg.cc/pX35pXmS/CEO-Eslam-Arafa.jpg",
+      founderImgUrl: "/assets/aistudio/IDEA_MAKERS__Neon_Visionary_Founder_Poster_f63e4b3b.png",
       founderName: "Eslam Arafa",
       founderRole: "Founder & CEO – IDEA Makers",
       founderExpTitle: "Expertise",
@@ -585,7 +698,17 @@ export default function App() {
     return defaultCms;
   });
 
-  const activeLocal = localizations[selectedCountry.id as keyof typeof localizations] || localizations.egypt;
+  const activeLocal = {
+    problemSectionTitle: t.problems.title,
+    problems: t.problems.items,
+    solutionSectionTitle: t.solutions.title,
+    solutions: t.solutions.items,
+    justificationText: t.justification.title,
+    justificationPoints: t.justification.points,
+    testimonials: t.testimonials.items,
+    faqs: t.faq.items,
+    ...(localizations[selectedCountry.id as keyof typeof localizations] || {}),
+  };
 
   const hasCustomCms = typeof window !== 'undefined' && !!localStorage.getItem('playstation_pos_cms_content');
 
@@ -649,27 +772,25 @@ export default function App() {
 
   // Handle country change and auto-select package, syncing the URL
   const handleCountryChange = (country: any) => {
-    setSelectedCountry(country);
-    localStorage.setItem('playstation_pos_selected_country', country.id);
+    setI18nCountry(country);
+    const targetPath = `/playstation-pos-${country.id}`;
+    setCurrentPath(targetPath);
+    setHeaderVisible(true);
     if (country.id !== 'egypt') {
       const intPkg = packagesData.find(p => p.id === 'international');
       if (intPkg) setSelectedPackage(intPkg);
     } else {
       setSelectedPackage(packagesData[1]);
     }
-
-    // Sync path with selected country
-    const path = `/playstation-pos-${country.id}`;
-    if (window.location.pathname !== path) {
-      window.history.pushState({ countryId: country.id }, '', path);
-    }
   };
 
-  // Sync state with back/forward history events
+  // Sync state with back/forward history events and hash scrolling
   useEffect(() => {
     const handlePopState = () => {
-      const currentCountry = getCountryFromPath(window.location.pathname) || countries.egypt;
-      setSelectedCountry(currentCountry);
+      const path = window.location.pathname;
+      setCurrentPath(path);
+      const currentCountry = getCountryFromPath(path) || countries.egypt;
+      setI18nCountry(currentCountry.id as any);
       localStorage.setItem('playstation_pos_selected_country', currentCountry.id);
       if (currentCountry.id !== 'egypt') {
         const intPkg = packagesData.find(p => p.id === 'international');
@@ -677,14 +798,77 @@ export default function App() {
       } else {
         setSelectedPackage(packagesData[1]);
       }
+
+      // Check if URL has a section hash on Back/Forward navigation
+      const hash = window.location.hash.replace('#', '').trim();
+      if (hash) {
+        const resolved = SECTION_ALIASES[hash] || hash;
+        setPendingSectionScroll(resolved);
+      }
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [packagesData]);
 
+  // Effect to perform scroll once homepage is mounted/rendered
+  useEffect(() => {
+    if (!pendingSectionScroll) return;
+    if (!isHomepage) return;
+
+    let attempts = 0;
+    const maxAttempts = 8;
+    let timeoutId: any;
+
+    const checkAndScroll = () => {
+      const scrolled = scrollToSectionElement(pendingSectionScroll, true);
+      if (scrolled) {
+        setPendingSectionScroll(null);
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        timeoutId = setTimeout(checkAndScroll, 60);
+      } else {
+        setPendingSectionScroll(null);
+      }
+    };
+
+    timeoutId = setTimeout(checkAndScroll, 40);
+    return () => clearTimeout(timeoutId);
+  }, [pendingSectionScroll, isHomepage, currentPath]);
+
+  // Effect for initial page load or direct URL with hash (e.g. /#pricing or /playstation-pos-egypt#features)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash.replace('#', '').trim();
+    if (hash && isHomepage) {
+      const resolved = SECTION_ALIASES[hash] || hash;
+      const timer = setTimeout(() => {
+        scrollToSectionElement(resolved, true);
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [isHomepage]);
+
   // Update localized HTML Page Title and Description tags dynamically for SEO discovery of separate country pages
   useEffect(() => {
+    // Preserve dedicated SEO titles for pillar pages and practical guides
+    const slugKey = currentPath.replace(/^\//, '');
+    const isPillar = Boolean((SEO_PILLAR_PAGES as any)[slugKey]);
+    const isGuide = currentPath === '/guides' || currentPath.startsWith('/guides/');
+    if (isPillar || isGuide) return;
+
+    if (currentPath === '/company-profile' || currentPath === '/company-profile/') {
+      document.title = 'الملف التعريفي للشركة والعرض الفني الرسمي | IDEA MAKERS Company Profile 2026';
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute(
+          'content', 
+          'الملف التعريفي الرسمي (26 صفحة بدقة عالية) لشركة IDEA MAKERS لنظام إدارة صالات البلايستيشن والكافيهات. تفاصيل بنية الأوفلاين 100%، استعراض الواجهات الحقيقية، والجدوى الاستثمارية لصالتك.'
+        );
+      }
+      return;
+    }
+
     let countrySuffix = '';
     if (selectedCountry.id === 'egypt') countrySuffix = ' في مصر';
     else if (selectedCountry.id === 'saudi') countrySuffix = ' في السعودية';
@@ -692,21 +876,18 @@ export default function App() {
     else if (selectedCountry.id === 'kuwait') countrySuffix = ' في الكويت';
     else if (selectedCountry.id === 'qatar') countrySuffix = ' في قطر';
 
-    document.title = `نظام إدارة صالات البلايستيشن${countrySuffix} | سيستم كاشير بلايسيتشن - IDEA Makers`;
+    document.title = `برنامج كاشير وإدارة صالات البلايستيشن والكافيهات${countrySuffix} | IDEA MAKERS`;
     
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
       metaDesc.setAttribute(
         'content', 
-        `امتلك أقوى نظام لإدارة صالات البلايستيشن، كاشير وسستم تشغيل ألعاب${countrySuffix}. نظام أوفلاين 100% بملكية مدى الحياة بدون اشتراكات أو رسوم شهرية متكررة.`
+        `امتلك أقوى نظام لإدارة صالات البلايستيشن والكافيهات، كاشير وسستم تشغيل ألعاب${countrySuffix}. نظام أوفلاين 100% بملكية مدى الحياة بدون اشتراكات أو رسوم شهرية متكررة.`
       );
     }
-  }, [selectedCountry]);
+  }, [selectedCountry, currentPath]);
 
   const heroRef = useRef(null);
-  const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-  const y2 = useTransform(scrollY, [0, 500], [0, -150]);
   const [calcDevices, setCalcDevices] = useState(5);
   const [calcHours, setCalcHours] = useState(8);
   const [leakRate, setLeakRate] = useState(20);
@@ -730,13 +911,81 @@ export default function App() {
   }, [isMenuOpen]);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const getActualScrollPosition = (): number => {
+      return Math.max(
+        0,
+        window.scrollY ?? 0,
+        window.pageYOffset ?? 0,
+        document.documentElement?.scrollTop ?? 0,
+        document.scrollingElement?.scrollTop ?? 0,
+        document.body?.scrollTop ?? 0
+      );
+    };
+
+    // Initialize previous position with actual current scroll position
+    lastScrollYRef.current = getActualScrollPosition();
+
+    const handleScroll = () => {
+      const currentY = getActualScrollPosition();
+      const previousY = lastScrollYRef.current;
+      const delta = currentY - previousY;
+
+      // Update scrolled visual treatment (blur / border padding)
+      const isScrolled = currentY > 15;
+      if (scrolledRef.current !== isScrolled) {
+        scrolledRef.current = isScrolled;
+        setScrolled(isScrolled);
+      }
+
+      // Safety Guards: Always show header if menu open, dropdown open, or keyboard focus inside
+      if (isMenuOpenRef.current || isCountryDropdownOpenRef.current || isHeaderFocusedRef.current) {
+        if (!headerVisibleRef.current) {
+          showHeader();
+        }
+        lastScrollYRef.current = currentY;
+        return;
+      }
+
+      // Rule C: At the top (currentY <= 0), header MUST ALWAYS be visible
+      if (currentY <= 0) {
+        if (!headerVisibleRef.current) {
+          showHeader();
+        }
+        lastScrollYRef.current = 0;
+        return;
+      }
+
+      // Rule A: First actual downward movement (delta > 0) -> IMMEDIATELY hide header!
+      if (delta > 0.05) {
+        if (headerVisibleRef.current) {
+          hideHeader();
+        }
+      } 
+      // Rule B: First actual upward movement (delta < 0) -> IMMEDIATELY reveal header at ANY depth!
+      else if (delta < -0.05) {
+        if (!headerVisibleRef.current) {
+          showHeader();
+        }
+      }
+
+      // Update previous scroll position on every valid scroll event
+      lastScrollYRef.current = currentY;
+    };
+
+    // Single authoritative scroll listener on window
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Initial evaluation on mount
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [showHeader, hideHeader]);
 
   const handleWhatsApp = (message?: string) => {
     const finalMessage = message || activeCmsContent.whatsappMessage || "مرحباً فريق صُنّاع الفكرة، أودّ الاستفسار عن نظام إدارة صالات البلايستيشن.";
+    Analytics.clickWhatsApp('whatsapp_cta', finalMessage);
     const encoded = encodeURIComponent(finalMessage);
     const phone = activeCmsContent.contactPhone || "201121778205";
     window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');
@@ -746,31 +995,11 @@ export default function App() {
     const pkg = packages.find(p => p.id === pkgId);
     if (!pkg) return;
 
+    Analytics.packageSelect(pkgId, pkg.price, selectedCountry.currency);
     const message = `*مرحباً فريق صُنّاع الفكرة* 👋
 
 أرغب في شراء باقة *${pkg.name}* لنظام إدارة البلايستيشن.`;
     handleWhatsApp(message);
-  };
-
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      const offset = 100; // Account for fixed header
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = el.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
-    setIsMenuOpen(false);
-  };
-
-  const navigateToSection = (id: string) => {
-    scrollToSection(id);
   };
 
   const getYoutubeId = (url: string) => {
@@ -791,69 +1020,151 @@ export default function App() {
   const demoEmbedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&vq=hd1080`;
 
   return (
-    <div className="min-h-screen font-cairo bg-[#050505] text-white selection:bg-primary/30 overflow-x-hidden">
+    <div className="min-h-screen font-cairo bg-[#050505] text-white selection:bg-primary/30 pb-20 lg:pb-0 overflow-x-hidden">
       <ScrollProgress />
 
-      {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-[150] transition-all duration-500 ${scrolled ? 'py-4 glass border-b border-white/10' : 'py-6'}`}>
-        <div className="container flex items-center justify-between">
-          <Logo onClick={() => {
-            const path = `/playstation-pos-${selectedCountry.id}`;
-            if (window.location.pathname !== path) {
-              window.history.pushState({ countryId: selectedCountry.id }, '', path);
-            }
-          }} />
+      {/* App Header Navigation - Fixed on top everywhere like a native app */}
+      <nav 
+        ref={headerRef}
+        role="navigation"
+        aria-label="التنقل الرئيسي"
+        onFocusCapture={() => {
+          isHeaderFocusedRef.current = true;
+          showHeader();
+        }}
+        onBlurCapture={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            isHeaderFocusedRef.current = false;
+          }
+        }}
+        className={`site-nav-header bg-[#07070d]/92 backdrop-blur-xl border-b border-white/[0.08] ${
+          scrolled ? 'py-2 sm:py-2.5 shadow-[0_10px_35px_rgba(0,0,0,0.85)]' : 'py-2.5 sm:py-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.4)]'
+        } ${headerVisible ? '' : 'header-hidden'}`}
+      >
+        {/* Futuristic glowing top accent bar */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-90 pointer-events-none" />
 
-          <div className="hidden lg:flex items-center gap-8 text-sm font-medium">
-            <a href="#features" onClick={(e) => { e.preventDefault(); navigateToSection('features'); }} className="hover:text-primary transition-all hover:translate-y-[-2px]">المميزات</a>
-            <a href="#comparison" onClick={(e) => { e.preventDefault(); navigateToSection('comparison'); }} className="hover:text-primary transition-all hover:translate-y-[-2px]">لماذا نحن؟</a>
-            <a href="#pricing" onClick={(e) => { e.preventDefault(); navigateToSection('pricing'); }} className="hover:text-primary transition-all hover:translate-y-[-2px]">الأسعار</a>
-            <a href="#smart-form" onClick={(e) => { e.preventDefault(); navigateToSection('smart-form'); }} className="hover:text-primary transition-all hover:translate-y-[-2px]">احجز الآن</a>
-            <a href="#faq" onClick={(e) => { e.preventDefault(); navigateToSection('faq'); }} className="hover:text-primary transition-all hover:translate-y-[-2px]">الأسئلة الشائعة</a>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
+          <Logo onClick={navigateHome} />
 
+          {/* Desktop Navigation Links */}
+          <div className="hidden lg:flex items-center gap-2 xl:gap-3 text-sm font-medium">
+            <a 
+              href="/#features" 
+              onClick={(e) => { e.preventDefault(); navigateToSection('features'); }} 
+              className="px-2.5 py-1.5 rounded-xl text-gray-200 hover:text-white hover:bg-white/[0.04] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              {t.navigation.features}
+            </a>
+            <a 
+              href="/#roadmap" 
+              onClick={(e) => { e.preventDefault(); navigateToSection('roadmap'); }} 
+              className="px-2.5 py-1.5 rounded-xl text-gray-200 hover:text-white hover:bg-white/[0.04] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary flex items-center gap-1"
+            >
+              <span>{t.navigation.roadmap}</span>
+            </a>
+            <a 
+              href="/#comparison" 
+              onClick={(e) => { e.preventDefault(); navigateToSection('comparison'); }} 
+              className="px-2.5 py-1.5 rounded-xl text-gray-200 hover:text-white hover:bg-white/[0.04] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              {t.navigation.whyUs}
+            </a>
+            <a 
+              href="/#pricing" 
+              onClick={(e) => { e.preventDefault(); navigateToSection('pricing'); }} 
+              className="px-2.5 py-1.5 rounded-xl text-gray-200 hover:text-white hover:bg-white/[0.04] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              {t.navigation.pricing}
+            </a>
+            <a 
+              href="/company-profile" 
+              onClick={(e) => { 
+                e.preventDefault(); 
+                if (isCompanyProfilePage) {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                  navigateTo('/company-profile'); 
+                }
+              }} 
+              className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                isCompanyProfilePage
+                  ? 'bg-primary/25 text-white border border-primary/40 shadow-[0_0_15px_rgba(168,85,247,0.3)]'
+                  : 'text-purple-300 hover:text-white hover:bg-white/[0.05]'
+              }`}
+              title="الملف التعريفي للشركة والعرض الفني"
+            >
+              <FileText className="w-3.5 h-3.5 text-primary" />
+              <span>الملف التعريفي</span>
+            </a>
+            <a 
+              href="/guides" 
+              onClick={(e) => { 
+                e.preventDefault(); 
+                if (isGuidesHub) {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                  navigateTo('/guides'); 
+                }
+              }} 
+              className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                isGuidesHub
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-[0_0_15px_rgba(56,189,248,0.25)]'
+                  : 'text-cyan-400 hover:text-cyan-200 hover:bg-white/[0.05]'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>دليل الصالات</span>
+            </a>
+            <a 
+              href="/#smart-form" 
+              onClick={(e) => { e.preventDefault(); navigateToSection('smart-form'); }} 
+              className="px-2.5 py-1.5 rounded-xl text-gray-200 hover:text-white hover:bg-white/[0.04] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              {t.navigation.freeTrial}
+            </a>
+            
             {/* Country Selector Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] hover:border-primary/40 transition-all duration-300 text-sm font-medium focus:outline-none cursor-pointer"
+                aria-haspopup="listbox"
+                aria-expanded={isCountryDropdownOpen}
+                aria-label={t.navigation.selectCountry}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] transition-all text-xs font-semibold text-gray-200 cursor-pointer"
               >
-                <span className="text-base leading-none">{selectedCountry.flag}</span>
-                <span className="text-gray-200">{selectedCountry.name}</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 ${isCountryDropdownOpen ? 'rotate-180' : ''}`} />
+                <span>{selectedCountry.flag}</span>
+                <span>{selectedCountry.name}</span>
+                <ChevronDown className="w-3 h-3 text-gray-400" />
               </button>
-
+              
               <AnimatePresence>
                 {isCountryDropdownOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute left-1/2 -translate-x-1/2 mt-2.5 w-44 rounded-2xl border border-white/10 bg-[#0d0d0d] shadow-xl shadow-black/80 overflow-hidden py-1.5 z-[250] text-right"
+                    className="absolute left-1/2 -translate-x-1/2 mt-2.5 w-48 rounded-2xl border border-white/10 bg-[#0d0d14]/98 backdrop-blur-xl shadow-2xl shadow-black/90 overflow-hidden py-1.5 z-[250] text-right"
                   >
-                    <div className="px-3 py-1 text-[10px] font-bold text-gray-500 tracking-wider border-b border-white/5 uppercase select-none mb-1 text-center">
-                      اختر الدولة لتخصيص المحتوى
-                    </div>
-                    {Object.values(countries).map((country) => (
+                    {SUPPORTED_COUNTRIES.map((country) => (
                       <button
                         key={country.id}
                         onClick={() => {
                           handleCountryChange(country);
                           setIsCountryDropdownOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between px-3.5 py-2 text-xs transition-colors duration-200 cursor-pointer ${
+                        className={`w-full flex items-center justify-between px-3.5 py-2 text-xs transition-colors cursor-pointer ${
                           selectedCountry.id === country.id
-                            ? 'bg-primary/10 text-primary font-bold'
+                            ? 'bg-primary/15 text-primary font-bold'
                             : 'text-gray-300 hover:bg-white/5 hover:text-white'
                         }`}
                       >
                         <span className="flex items-center gap-2">
-                          <span className="text-base">{country.flag}</span>
+                          <span>{country.flag}</span>
                           <span>{country.name}</span>
                         </span>
-                        {selectedCountry.id === country.id && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                        )}
+                        <span className="text-[10px] text-gray-500 font-mono">{country.currency}</span>
                       </button>
                     ))}
                   </motion.div>
@@ -863,268 +1174,253 @@ export default function App() {
 
             <RippleButton 
               primary
-              onClick={() => {
-                const el = document.getElementById('smart-form');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="bg-primary text-white px-6 py-2.5 rounded-full transition-all shadow-lg shadow-primary/20"
+              onClick={() => navigateToSection('smart-form')}
+              className="bg-primary hover:bg-primary-dark text-white text-xs font-bold px-4 py-2.5 rounded-full transition-all"
             >
-              ابدأ التجربة المجانية
+              {t.common.tryFree}
             </RippleButton>
           </div>
 
-          <button className="lg:hidden text-white p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile App Header Controls (<= 1024px) */}
+          <div className="flex lg:hidden items-center gap-1.5 xs:gap-2 shrink-0">
+            {/* Mobile Country Selector Badge - Responsive Pill */}
+            <div className="relative" ref={mobileDropdownRef}>
+              <button
+                onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
+                className="h-10 min-h-[40px] px-2.5 rounded-xl border border-primary/25 bg-primary/10 hover:bg-primary/20 transition-all flex items-center gap-1.5 text-xs font-bold text-white cursor-pointer"
+                aria-label="اختر الدولة"
+                aria-haspopup="listbox"
+                aria-expanded={isCountryDropdownOpen}
+              >
+                <span className="text-sm leading-none">{selectedCountry.flag}</span>
+                <span className="text-[11px] font-bold text-white whitespace-nowrap">{selectedCountry.name}</span>
+                <ChevronDown className={`w-3 h-3 text-primary transition-transform ${isCountryDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isCountryDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute left-0 mt-2 w-48 max-w-[calc(100vw-24px)] rounded-2xl border border-white/15 bg-[#0e0e16]/98 backdrop-blur-2xl shadow-2xl shadow-black overflow-hidden py-1.5 z-[1050] text-right"
+                  >
+                    <div className="px-3 py-1 text-[10px] font-bold text-gray-400 tracking-wider border-b border-white/5 uppercase select-none mb-1 text-center">
+                      {t.navigation.selectCountry}
+                    </div>
+                    {SUPPORTED_COUNTRIES.map((country) => (
+                      <button
+                        key={country.id}
+                        onClick={() => {
+                          handleCountryChange(country);
+                          setIsCountryDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs cursor-pointer transition-colors ${
+                          selectedCountry.id === country.id
+                            ? 'bg-primary/20 text-primary font-bold'
+                            : 'text-gray-300 hover:bg-white/5'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <span className="text-base">{country.flag}</span>
+                          <span>{country.name}</span>
+                        </span>
+                        <span className="text-[10px] text-gray-400 font-mono">{country.currency}</span>
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Quick Mobile Action CTA - Only on screens with enough space (>= 640px) */}
+            <button
+              onClick={() => navigateToSection('smart-form')}
+              className="hidden sm:inline-flex items-center gap-1 bg-gradient-to-r from-primary to-purple-600 hover:from-primary-dark hover:to-purple-700 text-white text-[11px] font-bold px-2.5 sm:px-3 h-10 rounded-xl shadow-md shadow-primary/25 transition-all cursor-pointer shrink-0"
+            >
+              <span>3 أيام مجاناً</span>
+            </button>
+
+            {/* Mobile Menu Button - 40x40px touch target */}
+            <button 
+              className="text-white w-10 h-10 sm:w-11 sm:h-11 min-w-[40px] rounded-xl glass border border-white/10 hover:border-primary/40 flex items-center justify-center transition-all cursor-pointer shrink-0" 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? "إغلاق القائمة" : "فتح القائمة"}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-navigation-drawer"
+            >
+              {isMenuOpen ? <X className="w-5 h-5 text-primary" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Drawer Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div 
-            initial={{ opacity: 0, x: '-100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[200] glass lg:hidden pt-24 px-6 flex flex-col mobile-menu-overlay overflow-y-auto"
+            id="mobile-navigation-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="قائمة التصفح"
+            className="fixed inset-0 z-[1000000] bg-[#07070d]/98 backdrop-blur-3xl lg:hidden flex flex-col overflow-y-auto"
           >
-            <button 
-              className="absolute top-6 left-6 p-3 glass rounded-full text-white hover:text-primary transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <X className="w-6 h-6" />
-            </button>
+            {/* Top Bar inside Drawer */}
+            <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-white/10">
+              <Logo onClick={navigateHome} />
 
-            <div className="flex flex-col gap-4 text-xl font-bold text-center mt-8 pb-12">
-              <div className="flex justify-center mb-6">
-                <Logo className="scale-125" onClick={() => {
-                  const path = `/playstation-pos-${selectedCountry.id}`;
-                  if (window.location.pathname !== path) {
-                    window.history.pushState({ countryId: selectedCountry.id }, '', path);
-                  }
-                  setIsMenuOpen(false);
-                }} />
-              </div>
+              <button 
+                className="w-10 h-10 rounded-full glass border border-white/15 hover:border-primary text-white flex items-center justify-center transition-colors cursor-pointer"
+                onClick={() => setIsMenuOpen(false)}
+                aria-label="إغلاق القائمة"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-              {/* Mobile Country Selector */}
-              <div className="w-full px-3 py-3 bg-white/[0.03] border border-white/10 rounded-3xl mb-6 text-right">
-                <span className="block text-xs text-gray-400 font-bold mb-3 text-center">اختر الدولة لتخصيص المحتوى والأسعار 🗺️</span>
+            <div className="flex flex-col gap-5 px-5 py-6">
+              {/* Mobile Country Selector Card */}
+              <div className="w-full p-3.5 bg-white/[0.03] border border-white/10 rounded-2xl text-right">
+                <span className="block text-xs text-gray-300 font-bold mb-2.5 text-center">🗺️ {t.navigation.selectCountry}</span>
                 <div className="grid grid-cols-5 gap-1.5">
-                  {Object.values(countries).map((country) => (
+                  {SUPPORTED_COUNTRIES.map((country) => (
                     <button
                       key={country.id}
                       onClick={() => {
                         handleCountryChange(country);
                         setIsMenuOpen(false);
                       }}
-                      className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                      className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl border transition-all duration-300 cursor-pointer ${
                         selectedCountry.id === country.id
-                          ? 'bg-primary/20 border-primary text-white font-bold scale-[1.05] shadow-lg shadow-primary/10'
-                          : 'bg-[#0a0a0a]/50 border-white/5 text-gray-400 hover:border-white/15'
+                          ? 'bg-primary/20 border-primary text-white font-bold scale-[1.04] shadow-md shadow-primary/20'
+                          : 'bg-[#0a0a0e]/60 border-white/5 text-gray-400 hover:border-white/15'
                       }`}
                     >
-                      <span className="text-lg mb-1">{country.flag}</span>
-                      <span className="text-[11px] font-bold tracking-tight">{country.name}</span>
+                      <span className="text-lg mb-0.5">{country.flag}</span>
+                      <span className="text-[10px] font-bold tracking-tight">{country.name}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="h-px bg-white/10 w-full mb-6" />
-              {['المميزات', 'لماذا نحن؟', 'الأسعار', 'احجز الآن', 'الأسئلة الشائعة'].map((item, idx) => {
-                const sectionId = ['features', 'comparison', 'pricing', 'smart-form', 'faq'][idx];
-                return (
+              {/* Navigation Links with Icons */}
+              <div className="flex flex-col gap-1.5 text-sm font-semibold">
+                {[
+                  { id: 'features', title: t.navigation.features, icon: <Gamepad2 className="w-4 h-4 text-primary" />, isPath: false, path: '' },
+                  { id: 'roadmap', title: t.navigation.roadmap, icon: <ShieldCheck className="w-4 h-4 text-emerald-400" />, isPath: false, path: '' },
+                  { id: 'guides', title: 'دليل ومقالات الصالات', icon: <BookOpen className="w-4 h-4 text-cyan-400" />, isPath: true, path: '/guides' },
+                  { id: 'comparison', title: t.navigation.whyUs, icon: <Zap className="w-4 h-4 text-amber-400" />, isPath: false, path: '' },
+                  { id: 'calculator', title: t.navigation.calculator, icon: <Percent className="w-4 h-4 text-purple-400" />, isPath: false, path: '' },
+                  { id: 'pricing', title: t.navigation.pricing, icon: <CreditCard className="w-4 h-4 text-blue-400" />, isPath: false, path: '' },
+                  { id: 'company-profile', title: 'الملف التعريفي للشركة (PDF)', icon: <FileText className="w-4 h-4 text-purple-400" />, isPath: true, path: '/company-profile' },
+                  { id: 'smart-form', title: t.navigation.freeTrial, icon: <Gift className="w-4 h-4 text-pink-400" />, isPath: false, path: '' },
+                  { id: 'faq', title: t.navigation.faq, icon: <HelpCircle className="w-4 h-4 text-cyan-400" />, isPath: false, path: '' },
+                ].map((item, idx) => (
                   <motion.a 
-                    key={item}
-                    initial={{ opacity: 0, x: -20 }}
+                    key={item.id}
+                    initial={{ opacity: 0, x: -15 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    href={`#${sectionId}`} 
+                    transition={{ delay: idx * 0.04 }}
+                    href={item.isPath ? item.path : `/#${item.id}`} 
                     onClick={(e) => {
                       e.preventDefault();
-                      navigateToSection(sectionId);
+                      if (item.isPath) {
+                        navigateTo(item.path);
+                      } else {
+                        navigateToSection(item.id);
+                      }
                       setIsMenuOpen(false);
                     }}
-                    className="py-4 hover:text-primary transition-colors border-b border-white/5 last:border-0"
+                    className="flex items-center gap-3 px-3.5 py-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] hover:text-primary transition-all border border-white/5"
                   >
-                    {item}
+                    <span className="shrink-0">{item.icon}</span>
+                    <span className="text-gray-200 font-bold">{item.title}</span>
                   </motion.a>
-                );
-              })}
+                ))}
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="pt-6"
-              >
+              {/* Action Buttons inside Drawer */}
+              <div className="flex flex-col gap-2.5 pt-2">
                 <RippleButton 
                   primary
                   onClick={() => {
-                    const el = document.getElementById('smart-form');
-                    el?.scrollIntoView({ behavior: 'smooth' });
+                    navigateToSection('smart-form');
                     setIsMenuOpen(false);
                   }}
-                  className="w-full bg-primary text-white py-5 rounded-2xl shadow-xl shadow-primary/30 font-black text-lg"
+                  className="w-full bg-primary hover:bg-primary-dark text-white py-3.5 rounded-xl shadow-xl shadow-primary/30 font-black text-sm flex items-center justify-center gap-2"
                 >
-                  ابدأ التجربة المجانية
+                  <Gift className="w-4 h-4" />
+                  <span>ابدأ التجربة المجانية (3 أيام)</span>
                 </RippleButton>
-              </motion.div>
+
+                <button
+                  onClick={() => {
+                    handleWhatsApp('مرحباً فريق صُنّاع الفكرة، أرغب في استفسار سريع عن نظام PlayStation POS.');
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full py-3 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4 text-emerald-400" />
+                  <span>تواصل فوري عبر الواتساب</span>
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Hero Section */}
-          <section className="relative pt-28 pb-0 lg:pt-28 lg:pb-0 overflow-hidden" ref={heroRef}>
-        {/* Background Elements */}
-        <div className="absolute inset-0 tech-grid opacity-20" />
-        <ParticleBackground />
-        <motion.div 
-          style={{ y: y1 }}
-          className="purple-glow w-[500px] h-[500px] bg-primary/30 top-[-10%] right-[-10%]" 
-        />
-        <motion.div 
-          style={{ y: y2 }}
-          className="purple-glow w-[400px] h-[400px] bg-purple-600/20 bottom-[10%] left-[-5%]" 
-        />
-        
-        <div className="container relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              className="mt-10 md:mt-16 lg:mt-24"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-[10px] sm:text-xs font-bold text-primary mt-[40px] sm:mt-[60px] mb-8 border-primary/30 tracking-widest uppercase">
-                <Gamepad2 className="w-3 h-3" />
-                {activeCmsContent.heroTag}
-              </span>
-            </motion.div>
+      {/* Route-Based Dynamic View Rendering (SEO Pillars, Guides, or Homepage) */}
+      {(() => {
+        const currentSlug = currentPath.replace(/^\//, '');
+        const activePillar = (SEO_PILLAR_PAGES as any)[currentSlug];
+        const isGuidesHub = currentPath === '/guides';
+        const isGuideArticle = currentPath.startsWith('/guides/');
+        const articleSlug = isGuideArticle ? currentPath.replace('/guides/', '') : null;
 
-            <motion.h1 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-4xl sm:text-6xl lg:text-7xl font-black mb-8 leading-[1.2] tracking-tight"
-            >
-              {activeCmsContent.heroTitlePrefix} <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-400 to-accent animate-gradient">{activeCmsContent.heroTitleHighlight}</span>
-            </motion.h1>
+        if (activePillar) {
+          return (
+            <SeoPillarView
+              page={activePillar}
+              onNavigateHome={navigateHome}
+              onNavigatePillar={(slug) => navigateTo(`/${slug}`)}
+              onOpenTrialForm={() => navigateToSection('smart-form')}
+            />
+          );
+        }
 
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-lg sm:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto font-light leading-relaxed"
-            >
-              {activeCmsContent.heroDescription}
-            </motion.p>
+        if (isGuidesHub || isGuideArticle) {
+          return (
+            <GuidesHubView
+              activeSlug={articleSlug}
+              onNavigateHome={navigateHome}
+              onNavigateArticle={(slug) => navigateTo(`/guides/${slug}`)}
+              onNavigateHub={() => navigateTo('/guides')}
+              onOpenTrialForm={() => navigateToSection('smart-form')}
+            />
+          );
+        }
 
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex flex-col items-center gap-6"
-            >
-              <div className="relative group">
-                {/* Free Trial Badge */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ 
-                    delay: 1,
-                    type: "spring",
-                    stiffness: 200
-                  }}
-                  className="absolute -top-4 -right-4 z-20 bg-gradient-to-r from-orange-500 to-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg shadow-orange-500/40 border border-white/20 whitespace-nowrap"
-                >
-                  تجربة مجانية 3 أيام (72 ساعة)
-                </motion.div>
+        if (currentPath === '/company-profile' || currentPath === '/company-profile/' || currentPath === '/profile') {
+          return (
+            <CompanyProfilePageView
+              onNavigateHome={navigateHome}
+              onOpenViewer={handleOpenCompanyProfile}
+              onOpenTrialForm={() => navigateToSection('smart-form')}
+            />
+          );
+        }
 
-                <RippleButton 
-                  primary
-                  shimmer
-                  onClick={() => scrollToSection('smart-form')}
-                  className="w-full sm:w-auto bg-primary text-white px-12 py-6 rounded-2xl shadow-2xl shadow-primary/40 font-black text-xl hover:scale-105 transition-transform"
-                >
-                  ابدأ تجربتك المجانية الآن
-                </RippleButton>
-              </div>
-
-              <p className="text-sm text-gray-500 font-medium flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-primary" />
-                لا يلزم بطاقة ائتمان — وصول كامل لمدة 72 ساعة
-              </p>
-            </motion.div>
-
-            {/* Trust Badges */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="mt-16 flex flex-wrap items-center justify-center gap-12 opacity-60 grayscale hover:grayscale-0 transition-all duration-500"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-primary" />
-                </div>
-                <span className="text-sm font-bold">آمن 100%</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-accent" />
-                </div>
-                <span className="text-sm font-bold">سرعة فائقة</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
-                  <Users className="w-6 h-6 text-blue-400" />
-                </div>
-                <span className="text-sm font-bold">+500 عميل</span>
-              </div>
-            </motion.div>
-
-            {/* Free Trial Offer */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="mt-16 pt-12 pb-8 border-t border-white/5 px-4 sm:px-6"
-            >
-              <div className="flex flex-col items-center">
-                <p className="text-gray-400 font-medium text-center">
-                  انضم إلى أكثر من <span className="text-white font-bold">500 صالة</span> ناجحة اليوم
-                </p>
-                
-                <div className="mt-8 sm:mt-10 md:mt-12 flex items-center gap-2 text-xs text-primary font-bold uppercase tracking-widest text-center">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  عرض لفترة محدودة: تجربة مجانية لمدة 3 أيام (72 ساعة)
-                </div>
-
-                <button 
-                  onClick={() => scrollToSection('story')}
-                  className="mt-6 sm:mt-8 md:mt-10 text-gray-400 hover:text-white transition-colors font-bold text-sm underline underline-offset-8 decoration-primary/30"
-                >
-                  أو استكشف المميزات أولاً
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-        <ScrollIndicator />
-      </section>
+        return (
+          <>
+            {/* PS5 Cinematic Hero Experience */}
+            <HeroSection 
+              onPrimaryCta={() => scrollToSection('smart-form')}
+              onSecondaryCta={() => scrollToSection('demo-video')}
+            />
 
       {/* Video Showcase Section */}
-      <section id="demo-video" className="relative pt-16 sm:pt-24 pb-20 lg:pt-32 lg:pb-32 overflow-hidden bg-gradient-to-b from-transparent via-primary/5 to-transparent">
+      <section id="demo-video" className="scroll-mt-24 sm:scroll-mt-28 relative pt-16 sm:pt-24 pb-20 lg:pt-32 lg:pb-32 overflow-hidden bg-gradient-to-b from-transparent via-primary/5 to-transparent">
         <div className="container relative z-10">
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
@@ -1277,6 +1573,12 @@ export default function App() {
         </div>
       </section>
 
+      {/* Customer Journey Roadmap Section */}
+      <CustomerJourneyRoadmap 
+        onNavigateToSection={navigateToSection}
+        onWhatsAppClick={handleWhatsApp}
+      />
+
       {/* Problem Agitation Section */}
       <section className="py-24 bg-white/[0.02] relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-10" />
@@ -1339,14 +1641,10 @@ export default function App() {
               >
                 <HelpCircle className="w-16 h-16 text-primary mx-auto mb-8" />
               </motion.div>
-              <h2 className="text-3xl md:text-5xl font-black mb-12">3 أسئلة ستغير نظرتك لصالتك..</h2>
+              <h2 className="text-3xl md:text-5xl font-black mb-12">{t.questions.title}</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-right">
-                {[
-                  "هل تعرف أرباح كل جهاز يوميًا بدقة؟",
-                  "هل تعرف أكثر ساعة ضغط في صالتك؟",
-                  "هل تعرف كم تخسر فعليًا بدون نظام؟"
-                ].map((q, idx) => (
+                {t.questions.items.map((q, idx) => (
                   <motion.div 
                     key={idx} 
                     initial={{ opacity: 0, x: 20 }}
@@ -1371,7 +1669,7 @@ export default function App() {
                   }}
                   className="text-primary font-bold text-xl hover:underline flex items-center justify-center gap-2 mx-auto"
                 >
-                  اكتشف الإجابة الآن عبر حاسبة الأرباح
+                  {t.questions.cta}
                   <ArrowLeft className="w-5 h-5" />
                 </RippleButton>
               </div>
@@ -1381,7 +1679,7 @@ export default function App() {
       </section>
 
       {/* Solution Section */}
-      <section id="solution" className="py-24 relative overflow-hidden">
+      <section id="solution" className="scroll-mt-24 sm:scroll-mt-28 py-24 relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-5" />
         <div className="container">
           <motion.div 
@@ -1415,7 +1713,7 @@ export default function App() {
       </section>
 
       {/* Product Story Section */}
-      <section id="story" className="py-24 relative overflow-hidden bg-white/[0.01]">
+      <section id="story" className="scroll-mt-24 sm:scroll-mt-28 py-24 relative overflow-hidden bg-white/[0.01]">
         <div className="absolute inset-0 tech-grid opacity-5" />
         <div className="container">
           <motion.div 
@@ -1596,6 +1894,23 @@ export default function App() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center gap-16">
             <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="flex-1 relative"
+            >
+              <div className="glass rounded-[40px] p-4 border-white/10 shadow-2xl relative z-10 group overflow-hidden">
+                <GrayscaleImage 
+                  src={activeCmsContent.authImageUrl || "https://i.postimg.cc/k56Vy6yG/3-200.jpg"} 
+                  alt="Engineering Partnership" 
+                  className="rounded-[32px]"
+                  aspectRatio="aspect-auto"
+                />
+              </div>
+              <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-primary/20 blur-[100px] rounded-full animate-pulse" />
+            </motion.div>
+            <motion.div 
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -1637,29 +1952,12 @@ export default function App() {
                 </motion.div>
               </div>
             </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="flex-1 relative"
-            >
-              <div className="glass rounded-[40px] p-4 border-white/10 shadow-2xl relative z-10 group overflow-hidden">
-                <GrayscaleImage 
-                  src={activeCmsContent.authImageUrl || "https://i.postimg.cc/GmskHZKC/aryd-swrt-afdl-202604051407.jpg"} 
-                  alt="Engineering Partnership" 
-                  className="rounded-[32px]"
-                  aspectRatio="aspect-auto"
-                />
-              </div>
-              <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-primary/20 blur-[100px] rounded-full animate-pulse" />
-            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 sm:py-32 relative overflow-hidden">
+      <section id="features" className="scroll-mt-24 sm:scroll-mt-28 py-20 sm:py-32 relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-5" />
         <div className="container">
           <motion.div 
@@ -1691,8 +1989,8 @@ export default function App() {
               },
               {
                 icon: <ShieldCheck className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />,
-                title: "تحكم سيادي بالأجهزة",
-                desc: "تحكم في وقت التشغيل لكل جهاز مباشرة من الكاشير لمنع أي تلاعب بالأرباح وضمان الشفافية المطلقة."
+                title: "إدارة جلسات اللعب ومتابعة الأجهزة",
+                desc: "إدارة دقيقة لوقت اللعب لكل جهاز من داخل السيستم ومتابعة انتهاء الجلسات بوضوح لضمان الشفافية والانضباط."
               },
               {
                 icon: <Users className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />,
@@ -1726,7 +2024,7 @@ export default function App() {
       </section>
 
       {/* Comparison Section */}
-      <section id="comparison" className="py-20 sm:py-32 bg-white/[0.01] relative overflow-hidden">
+      <section id="comparison" className="scroll-mt-24 sm:scroll-mt-28 py-20 sm:py-32 bg-white/[0.01] relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-5" />
         <div className="container">
           <motion.div 
@@ -1761,7 +2059,7 @@ export default function App() {
                     ["التكلفة التشغيلية", "اشتراك شهري (نزيف مستمر)", "دفع لمرة واحدة (ملكية للأبد)"],
                     ["ملكية البيانات", "مخزنة عند طرف ثالث", "مخزنة محلياً تحت سيطرتك"],
                     ["تخصيص الهوية", "محدود جداً", "كامل (شعارك وألوانك)"],
-                    ["التحكم في الأجهزة", "جزئي/برمجي فقط", "تحكم سيادي مباشر"],
+                    ["إدارة الجلسات والأجهزة", "معقدة وبطيئة", "إدارة الأجهزة والجلسات من خلال السيستم"],
                     ["الدعم الفني", "تذاكر انتظار", "دعم استراتيجي مباشر"]
                   ].map((row, i) => (
                     <tr key={i} className="comparison-row border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors group">
@@ -1788,7 +2086,7 @@ export default function App() {
       </section>
 
       {/* Profit Calculator Section */}
-      <section id="calculator" className="py-24 relative overflow-hidden">
+      <section id="calculator" className="scroll-mt-24 sm:scroll-mt-28 py-24 relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-10" />
         <div className="container">
           <div className="max-w-4xl mx-auto">
@@ -1798,12 +2096,12 @@ export default function App() {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <h2 className="text-3xl md:text-5xl font-black mb-6">احسب أرباحك المحتملة</h2>
-              <p className="text-xl text-gray-400 mb-8">اكتشف كم يمكن أن يوفر لك النظام شهريًا</p>
+              <h2 className="text-3xl md:text-5xl font-black mb-6">{t.calculator.title}</h2>
+              <p className="text-xl text-gray-400 mb-8">{t.calculator.subtitle}</p>
               
               {/* Country Selector */}
               <div className="flex flex-wrap justify-center gap-4 mb-8">
-                {Object.values(countries).map((country) => (
+                {SUPPORTED_COUNTRIES.map((country) => (
                   <button
                     key={country.id}
                     onClick={() => handleCountryChange(country)}
@@ -1829,21 +2127,21 @@ export default function App() {
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] -mr-32 -mt-32" />
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10">
-                <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 relative z-10">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Devices Control */}
-                  <div className="glass p-6 rounded-3xl border-white/5 hover:border-primary/20 transition-all group">
-                    <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 text-center sm:text-right">عدد الأجهزة بالصالة</label>
-                    <div className="flex items-center justify-center gap-10">
+                  <div className="glass p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-white/5 hover:border-primary/20 transition-all group">
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-wider mb-4 sm:mb-6 text-center sm:text-right">{t.calculator.devicesLabel}</label>
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-10">
                       <motion.button 
-                        whileHover={{ scale: 1.15 }}
+                        whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
-                        title="تقليل"
+                        title="تقليل (-)"
                         onClick={() => setCalcDevices(Math.max(1, calcDevices - 1))} 
-                        className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-red-500/20 text-white border border-white/10 shadow-xl transition-colors"
+                        className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 shadow-lg shadow-red-500/10 flex items-center justify-center transition-all cursor-pointer shrink-0"
                       >
-                        <Minus className="w-7 h-7" />
+                        <Minus className="w-6 h-6 sm:w-8 sm:h-8" strokeWidth={3.5} />
                       </motion.button>
                       
                       <div className="relative group/input">
@@ -1854,41 +2152,41 @@ export default function App() {
                             const val = parseInt(e.target.value);
                             if (!isNaN(val)) setCalcDevices(Math.min(50, Math.max(1, val)));
                           }}
-                          className="text-5xl font-black w-24 text-center bg-transparent border-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-white"
+                          className="text-3xl sm:text-5xl font-black w-20 sm:w-24 text-center bg-transparent border-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-white"
                         />
                         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary/20 rounded-full group-hover/input:w-12 group-hover/input:bg-primary transition-all" />
                       </div>
 
                       <motion.button 
-                        whileHover={{ scale: 1.15 }}
+                        whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
-                        title="زيادة"
+                        title="زيادة (+)"
                         onClick={() => setCalcDevices(Math.min(50, calcDevices + 1))} 
-                        className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-emerald-500/20 text-white border border-white/10 shadow-xl transition-colors"
+                        className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 shadow-lg shadow-emerald-500/10 flex items-center justify-center transition-all cursor-pointer shrink-0"
                       >
-                        <Plus className="w-7 h-7" />
+                        <Plus className="w-6 h-6 sm:w-8 sm:h-8" strokeWidth={3.5} />
                       </motion.button>
                     </div>
-                    <div className="mt-6 text-center">
+                    <div className="mt-4 sm:mt-6 text-center">
                       <p className="text-[10px] text-primary/60 font-bold mb-1">➕ لزيادة العدد — ➖ لتقليل العدد</p>
-                      <p className="text-[10px] text-gray-500 font-bold">الحد الأقصى: 50 جهاز</p>
+                      <p className="text-[10px] text-gray-500 font-bold">{t.calculator.devicesHint}</p>
                     </div>
                   </div>
 
                   {/* Hours Control */}
-                  <div className="glass p-6 rounded-3xl border-white/5 hover:border-primary/20 transition-all group">
-                    <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 text-center sm:text-right">متوسط ساعات التشغيل اليومية للجهاز</label>
-                    <div className="flex items-center justify-center gap-10">
+                  <div className="glass p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-white/5 hover:border-primary/20 transition-all group">
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-wider mb-4 sm:mb-6 text-center sm:text-right">{t.calculator.hoursLabel}</label>
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-10">
                       <motion.button 
-                        whileHover={{ scale: 1.15 }}
+                        whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
-                        title="تقليل"
+                        title="تقليل (-)"
                         onClick={() => setCalcHours(Math.max(1, calcHours - 1))} 
-                        className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-red-500/20 text-white border border-white/10 shadow-xl transition-colors"
+                        className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 shadow-lg shadow-red-500/10 flex items-center justify-center transition-all cursor-pointer shrink-0"
                       >
-                        <Minus className="w-7 h-7" />
+                        <Minus className="w-6 h-6 sm:w-8 sm:h-8" strokeWidth={3.5} />
                       </motion.button>
                       
                       <div className="relative group/input">
@@ -1899,61 +2197,61 @@ export default function App() {
                             const val = parseInt(e.target.value);
                             if (!isNaN(val)) setCalcHours(Math.min(24, Math.max(1, val)));
                           }}
-                          className="text-5xl font-black w-24 text-center bg-transparent border-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-white"
+                          className="text-3xl sm:text-5xl font-black w-20 sm:w-24 text-center bg-transparent border-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-white"
                         />
                         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary/20 rounded-full group-hover/input:w-12 group-hover/input:bg-primary transition-all" />
                       </div>
 
                       <motion.button 
-                        whileHover={{ scale: 1.15 }}
+                        whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
-                        title="زيادة"
+                        title="زيادة (+)"
                         onClick={() => setCalcHours(Math.min(24, calcHours + 1))} 
-                        className="w-16 h-16 rounded-full glass flex items-center justify-center hover:bg-emerald-500/20 text-white border border-white/10 shadow-xl transition-colors"
+                        className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 shadow-lg shadow-emerald-500/10 flex items-center justify-center transition-all cursor-pointer shrink-0"
                       >
-                        <Plus className="w-7 h-7" />
+                        <Plus className="w-6 h-6 sm:w-8 sm:h-8" strokeWidth={3.5} />
                       </motion.button>
                     </div>
-                    <div className="mt-6 text-center">
+                    <div className="mt-4 sm:mt-6 text-center">
                       <p className="text-[10px] text-primary/60 font-bold mb-1">➕ لزيادة العدد — ➖ لتقليل العدد</p>
-                      <p className="text-[10px] text-gray-500 font-bold">الحد الأقصى: 24 ساعة</p>
+                      <p className="text-[10px] text-gray-500 font-bold">{t.calculator.hoursHint}</p>
                     </div>
                   </div>
 
                   {/* Leak Rate (Fraud & Abuse Control) */}
                   <div className="glass p-6 rounded-3xl border-white/5 hover:border-primary/20 transition-all group">
-                    <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4 text-center sm:text-right">نسبة التسريب المالي وتلاعب العمال المتوقعة (دون سيستم حماية)</label>
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4 text-center sm:text-right">{t.calculator.leakLabel}</label>
                     <div className="flex items-center justify-center gap-6">
                       <motion.button 
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
-                        title="تقليل"
+                        title="تقليل (-)"
                         onClick={() => setLeakRate(Math.max(5, leakRate - 5))} 
-                        className="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-red-500/20 text-white border border-white/10 shadow-xl transition-colors"
+                        className="w-12 h-12 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 shadow-lg shadow-red-500/10 flex items-center justify-center transition-all cursor-pointer"
                       >
-                        <Minus className="w-5 h-5" />
+                        <Minus className="w-6 h-6" strokeWidth={3.5} />
                       </motion.button>
                       
                       <div className="text-center">
                         <span className="text-4xl font-black text-red-400">{leakRate}%</span>
-                        <p className="text-[10px] text-gray-500 font-bold mt-1">نسبة الهدر الافتراضية</p>
+                        <p className="text-[10px] text-gray-500 font-bold mt-1">{t.calculator.leakHint}</p>
                       </div>
 
                       <motion.button 
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
-                        title="زيادة"
+                        title="زيادة (+)"
                         onClick={() => setLeakRate(Math.min(40, leakRate + 5))} 
-                        className="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-emerald-500/20 text-white border border-white/10 shadow-xl transition-colors"
+                        className="w-12 h-12 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 shadow-lg shadow-emerald-500/10 flex items-center justify-center transition-all cursor-pointer"
                       >
-                        <Plus className="w-5 h-5" />
+                        <Plus className="w-6 h-6" strokeWidth={3.5} />
                       </motion.button>
                     </div>
                     <div className="mt-4 text-center">
-                      <p className="text-[10px] text-gray-400 leading-relaxed">تتراوح نسبة الخسارة الحقيقية في الصالات غير المراقبة آلياً بين <span className="text-red-400 font-bold">15% إلى 30%</span> نتيجة الوقت غير المسجل وهدايا المشروبات للزبائن.</p>
+                      <p className="text-[10px] text-gray-400 leading-relaxed">{t.calculator.leakExplanation}</p>
                     </div>
                   </div>
                 </div>
@@ -1964,14 +2262,14 @@ export default function App() {
                     layout
                     className="bg-white/[0.02] rounded-[24px] p-6 border border-white/5 flex flex-col justify-between items-center text-center relative overflow-hidden"
                   >
-                    <div className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-2">الدخل الشهري الإجمالي المفترض</div>
+                    <div className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-2">{t.calculator.potentialProfitLabel}</div>
                     <div className="flex items-baseline gap-2 mb-1">
                       <div className="text-4xl font-black text-white tracking-tight">
                         <Counter value={potentialProfit} />
                       </div>
                       <div className="text-sm font-bold text-gray-400">{selectedCountry.hourlyCurrencyName}</div>
                     </div>
-                    <p className="text-[10px] text-gray-500">حساب افتراضي: عدد الأجهزة × الساعات × سعر ساعة اللعب ({selectedCountry.hourlyPrice} {selectedCountry.hourlyCurrencyName})</p>
+                    <p className="text-[10px] text-gray-500">{t.calculator.potentialProfitHint}: عدد الأجهزة × الساعات × سعر ساعة اللعب ({selectedCountry.hourlyPrice} {selectedCountry.hourlyCurrencyName})</p>
                   </motion.div>
 
                   {/* Monthly Loss / Waste Card (CRIMSON RED for Loss Aversion) */}
@@ -1983,7 +2281,7 @@ export default function App() {
                       <AlertTriangle className="w-12 h-12" />
                     </div>
                     <div className="text-xs text-red-400 font-black uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                      <span>نزيف الخسائر الصامت شهرياً (دون سيستم)</span>
+                      <span>{t.calculator.lossLabel}</span>
                     </div>
                     <div className="flex items-baseline gap-2 mb-1">
                       <div className="text-4xl font-black text-red-500 tracking-tight">
@@ -1991,7 +2289,7 @@ export default function App() {
                       </div>
                       <div className="text-sm font-bold text-red-400">{selectedCountry.hourlyCurrencyName}</div>
                     </div>
-                    <p className="text-[10px] text-red-400/80 max-w-[300px] leading-relaxed">أموال تسقط من جيبك وتذهب لصالح تلاعب العمال أو ساعات اللعب المنسية والسرقات الفردية.</p>
+                    <p className="text-[10px] text-red-400/80 max-w-[300px] leading-relaxed">{t.calculator.lossHint}</p>
                   </motion.div>
 
                   {/* Recovered Extra Profit Card (GLOWING EMERALD for Gain Motivation) */}
@@ -2003,7 +2301,7 @@ export default function App() {
                       <ShieldCheck className="w-12 h-12 animate-pulse" />
                     </div>
                     <div className="text-xs text-emerald-400 font-black uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                      <span>الأرباح الإضافية المستردة شهرياً (مع IDEA Makers)</span>
+                      <span>{t.calculator.recoveredProfitLabel}</span>
                     </div>
                     <div className="flex items-baseline gap-2 mb-1">
                       <div className="text-5xl font-black text-emerald-400 tracking-tight">
@@ -2011,7 +2309,7 @@ export default function App() {
                       </div>
                       <div className="text-sm font-bold text-emerald-400">{selectedCountry.hourlyCurrencyName}</div>
                     </div>
-                    <p className="text-[11px] text-emerald-400/90 font-bold max-w-[320px] leading-relaxed">🛡️ هذا المبلغ سيتم استرداده بالكامل وتحويله لحسابك المباشر في أول شهر بعد تطبيق النظام وسد الثغرات!</p>
+                    <p className="text-[11px] text-emerald-400/90 font-bold max-w-[320px] leading-relaxed">{t.calculator.recoveredProfitHint}</p>
                   </motion.div>
                 </div>
               </div>
@@ -2019,10 +2317,10 @@ export default function App() {
               <div className="mt-12 text-center">
                 <RippleButton 
                   primary
-                  onClick={() => handleWhatsApp(`*مرحبًا فريق صُنّاع الفكرة* 👋\n\nقمت بحساب الخسائر في صالتي، وتبين أني أخسر حوالي ${estimatedLoss} ${selectedCountry.hourlyCurrencyName} شهرياً دون سيستم حماية. أريد بدء التشغيل الفوري وتجربة النظام مجاناً لسد الثغرات.`)}
+                  onClick={() => handleWhatsApp(`*مرحبًا فريق صُنّاع الفكرة* 👋\n\nقمت بحساب الخسائر في صالتي (${selectedCountry.name})، وتبين أني أخسر حوالي ${estimatedLoss} ${selectedCountry.hourlyCurrencyName} شهرياً دون سيستم حماية. أريد بدء التشغيل الفوري وتجربة النظام مجاناً لسد الثغرات.`)}
                   className="bg-primary text-white px-10 py-5 rounded-2xl font-black text-xl shadow-xl shadow-primary/30 hover:scale-105 transition-all w-full sm:w-auto"
                 >
-                  احمِ صالتك واسترد أرباحك المهدرة الآن
+                  {t.calculator.cta}
                 </RippleButton>
               </div>
             </motion.div>
@@ -2098,7 +2396,7 @@ export default function App() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20 sm:py-32 relative overflow-hidden">
+      <section id="pricing" className="scroll-mt-24 sm:scroll-mt-28 py-20 sm:py-32 relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-10" />
         <div className="purple-glow top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-primary/10" />
         
@@ -2109,22 +2407,22 @@ export default function App() {
             viewport={{ once: true }}
             className="text-center mb-12 sm:mb-20"
           >
-            <h2 className="font-bold mb-4 sm:mb-6">{activeCmsContent.pricingTitle || "استثمار سيادي.. لمرة واحدة"}</h2>
-            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto font-light mb-12">{activeCmsContent.pricingSubtitle || "اختر الباقة التي تناسب طموحك. لا توجد رسوم خفية، لا توجد اشتراكات، لا توجد تبعية."}</p>
+            <h2 className="font-bold mb-4 sm:mb-6">{activeCmsContent.pricingTitle || t.pricing.title}</h2>
+            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto font-light mb-12">{activeCmsContent.pricingSubtitle || t.pricing.subtitle}</p>
             
             {/* Country Selector for Pricing */}
-            <div className="flex flex-wrap justify-center gap-4 mb-4">
-              {Object.values(countries).map((country) => (
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-4">
+              {SUPPORTED_COUNTRIES.map((country) => (
                 <button
                   key={country.id}
                   onClick={() => handleCountryChange(country)}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3.5 py-2 sm:px-6 sm:py-3 rounded-2xl text-xs sm:text-base font-bold transition-all cursor-pointer ${
                     selectedCountry.id === country.id
                       ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-105'
                       : 'glass hover:bg-white/10 text-gray-400'
                   }`}
                 >
-                  <span className="text-xl">{country.flag}</span>
+                  <span className="text-base sm:text-xl">{country.flag}</span>
                   <span>{country.name}</span>
                 </button>
               ))}
@@ -2133,14 +2431,14 @@ export default function App() {
               <motion.p 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-emerald-500 font-bold mt-4 text-sm"
+                className="text-emerald-500 font-bold mt-4 text-xs sm:text-sm"
               >
-                الباقة الدولية هي المتاحة لهذا البلد لضمان أفضل أداء وتجربة تشغيل
+                {t.pricing.internationalNotice}
               </motion.p>
             )}
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 max-w-7xl mx-auto items-stretch pricing-grid">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12 max-w-7xl mx-auto items-stretch pricing-grid">
             {packagesData.map((pkg, idx) => {
               const isLocked = selectedCountry.id !== 'egypt' && pkg.id !== 'international';
               const isRecommended = selectedCountry.id !== 'egypt' && pkg.id === 'international';
@@ -2191,7 +2489,7 @@ export default function App() {
                     scale: [1, 1.02, 1],
                     transition: { duration: 0.5 }
                   } : {}}
-                  className={`relative glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] flex flex-col transition-all duration-500 ${pkg.popular ? `${colors.borderFeatured} scale-105 shadow-[0_0_50px_${colors.glow}] py-10 sm:py-16 z-20 bg-gradient-to-b ${colors.bg} to-transparent` : 'hover:border-white/20'} ${pkg.id === 'international' ? 'border-blue-500/30' : ''} ${isLocked ? 'opacity-40 grayscale pointer-events-none' : ''} ${selectedPackage.id === pkg.id ? 'ring-4 ring-primary ring-offset-4 ring-offset-black' : ''}`}
+                  className={`relative glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] flex flex-col transition-all duration-500 ${pkg.popular ? `pricing-card-featured ${colors.borderFeatured} lg:scale-105 shadow-[0_0_50px_${colors.glow}] py-8 sm:py-10 lg:py-16 z-20 bg-gradient-to-b ${colors.bg} to-transparent` : 'hover:border-white/20'} ${pkg.id === 'international' ? 'border-blue-500/30' : ''} ${isLocked ? 'opacity-40 grayscale pointer-events-none' : ''} ${selectedPackage.id === pkg.id ? 'ring-4 ring-primary ring-offset-4 ring-offset-black' : ''}`}
                   onClick={() => !isLocked && setSelectedPackage(pkg)}
                 >
                   {pkg.popular && selectedCountry.id === 'egypt' && (
@@ -2201,65 +2499,80 @@ export default function App() {
                       transition={{ delay: 1, type: 'spring' }}
                       className={`absolute -top-5 left-1/2 -translate-x-1/2 ${colors.button} text-white text-[10px] sm:text-sm font-black px-6 sm:px-8 py-2 rounded-full shadow-[0_0_30px_${colors.glow}] uppercase tracking-widest whitespace-nowrap`}
                     >
-                      الأكثر اختيارًا
+                      {t.pricing.popularBadge}
                     </motion.div>
                   )}
 
-                  {isLocked && (
-                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-red-500/80 text-white text-[10px] sm:text-sm font-black px-6 sm:px-8 py-2 rounded-full shadow-lg uppercase tracking-widest whitespace-nowrap z-30">
-                      غير متاح في بلدك
-                    </div>
-                  )}
-
-                  {isRecommended && (
+                  {/* Professional Badge - الأكثر اختيارًا */}
+                  {pkg.id === 'professional' && (
                     <motion.div 
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="absolute -top-5 left-1/2 -translate-x-1/2 bg-emerald-500 text-black text-[10px] sm:text-sm font-black px-6 sm:px-8 py-2 rounded-full shadow-[0_0_30px_rgba(16,185,129,0.5)] uppercase tracking-widest whitespace-nowrap z-30"
+                      transition={{ delay: 0.3, type: 'spring' }}
+                      className="absolute -top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-accent via-emerald-400 to-accent text-black text-xs sm:text-sm font-black px-6 sm:px-8 py-2 rounded-full shadow-[0_0_30px_rgba(16,185,129,0.5)] uppercase tracking-wider whitespace-nowrap z-30"
                     >
-                      موصى بها لهذا البلد
+                      {pkg.badge || 'الأكثر اختيارًا'}
                     </motion.div>
                   )}
-                  
-                  {pkg.id === 'international' && selectedCountry.id === 'egypt' && (
-                    <div className={`absolute -top-5 left-1/2 -translate-x-1/2 ${colors.button} text-white text-[10px] sm:text-sm font-black px-6 sm:px-8 py-2 rounded-full shadow-[0_0_30px_${colors.glow}] uppercase tracking-widest whitespace-nowrap`}>
-                      للصالات الاحترافية والتوسع الخارجي
+
+                  {/* Supporting label for International Package */}
+                  {pkg.id === 'international' && (
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-blue-600/90 text-white text-[11px] sm:text-xs font-bold px-4 sm:px-6 py-1.5 rounded-full shadow-lg border border-blue-400/30 whitespace-nowrap z-30">
+                      {pkg.supportingLabel || 'للصالات الاحترافية والتوسع الخارجي'}
+                    </div>
+                  )}
+
+                  {isLocked && (
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-red-500/80 text-white text-[10px] sm:text-xs font-black px-4 sm:px-6 py-1.5 rounded-full shadow-lg uppercase tracking-wider whitespace-nowrap z-30">
+                      {t.pricing.lockedBadge || 'متاحة لمصر فقط'}
                     </div>
                   )}
                   
-                  <h3 className={`text-2xl sm:text-3xl font-black mb-4 ${colors.text}`}>{pkg.name}</h3>
-                  <div className="flex items-baseline gap-2 mb-8 sm:mb-10 h-[60px]">
+                  <div className="mb-4">
+                    <h3 className={`text-2xl sm:text-3xl font-black ${colors.text}`}>{pkg.name}</h3>
+                    {pkg.supportingLabel && (
+                      <p className="text-xs text-blue-400/90 font-medium mt-1">
+                        {pkg.supportingLabel}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-baseline gap-2 mb-6 sm:mb-8 min-h-[56px]">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={pkg.id === 'international' ? selectedCountry.id : 'static'}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
+                        exit={{ opacity: 0, y: -15 }}
+                        transition={{ duration: 0.25 }}
                         className="flex items-baseline gap-2"
                       >
-                        <span className="text-4xl sm:text-5xl font-black">
-                          {pkg.id === 'international' ? intPricing[selectedCountry.id]?.price : pkg.price}
+                        <span className="text-4xl sm:text-5xl font-black tracking-tight text-white">
+                          {pkg.id === 'international' && selectedCountry.id !== 'egypt' && intPricing[selectedCountry.id]
+                            ? formatPriceEGP(Number(intPricing[selectedCountry.id].price))
+                            : formatPriceEGP(Number(pkg.price))}
                         </span>
-                        <span className="text-gray-500 font-medium text-sm sm:text-base">
-                          {pkg.id === 'international' ? intPricing[selectedCountry.id]?.currency : pkg.currency}
+                        <span className="text-gray-400 font-bold text-base sm:text-lg">
+                          {pkg.id === 'international' && selectedCountry.id !== 'egypt' && intPricing[selectedCountry.id]
+                            ? intPricing[selectedCountry.id].currency
+                            : pkg.currency}
                         </span>
                         {pkg.id === 'international' && selectedCountry.id !== 'egypt' && (
-                          <div className="text-[10px] text-gray-500 ml-2">
-                            (يعادل تقريبًا {intPricing['egypt']?.price} {intPricing['egypt']?.currency})
+                          <div className="text-[11px] text-gray-500 mr-2 font-medium">
+                            (يعادل {formatPriceEGP(Number(pkg.price))} {pkg.currency})
                           </div>
                         )}
                       </motion.div>
                     </AnimatePresence>
                   </div>
                   
-                  <div className="h-px bg-white/10 mb-8 sm:mb-10" />
+                  <div className="h-px bg-white/10 mb-6 sm:mb-8" />
 
-                  <ul className="space-y-4 sm:space-y-6 mb-10 sm:mb-12 flex-grow">
+                  <ul className="space-y-3.5 sm:space-y-4 mb-8 sm:mb-10 flex-grow text-right" dir="rtl">
                     {pkg.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-3 sm:gap-4 text-sm sm:text-base">
-                        <CheckCircle2 className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 mt-0.5 ${colors.icon}`} />
-                        <span className="text-gray-300">{feature}</span>
+                      <li key={i} className="flex items-start gap-2.5 sm:gap-3 text-xs sm:text-sm leading-relaxed">
+                        <CheckCircle2 className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 mt-0.5 ${colors.icon}`} />
+                        <span className="text-gray-300 font-normal">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -2359,13 +2672,13 @@ export default function App() {
                     <span className="text-xs text-accent font-black">(الحصن السيادي)</span>
                   </h4>
                   <p className="text-xs text-gray-300 leading-relaxed">
-                    الباقة المفضلة لـ **90% من أصحاب الصالات** لأنها تقضي على الوجع الأكبر: **سرقة الموظفين وتشغيل الأجهزة سراً**. فجوة السعر الضئيلة لمرة واحدة (2,000 ج.م) ستستردها خلال أول أسبوع تشغيل فقط بفضل دمج الكافيه وحظر الشاشات بدون فاتورة!
+                    الباقة المفضلة لـ **90% من أصحاب الصالات** لأنها تساعدك على إدارة الصالة باحترافية: **متابعة أداء العمل وتسجيل كافة الجلسات بدقة**. فجوة السعر الضئيلة لمرة واحدة (2,000 ج.م) ستستردها خلال أول أسبوع تشغيل فقط بفضل دمج الكافيه وإدارة الأجهزة والجلسات من خلال السيستم!
                   </p>
                   <div className="h-px bg-white/5 my-4" />
                   <ul className="space-y-3 text-xs text-gray-300">
                     <li className="flex items-center gap-2 justify-start">
                       <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
-                      <span className="font-bold text-white">حماية سيادية مطلقة وقفل للشاشات تلقائياً</span>
+                      <span className="font-bold text-white">رقابة إدارية دقيقة لضمان تسجيل كافة الجلسات</span>
                     </li>
                     <li className="flex items-center gap-2 justify-start">
                       <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
@@ -2461,10 +2774,10 @@ export default function App() {
                       <td className="py-4 text-center">أصل مدى الحياة للفرع الحالي (مع ترخيص ترقية للفروع مستقبلاً)</td>
                     </tr>
                     <tr>
-                      <td className="py-4 font-bold text-white">حماية الشاشات ضد تلاعب العمال سراً</td>
+                      <td className="py-4 font-bold text-white">إدارة الأجهزة والجلسات من خلال السيستم</td>
                       <td className="py-4 text-center text-gray-500">❌ حماية أساسية (يدوية)</td>
-                      <td className="py-4 text-center text-accent font-black bg-accent/5">👑 حماية سيادية مطلقة وقفل الشاشات آلياً</td>
-                      <td className="py-4 text-center text-blue-400 font-bold">👑 حماية سيادية مطلقة وقفل الشاشات آلياً</td>
+                      <td className="py-4 text-center text-accent font-black bg-accent/5">👑 رقابة إدارية دقيقة لضمان تسجيل كافة الجلسات</td>
+                      <td className="py-4 text-center text-blue-400 font-bold">👑 رقابة إدارية دقيقة لضمان تسجيل كافة الجلسات</td>
                     </tr>
                     <tr>
                       <td className="py-4 font-bold text-white">نظام الكافيه والمشروبات والمخازن</td>
@@ -2564,8 +2877,14 @@ export default function App() {
       {/* Testimonials Section */}
       <Testimonials customTestimonials={activeLocal.testimonials} />
 
+      {/* Enterprise Company Profile & Technical Proposal Section */}
+      <CompanyProfileSection 
+        onOpenViewer={handleOpenCompanyProfile}
+        onWhatsAppInquiry={handleWhatsApp}
+      />
+
       {/* Brand Authority Section */}
-      <section id="about" className="py-24 bg-white/[0.02] relative overflow-hidden">
+      <section id="about" className="scroll-mt-24 sm:scroll-mt-28 py-24 bg-white/[0.02] relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-5" />
         <div className="container mx-auto px-4 sm:px-6">
           
@@ -2758,18 +3077,18 @@ export default function App() {
                 transition={{ duration: 0.8 }}
                 className="relative group"
               >
-                <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                <div className="relative glass p-2 rounded-[48px] border-white/10 overflow-hidden shadow-2xl">
-                  <GrayscaleImage 
-                    src={activeCmsContent.founderImgUrl || "https://i.postimg.cc/pX35pXmS/CEO-Eslam-Arafa.jpg"} 
-                    alt={`${activeCmsContent.founderName || "Eslam Arafa"} - ${activeCmsContent.founderRole || "Founder & CEO"}`} 
-                    className="rounded-[40px]"
-                    aspectRatio="aspect-[4/5]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                  <div className="absolute bottom-8 left-8 right-8 text-right">
-                    <h3 className="text-3xl font-black text-white mb-1">{activeCmsContent.founderName || "Eslam Arafa"}</h3>
-                    <p className="text-primary font-bold">{activeCmsContent.founderRole || "Founder & CEO – IDEA Makers"}</p>
+                <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                <div className="relative glass p-2 sm:p-2.5 rounded-[36px] sm:rounded-[44px] border border-primary/30 overflow-hidden shadow-[0_25px_80px_rgba(168,85,247,0.3)] bg-[#090914] group">
+                  <div className="relative rounded-[30px] sm:rounded-[38px] overflow-hidden aspect-[1218/1292] bg-[#070710]">
+                    <img 
+                      src={(!activeCmsContent.founderImgUrl || activeCmsContent.founderImgUrl.includes('CEO-Eslam-Arafa.jpg') || activeCmsContent.founderImgUrl.includes('Neon_Idea_Makers_Founder_Poster_882efcf0.png')) ? "/assets/aistudio/IDEA_MAKERS__Neon_Visionary_Founder_Poster_f63e4b3b.png" : activeCmsContent.founderImgUrl} 
+                      alt={`${activeCmsContent.founderName || "Eslam Arafa"} - ${activeCmsContent.founderRole || "Founder & CEO – IDEA Makers"}`} 
+                      loading="eager"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.015]"
+                    />
+                    {/* Subtle neon rim highlight */}
+                    <div className="absolute inset-0 rounded-[30px] sm:rounded-[38px] ring-1 ring-inset ring-white/10 pointer-events-none" />
                   </div>
                 </div>
                 
@@ -2866,7 +3185,7 @@ export default function App() {
       <SmartForm initialPackage={selectedPackage} initialCountry={selectedCountry} />
 
       {/* FAQ Section */}
-      <section id="faq" className="py-16 sm:py-24 relative overflow-hidden">
+      <section id="faq" className="scroll-mt-24 sm:scroll-mt-28 py-16 sm:py-24 relative overflow-hidden">
         <div className="absolute inset-0 tech-grid opacity-5" />
         <div className="container max-w-3xl">
           <motion.div 
@@ -2875,8 +3194,8 @@ export default function App() {
             viewport={{ once: true }}
             className="text-center mb-12 sm:mb-16"
           >
-            <h2 className="font-bold mb-4">الأسئلة الشائعة</h2>
-            <p className="text-gray-400 text-base sm:text-lg">كل ما تحتاج لمعرفته حول نظام IDEA Makers</p>
+            <h2 className="font-bold mb-4">{t.faq.title}</h2>
+            <p className="text-gray-400 text-base sm:text-lg">{t.faq.subtitle}</p>
           </motion.div>
 
           <div className="space-y-4">
@@ -2901,32 +3220,44 @@ export default function App() {
           </div>
         </div>
       </section>
+          </>
+        );
+      })()}
 
       {/* Social Media Icons Section */}
       <SocialIcons />
 
       {/* Professional Footer */}
-      <Footer />
+      <Footer 
+        onNavigatePath={navigateTo} 
+        selectedCountryId={selectedCountry.id}
+        onSelectCountry={handleCountryChange}
+      />
 
       {/* Sticky Mobile CTA Bar */}
-      <div className="sticky-cta-bar flex gap-3">
+      <div className="sticky-cta-bar flex gap-2.5 sm:gap-3">
         <button 
-          onClick={() => {
-            const el = document.getElementById('smart-form');
-            el?.scrollIntoView({ behavior: 'smooth' });
-          }}
-          className="flex-1 bg-primary text-white py-4 rounded-xl font-bold text-sm shadow-lg shadow-primary/20"
+          onClick={() => navigateToSection('smart-form')}
+          className="flex-1 bg-primary hover:bg-primary-dark text-white py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm shadow-lg shadow-primary/25 cursor-pointer transition-colors"
         >
-          ابدأ التجربة
+          ابدأ التجربة المجانية (3 أيام)
         </button>
         <button 
           onClick={() => handleWhatsApp("*مرحبًا فريق صُنّاع الفكرة* 👋\n\nأرغب في شراء نظام البلايستيشن.")}
-          className="flex-1 glass text-white py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
+          className="glass hover:bg-white/10 text-white px-4 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer transition-colors shrink-0"
         >
-          <MessageCircle className="w-4 h-4" />
-          اشتري الآن
+          <MessageCircle className="w-4 h-4 text-emerald-400" />
+          <span>واتساب</span>
         </button>
       </div>
+
+      {/* World-Class Enterprise Company Profile & Technical Proposal Viewer Modal */}
+      <CompanyProfileViewerModal
+        isOpen={isCompanyProfileViewerOpen}
+        onClose={() => setIsCompanyProfileViewerOpen(false)}
+        initialPage={companyProfileInitialPage}
+        onConsultationClick={handleWhatsApp}
+      />
     </div>
   );
 }

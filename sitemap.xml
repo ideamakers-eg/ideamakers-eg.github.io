@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Homepage -->
+  <url>
+    <loc>https://ideamakers-eg.github.io/</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://ideamakers-eg.github.io/playstation-pos-egypt" />
+    <xhtml:link rel="alternate" hreflang="ar-SA" href="https://ideamakers-eg.github.io/playstation-pos-saudi" />
+    <xhtml:link rel="alternate" hreflang="ar-AE" href="https://ideamakers-eg.github.io/playstation-pos-uae" />
+    <xhtml:link rel="alternate" hreflang="ar-KW" href="https://ideamakers-eg.github.io/playstation-pos-kuwait" />
+    <xhtml:link rel="alternate" hreflang="ar-QA" href="https://ideamakers-eg.github.io/playstation-pos-qatar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ideamakers-eg.github.io/" />
+  </url>
+
+  <!-- 7 Specialized Pillar Pages -->
+  <url>
+    <loc>https://ideamakers-eg.github.io/playstation-pos-cashier</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/session-billing-software</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/accounting-reports-pos</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/cafe-inventory-pos</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/pricing-packages</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/free-trial</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/profit-calculator</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <!-- International English Landing Pages -->
+  <url>
+    <loc>https://ideamakers-eg.github.io/playstation-lounge-management-software</loc>
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/gaming-lounge-pos-software</loc>
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- Knowledge & Practical Guides Hub -->
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <!-- 8 Comprehensive Practical Guides -->
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/how-to-choose-playstation-pos</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/calculate-gaming-lounge-profit</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/track-playstation-session-time</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/manage-lounge-cafe-inventory</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/offline-vs-cloud-pos</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/shift-handover-cashier-audit</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/traditional-cashier-vs-gaming-pos</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/lounge-setup-and-operation-costs</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/break-even-calculator-playstation-lounge</loc>
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/prevent-windows-clock-tampering</loc>
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/lounge-cafe-beverage-profit-system</loc>
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/guides/shift-handover-cashier-protocol</loc>
+    <lastmod>2026-11-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Targeted Regional Pages -->
+  <url>
+    <loc>https://ideamakers-eg.github.io/playstation-pos-egypt</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/playstation-pos-saudi</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/playstation-pos-uae</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/playstation-pos-kuwait</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://ideamakers-eg.github.io/playstation-pos-qatar</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+</urlset>

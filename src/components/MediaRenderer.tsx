@@ -91,6 +91,8 @@ export const MediaRenderer: React.FC<MediaRendererProps> = ({
           alt={alt}
           className={className}
           referrerPolicy="no-referrer"
+          loading="lazy"
+          decoding="async"
         />
       );
     }
@@ -104,6 +106,8 @@ export const MediaRenderer: React.FC<MediaRendererProps> = ({
         alt={alt}
         className={className}
         referrerPolicy="no-referrer"
+        loading="lazy"
+        decoding="async"
       />
     );
   }

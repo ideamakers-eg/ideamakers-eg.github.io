@@ -12,56 +12,13 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { SourceSelection, SourceType } from './SourceSelection';
+import { useI18n, SUPPORTED_COUNTRIES } from '../i18n';
+import { OFFICIAL_PRICING_PACKAGES, formatPriceEGP } from '../pricingConfig';
+import { Analytics } from '../lib/analytics';
 import './SmartForm.css';
 import './package-colors.css';
 
-const packages = [
-  {
-    id: 'starter',
-    name: 'Starter Package',
-    price: '4000',
-    currency: 'EGP',
-    color: 'primary',
-    features: [
-      'مناسب لصالات البلايستيشن الصغيرة',
-      'عدد أجهزة لا نهائي',
-      'ملكية أصل للأبد',
-      'حصانة كاملة ضد انقطاع الإنترنت',
-      'دعم فني استراتيجي'
-    ]
-  },
-  {
-    id: 'professional',
-    name: 'Professional Package',
-    price: '6000',
-    currency: 'EGP',
-    color: 'accent',
-    features: [
-      'أفضل قيمة للصالات المتنامية',
-      'كل مميزات باقة Starter',
-      'تحكم سيادي في الأجهزة',
-      'نظام ذكاء الأعمال والتقارير',
-      'تخصيص كامل لهوية البراند',
-      'بروتوكول تدريب الفريق الاحترافي'
-    ],
-    badge: 'الأكثر اختيارًا'
-  },
-  {
-    id: 'international',
-    name: 'International Package',
-    price: '10000',
-    currency: 'EGP',
-    color: 'blue',
-    features: [
-      'دعم تغيير العملات (Currency switching)',
-      'التحكم في المنطقة الزمنية للنظام',
-      'يدعم بيئة العمل في السعودية والإمارات',
-      'كل مميزات باقة Professional',
-      'دعم فني دولي عابر للحدود'
-    ],
-    badge: 'للصالات الاحترافية والتوسع الخارجي'
-  }
-];
+const packages = OFFICIAL_PRICING_PACKAGES;
 
 const countries = [
   { 
@@ -122,17 +79,20 @@ interface SmartFormProps {
 }
 
 const SmartForm = ({ initialPackage, initialCountry }: SmartFormProps) => {
+  const { country: selectedCountry, setCountry: setSelectedCountry, t } = useI18n();
   const [selectedPackage, setSelectedPackage] = useState(initialPackage || packages[1]);
-  const [selectedCountry, setSelectedCountry] = useState(initialCountry || countries[0]);
+  const [requestType, setRequestType] = useState<'trial' | 'buy'>('trial');
 
-  // Update state when props change
+  // Update state when initialPackage prop changes
   useEffect(() => {
     if (initialPackage) setSelectedPackage(initialPackage);
   }, [initialPackage]);
 
   useEffect(() => {
-    if (initialCountry) setSelectedCountry(initialCountry);
-  }, [initialCountry]);
+    if (initialCountry && initialCountry.id !== selectedCountry.id) {
+      setSelectedCountry(initialCountry);
+    }
+  }, [initialCountry, selectedCountry.id, setSelectedCountry]);
 
   // Enforce International Package for international countries
   useEffect(() => {
@@ -140,7 +100,7 @@ const SmartForm = ({ initialPackage, initialCountry }: SmartFormProps) => {
       const intPkg = packages.find(p => p.id === 'international');
       if (intPkg) setSelectedPackage(intPkg);
     }
-  }, [selectedCountry.id]);
+  }, [selectedCountry.id, selectedPackage.id]);
 
   const [formData, setFormData] = useState({
     salonName: '',
@@ -159,8 +119,8 @@ const SmartForm = ({ initialPackage, initialCountry }: SmartFormProps) => {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.salonName.trim()) newErrors.salonName = 'اسم الصالة مطلوب';
-    if (!formData.clientName.trim()) newErrors.clientName = 'اسم العميل مطلوب';
+    if (!formData.salonName.trim()) newErrors.salonName = `${t.forms?.loungeNameLabel || 'اسم الصالة'} مطلوب`;
+    if (!formData.clientName.trim()) newErrors.clientName = `${t.forms?.ownerNameLabel || 'اسم العميل'} مطلوب`;
     if (!formData.address.trim()) newErrors.address = 'عنوان الصالة مطلوب';
     
     if (!selectedSource) {
@@ -171,21 +131,25 @@ const SmartForm = ({ initialPackage, initialCountry }: SmartFormProps) => {
     
     const cleanPhone = formData.phone.trim().replace(/[\s-]/g, '');
     
-    const phoneRegex = /^01[0125][0-9]{8}$/;
+    const egyptRegex = /^01[0125][0-9]{8}$/;
     const saudiRegex = /^(05|5)[0-9]{8}$/;
     const uaeRegex = /^(05|5)[0-9]{8}$/;
-    const internationalRegex = /^\+?[0-9]{10,15}$/;
+    const qatarRegex = /^(?:974)?[3567][0-9]{7}$/;
+    const kuwaitRegex = /^(?:965)?[569][0-9]{7}$/;
+    const internationalRegex = /^\+?[0-9]{8,15}$/;
 
     if (!formData.phone.trim()) {
-      newErrors.phone = 'رقم الهاتف مطلوب';
+      newErrors.phone = `${t.forms?.phoneLabel || 'رقم الهاتف'} مطلوب`;
     } else {
-      const isValid = phoneRegex.test(cleanPhone) || 
+      const isValid = egyptRegex.test(cleanPhone) || 
                       saudiRegex.test(cleanPhone) || 
                       uaeRegex.test(cleanPhone) || 
+                      qatarRegex.test(cleanPhone) || 
+                      kuwaitRegex.test(cleanPhone) || 
                       internationalRegex.test(cleanPhone);
       
       if (!isValid) {
-        newErrors.phone = 'رقم الهاتف غير صحيح (مثال: 01121778205)';
+        newErrors.phone = `رقم الهاتف غير صحيح (مثال: ${t.forms?.phonePlaceholder || '01121778205'})`;
       }
     }
 
@@ -215,15 +179,17 @@ const SmartForm = ({ initialPackage, initialCountry }: SmartFormProps) => {
   };
 
   const getPriceForCountry = (pkgId: string, countryId: string) => {
-    const country = countries.find(c => c.id === countryId) || countries[0];
-    if (pkgId === 'international') {
-      return internationalPricing[countryId] || internationalPricing['egypt'];
-    }
     const basePkg = packages.find(p => p.id === pkgId);
-    const basePrice = Number(basePkg?.price || 0);
+    if (pkgId === 'international') {
+      const verified = internationalPricing[countryId];
+      if (verified) {
+        return verified;
+      }
+    }
+    // Official package prices are authoritative in EGP
     return {
-      price: Math.round(basePrice * country.rate).toString(),
-      currency: country.currency
+      price: basePkg ? basePkg.price.toString() : '0',
+      currency: 'EGP'
     };
   };
 
@@ -255,8 +221,13 @@ const SmartForm = ({ initialPackage, initialCountry }: SmartFormProps) => {
     const featuresText = selectedPackage.features.map(f => `- ${f}`).join('\n');
     const isAutoSelected = selectedCountry.id !== 'egypt';
 
+    const requestTypeText = requestType === 'trial' 
+      ? '🎁 طلب نسخة تجريبية مجانية (3 أيام / 72 ساعة)'
+      : '⚡ طلب شراء مباشر وبداية التفعيل الدائم';
+
     const messageText = `**ملخص الطلب:**
 
+**نوع الطلب:** ${requestTypeText}
 **الباقة المختارة:** ${pkgName}
 **السعر:** ${formatCurrency(currentPriceData.price)} ${currentPriceData.currency}
 **الدولة:** ${selectedCountry.name}
@@ -280,6 +251,7 @@ ${isAutoSelected ? '_تم اختيار هذه الباقة بناءً على ا�
 
 _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
     
+    Analytics.trialFormSubmit(selectedPackage.id, selectedCountry.id);
     const encodedText = encodeURIComponent(messageText);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
 
@@ -291,7 +263,11 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
   };
 
   return (
-    <section id="smart-form" className="smart-form-section">
+    <section 
+      id="smart-form" 
+      data-section="request-trial"
+      className="smart-form-section scroll-mt-24 sm:scroll-mt-28"
+    >
       <div className="container">
         <motion.div 
           initial={{ opacity: 0, y: 50 }}
@@ -306,6 +282,44 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
           </div>
 
           <form onSubmit={handleSubmit}>
+            {/* Request Type Selector */}
+            <div className="mb-8 p-1.5 bg-[#0a0a0f] border border-white/10 rounded-2xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRequestType('trial')}
+                  className={`py-3.5 px-4 rounded-xl font-black text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    requestType === 'trial'
+                      ? 'bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg shadow-primary/30 border border-primary/50'
+                      : 'bg-transparent text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span className="text-base">🎁</span>
+                  <span>طلب تجربة مجانية 3 أيام (72 ساعة)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setRequestType('buy')}
+                  className={`py-3.5 px-4 rounded-xl font-black text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    requestType === 'buy'
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 border border-amber-500/50'
+                      : 'bg-transparent text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span className="text-base">⚡</span>
+                  <span>شراء وتفعيل الملكية الدائمة مباشرة</span>
+                </button>
+              </div>
+
+              {requestType === 'trial' && (
+                <div className="mt-3 p-3 bg-primary/10 border border-primary/20 rounded-xl text-xs text-purple-200 font-medium flex items-center gap-2 text-right">
+                  <Info className="w-4 h-4 text-primary shrink-0" />
+                  <span>تثبيت آمن ومجاني 100% عبر مهندسينا خلال 5 دقائق — تجربة كاملة المزايا بدون بطاقة ائتمان.</span>
+                </div>
+              )}
+            </div>
+
             {/* Step 1: Package Selection */}
             <div className="step-title">
               <span className="step-number">1</span>
@@ -369,7 +383,7 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
               <span>اختر الدولة</span>
             </div>
             <div className="country-flex">
-              {countries.map((country) => (
+              {SUPPORTED_COUNTRIES.map((country) => (
                 <motion.button
                   key={country.id}
                   type="button"
@@ -472,26 +486,28 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
               className="summary-box"
             >
               <div className="summary-title">
-                <Info className="w-5 h-5" />
+                <Info className="w-5 h-5 text-primary" />
                 <span>ملخص الطلب</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">نوع الطلب:</span>
+                <span className="summary-value font-bold text-primary">
+                  {requestType === 'trial' ? '🎁 تجربة مجانية (3 أيام / 72 ساعة)' : '⚡ شراء وتفعيل الملكية الدائمة'}
+                </span>
               </div>
               <div className="summary-item">
                 <span className="summary-label">الباقة المختارة:</span>
                 <span className={`summary-value text-${selectedPackage.id === 'professional' ? 'pro' : selectedPackage.id}`}>{selectedPackage.name}</span>
               </div>
               <div className="summary-item">
-                <span className="summary-label">السعر:</span>
+                <span className="summary-label">السعر المستحق عند الشراء:</span>
                 <span className={`summary-value text-${selectedPackage.id === 'professional' ? 'pro' : selectedPackage.id}`}>
                   {formatCurrency(getPriceForCountry(selectedPackage.id, selectedCountry.id).price)} {getPriceForCountry(selectedPackage.id, selectedCountry.id).currency}
                 </span>
               </div>
               <div className="summary-item">
-                <span className="summary-label">الدولة:</span>
-                <span className="summary-value">{selectedCountry.name}</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">العملة:</span>
-                <span className="summary-value">{selectedCountry.currency}</span>
+                <span className="summary-label">الدولة والعملة:</span>
+                <span className="summary-value">{selectedCountry.name} ({selectedCountry.currency})</span>
               </div>
             </motion.div>
 
@@ -499,32 +515,25 @@ _تم إرسال الطلب من الموقع الرسمي لـ IDEA Makers_`;
             <div className="submit-actions">
               <button 
                 type="submit" 
-                className="smart-submit-btn"
+                className={`smart-submit-btn cursor-pointer ${requestType === 'trial' ? 'bg-gradient-to-r from-primary to-purple-700' : 'bg-gradient-to-r from-amber-500 to-orange-600'}`}
                 disabled={isSubmitting || !selectedSource}
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="animate-spin w-6 h-6" />
-                    <span>جاري المعالجة...</span>
+                    <span>جاري التوجيه إلى الواتساب...</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-6 h-6" />
-                    <span>ابدأ الآن وقرر بنفسك</span>
+                    <span>
+                      {requestType === 'trial'
+                        ? 'ارسل طلب التجربة المجانية (3 أيام) عبر الواتساب'
+                        : 'تأكيد طلب الشراء وتفعيل الملكية الدائمة'}
+                    </span>
                   </>
                 )}
               </button>
-
-              <motion.button
-                type="submit"
-                initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                animate={{ opacity: 1, height: 'auto', marginTop: 20 }}
-                className="trial-btn"
-                disabled={isSubmitting}
-              >
-                <span>ابدأ التجربة المجانية الآن</span>
-                <CheckCircle2 className="w-6 h-6" />
-              </motion.button>
             </div>
           </form>
         </motion.div>

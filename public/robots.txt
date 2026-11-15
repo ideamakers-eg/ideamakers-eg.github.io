@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ideamakers-eg.github.io/sitemap.xml

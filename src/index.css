@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "./comparison-responsive.css";
 @import "./responsive.css";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-cairo: "Cairo", sans-serif;
+  --font-sans: "Readex Pro", "Cairo", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-cairo: "Readex Pro", "Cairo", sans-serif;
   
   --color-primary: #a855f7;
   --color-primary-dark: #9333ea;
@@ -23,16 +23,16 @@
 
 @layer base {
   :root {
-    /* Fluid Typography using clamp() - Professional Scaling */
-    --fs-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.8rem);
-    --fs-sm: clamp(0.85rem, 0.8rem + 0.3vw, 0.95rem);
-    --fs-base: clamp(1rem, 0.95rem + 0.25vw, 1.1rem);
-    --fs-lg: clamp(1.1rem, 1.05rem + 0.3vw, 1.2rem);
-    --fs-xl: clamp(1.2rem, 1.1rem + 0.5vw, 1.4rem);
-    --fs-2xl: clamp(1.4rem, 1.3rem + 0.7vw, 1.8rem);
-    --fs-3xl: clamp(1.75rem, 1.5rem + 1.2vw, 2.5rem);
-    --fs-4xl: clamp(2.1rem, 1.8rem + 1.8vw, 3.5rem);
-    --fs-5xl: clamp(2.5rem, 2rem + 3vw, 5rem);
+    /* Fluid Typography using clamp() - Designed for Arabic screen comfort & clarity */
+    --fs-xs: clamp(0.72rem, 0.68rem + 0.2vw, 0.82rem);
+    --fs-sm: clamp(0.85rem, 0.8rem + 0.25vw, 0.95rem);
+    --fs-base: clamp(0.95rem, 0.9rem + 0.25vw, 1.05rem);
+    --fs-lg: clamp(1.08rem, 1rem + 0.3vw, 1.2rem);
+    --fs-xl: clamp(1.18rem, 1.1rem + 0.4vw, 1.35rem);
+    --fs-2xl: clamp(1.35rem, 1.25rem + 0.6vw, 1.65rem);
+    --fs-3xl: clamp(1.6rem, 1.45rem + 1vw, 2.2rem);
+    --fs-4xl: clamp(1.9rem, 1.7rem + 1.4vw, 2.85rem);
+    --fs-5xl: clamp(2.2rem, 1.9rem + 2vw, 3.75rem);
 
     /* Fluid Spacing */
     --space-xs: clamp(0.4rem, 0.35rem + 0.2vw, 0.6rem);
@@ -52,16 +52,17 @@
   body {
     @apply font-cairo bg-[#050505] text-white antialiased selection:bg-primary/30;
     font-size: var(--fs-base);
-    line-height: 1.6;
+    line-height: 1.75;
+    letter-spacing: normal;
     overflow-x: hidden;
     width: 100%;
     position: relative;
   }
 
-  h1 { font-size: var(--fs-5xl); font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; }
-  h2 { font-size: var(--fs-4xl); font-weight: 800; line-height: 1.2; letter-spacing: -0.01em; }
-  h3 { font-size: var(--fs-3xl); font-weight: 700; line-height: 1.3; }
-  h4 { font-size: var(--fs-2xl); font-weight: 700; }
+  h1 { font-size: var(--fs-5xl); font-weight: 800; line-height: 1.35; letter-spacing: normal; }
+  h2 { font-size: var(--fs-4xl); font-weight: 700; line-height: 1.35; letter-spacing: normal; }
+  h3 { font-size: var(--fs-3xl); font-weight: 700; line-height: 1.4; letter-spacing: normal; }
+  h4 { font-size: var(--fs-2xl); font-weight: 700; line-height: 1.4; letter-spacing: normal; }
 
   section {
     padding-top: var(--space-2xl);
@@ -89,7 +90,7 @@
     }
   }
 
-  button, .btn {
+  .btn {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
@@ -107,8 +108,9 @@
 }
 
 .sticky-cta-bar {
-  @apply fixed bottom-0 left-0 right-0 z-[100] p-4 bg-white/[0.03] backdrop-blur-xl border-t border-white/10 lg:hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
-  background: rgba(5, 5, 5, 0.8);
+  @apply fixed bottom-0 left-0 right-0 z-[100] px-3.5 py-2.5 sm:px-4 sm:py-3 bg-white/[0.03] backdrop-blur-xl border-t border-white/10 lg:hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.5)];
+  background: rgba(7, 7, 13, 0.94);
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
 }
 
 .text-gradient {
@@ -228,5 +230,151 @@
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+/* PS5 Cinematic Hero Experience Design Tokens */
+:root {
+  --hero-bg-primary: #050508;
+  --hero-bg-secondary: #0b0b14;
+  --hero-accent-purple: #a855f7;
+  --hero-accent-purple-glow: rgba(168, 85, 247, 0.45);
+  --hero-accent-cyan: #38bdf8;
+  --hero-accent-cyan-glow: rgba(56, 189, 248, 0.35);
+  --hero-text-primary: #ffffff;
+  --hero-text-muted: #cbd5e1;
+  --hero-radius: 1rem;
+  --hero-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reduced Motion Compliance: respect user accessibility preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Speed & Rendering Optimization for All Devices (Mobile, Tablet, Laptop, Desktop) */
+html {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+  background-color: #050505;
+}
+
+/* ========================================================
+   AUTHORITATIVE DIRECTION-AWARE APP HEADER
+   Immediate zero-delay scroll hide on down, reveal on up.
+   Guarantees no conflict with Tailwind translate variables.
+   ======================================================== */
+.site-nav-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  pointer-events: auto;
+  will-change: transform, opacity;
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 180ms cubic-bezier(0.22, 1, 0.36, 1),
+              padding 180ms ease,
+              background-color 180ms ease,
+              border-color 180ms ease,
+              box-shadow 180ms ease;
+}
+
+.site-nav-header.header-hidden {
+  transform: translate3d(0, -100%, 0) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-header {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* Content Visibility for Offscreen Elements to Speed Up Rendering */
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
+}
+
+/* Hardware Acceleration Helper for Crisp Performance */
+.gpu-layer {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Image Performance Optimization */
+img, svg, iframe {
+  content-visibility: auto;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* ========================================================
+   CINEMATIC HERO PARALLAX & 3D CONTROLLER LIGHTING
+   Coordinated pointer-responsive parallax system across:
+   1. Foreground: Controller 3D tilt & studio lighting
+   2. Middle layer: Ambient lighting halos & PS symbols
+   3. Background: Tech grid & nebula glow shift
+   4. Content layer: Ultra-subtle text anchoring (2-3px)
+   ======================================================== */
+.hero-scene-container {
+  will-change: background;
+}
+
+.hero-parallax-bg {
+  transform: translate3d(var(--bg-shift-x, 0px), var(--bg-shift-y, 0px), 0);
+  will-change: transform;
+}
+
+.hero-parallax-symbols {
+  transform: translate3d(var(--symbols-shift-x, 0px), var(--symbols-shift-y, 0px), 0);
+  will-change: transform;
+}
+
+.hero-parallax-halo {
+  transform: translate3d(var(--halo-shift-x, 0px), var(--halo-shift-y, 0px), 0);
+  will-change: transform;
+}
+
+.hero-parallax-content {
+  transform: translate3d(var(--content-shift-x, 0px), var(--content-shift-y, 0px), 0);
+  will-change: transform;
+}
+
+.hero-controller-3d-card {
+  perspective: 1100px;
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-controller-3d-card:hover {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-parallax-bg,
+  .hero-parallax-symbols,
+  .hero-parallax-halo,
+  .hero-parallax-content,
+  .hero-controller-3d-card {
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
